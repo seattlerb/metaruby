@@ -1,22 +1,56 @@
 
-FILES = array.rb bignum.rb class.rb compar.rb dir.rb enum.rb error.rb eval.rb file.rb gc.rb hash.rb io.rb marshal.rb math.rb numeric.rb object.rb pack.rb prec.rb process.rb random.rb range.rb re.rb ruby.rb signal.rb string.rb struct.rb time.rb variable.rb version.rb
+CLASSES = \
+	TrueClass \
+	FalseClass \
+	NilClass \
+	Time \
+	Array \
+	$(NULL)
 
+FILES = $(patsubst %,%.c,$(CLASSES))
 
-%.rb : %.rb.c preprocess.rb port.rb Makefile
-	ruby -w preprocess.rb $< > $@
+RUBY2C=../../ruby_to_c/dev
 
-all: everything.rb
-	ruby -w everything.rb
-	ruby -w metaruby.rb
+%.c: %.rb Makefile
+	(cd rubicon/builtin; ruby -w -I../.. -r$* Test$<)
+	ruby -w -I$(RUBY2C) $(RUBY2C)/translate.rb -c=$* $< > $@
 
-everything.rb: $(FILES) Makefile tie-it-all-together.rb
-	ruby -w tie-it-all-together.rb > everything.rb
+all: rubicon tools $(FILES)
 
-test: all
-	cd tests/builtin; $(MAKE)
+test: realclean
+	$(MAKE) -k all
 
-parser:
-	ruby -wI ../../cocor/dev/build2 ../../cocor/dev/build2/Comp.rb ruby.ATG 
+audit: rubicon
+	ruby -I rubicon /usr/local/bin/ZenTest TrueClass.rb rubicon/builtin/TestTrueClass.rb
+	ruby -I rubicon /usr/local/bin/ZenTest FalseClass.rb rubicon/builtin/TestFalseClass.rb
+	ruby -I rubicon /usr/local/bin/ZenTest NilClass.rb rubicon/builtin/TestNilClass.rb
+	ruby -I rubicon /usr/local/bin/ZenTest Time.rb rubicon/builtin/TestTime.rb
+	ruby -I rubicon /usr/local/bin/ZenTest Array.rb rubicon/builtin/TestArray.rb
+
+# so you can type `make Time` to just run Time tests
+$(CLASSES):
+	(cd rubicon/builtin; ruby -w -I../.. -r$@ Test$@.rb)
+
+# shortcut to login, we can't find any way to default the input. argh.
+cvslogin:
+	cvs -d:pserver:anonymous@rubyforge.org:/var/cvs/rubytests login
+
+# checks out rubicon fresh and patches
+rubicon:
+	cvs -z3 -d:pserver:anonymous@rubyforge.org:/var/cvs/rubytests co rubicon
+	(cd rubicon; patch -p0 < ../rubicon.patch)
+
+patch:
+	(cd rubicon; patch -p0 < ../rubicon.patch)
+
+tools: rubicon
+	(cd rubicon; $(MAKE) tools)
+
+diffs:
+	(cd rubicon; cvs -q diff -du > ../rubicon.patch.new)
 
 clean:
-	rm -f $(FILES) everything.rb *~
+	rm -rf *~ *.c ~/.ruby_inline
+
+realclean: clean
+	rm -rf rubicon

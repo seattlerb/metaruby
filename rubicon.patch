@@ -1,0 +1,470 @@
+Index: builtin/TestTime.rb
+===================================================================
+RCS file: /var/cvs/rubytests/rubicon/builtin/TestTime.rb,v
+retrieving revision 1.7
+diff -d -u -r1.7 TestTime.rb
+--- builtin/TestTime.rb	24 Mar 2005 01:00:03 -0000	1.7
++++ builtin/TestTime.rb	29 Mar 2005 10:37:02 -0000
+@@ -104,9 +104,16 @@
+     end
+   end
+ 
++  def setup
++    @utc = Time.utc(2001, 2, 3, 4, 5, 6)
++    @loc = Time.local(2001, 2, 3, 4, 5, 6)
++    @zone = Time.now.zone
++  end
++
+   #
+   # Ensure against time travel
+   #
++
+   def test_00sanity # ZenTest SKIP
+     assert_operator Time.now.to_i, :>, 960312287 # Tue Jun  6 13:25:06 EDT 2000
+   end
+@@ -118,16 +125,24 @@
+   end
+ 
+   def test_class_at
+-    t = Time.now
+-    sec = t.to_i
++    loc = Time.now
++    sec = loc.to_i
+     assert_equal(0, Time.at(0).to_i)
+-    assert_equal(t, Time.at(t))
+-    assert((Time.at(sec,1000000).to_f - Time.at(sec).to_f) == 1.0)
++    assert_equal(loc, Time.at(loc))
++    assert((Time.at(sec,1000000).to_f - Time.at(sec).to_f) == 1.0) # FIX
++  end
++
++  def test_class_at_utc
++    utc1 = Time.now.utc
++    utc2 = Time.at(utc1)
++    assert(utc1.utc?)
++    assert(utc2.utc?)
++    assert_equal(utc1.to_i, utc2.to_i)
+   end
+ 
+   def test_class_gm
+     assert_raises(ArgumentError) { Time.gm }
+-    assert(Time.gm(2000) != Time.local(2000))
++    assert_not_equal(Time.gm(2000), Time.local(2000))
+     assert_equal(Time.gm(2000), Time.gm(2000,1,1,0,0,0))
+     assert_equal(Time.gm(2000,nil,nil,nil,nil,nil), Time.gm(2000,1,1,0,0,0))
+     assert_raises(ArgumentError) { Time.gm(2000,0) }
+@@ -144,17 +159,9 @@
+     assert_equal(Time.gm(*a),t)
+   end
+ 
+-  def test_class_httpdate
+-    raise NotImplementedError, 'Need to write test_class_httpdate'
+-  end
+-
+-  def test_class_iso8601
+-    raise NotImplementedError, 'Need to write test_class_iso8601'
+-  end
+-
+   def test_class_local
+     assert_raises(ArgumentError) { Time.local }
+-    assert(Time.gm(2000) != Time.local(2000))
++    assert_not_equal(Time.gm(2000), Time.local(2000))
+     assert_equal(Time.local(2000), Time.local(2000,1,1,0,0,0))
+     assert_equal(Time.local(2000,nil,nil,nil,nil,nil), Time.local(2000,1,1,0,0,0))
+     assert_raises(ArgumentError) { Time.local(2000,0) }
+@@ -176,7 +183,7 @@
+     # Test insufficient arguments
+     #
+     assert_raises(ArgumentError) { Time.mktime }
+-    assert(Time.gm(2000) != Time.mktime(2000))
++    assert_not_equal(Time.gm(2000), Time.mktime(2000))
+     assert_equal(Time.mktime(2000), Time.mktime(2000,1,1,0,0,0))
+     assert_equal(Time.mktime(2000,nil,nil,nil,nil,nil), Time.mktime(2000,1,1,0,0,0))
+     assert_raises(ArgumentError) { Time.mktime(2000,0) }
+@@ -197,24 +204,16 @@
+     assert_equal(Time.mktime(*a),t)
+   end
+ 
+-  def test_class_now
+-    t1 = Time.now
+-    sleep 1
+-    t2 = Time.now
++  def util_class_now(method)
++    t1 = Time.send(method)
++    sleep 0.1
++    t2 = Time.send(method)
+     d = t2.to_f - t1.to_f
+-    assert(d > 0.9 && d < 1.1)
+-  end
+-
+-  def test_class_parse
+-    raise NotImplementedError, 'Need to write test_class_parse'
+-  end
+-
+-  def test_class_rfc2822
+-    raise NotImplementedError, 'Need to write test_class_rfc2822'
++    assert_in_delta(0.1, d, 0.01)
+   end
+ 
+-  def test_class_rfc822
+-    raise NotImplementedError, 'Need to write test_class_rfc822'
++  def test_class_now
++    util_class_now(:now)
+   end
+ 
+   def test_class_times
+@@ -227,15 +226,7 @@
+   end
+ 
+   def test_class_utc
+-    raise NotImplementedError, 'Need to write test_class_utc'
+-  end
+-
+-  def test_class_xmlschema
+-    raise NotImplementedError, 'Need to write test_class_xmlschema'
+-  end
+-
+-  def test_class_zone_offset
+-    raise NotImplementedError, 'Need to write test_class_zone_offset'
++    test_class_gm # TODO: refactor to ensure they really are synonyms
+   end
+ 
+   # Instance Methods:
+@@ -258,7 +249,7 @@
+         b = a.clone
+ 
+         assert_equal(a, b)
+-        assert(a.__id__ != b.__id__)
++        assert_not_equal(a.__id__, b.__id__)
+         assert_equal(a.frozen?, b.frozen?)
+         assert_equal(a.tainted?, b.tainted?)
+       end
+@@ -275,28 +266,49 @@
+   end
+ 
+   def test_dst_eh
+-    raise NotImplementedError, 'Need to write test_dst_eh'
++    test_isdst # TODO: refactor to test that they really are the same
+   end
+ 
+   def test_eql_eh
+-    t1=Time.now
+-    t2=t1 
+-    t2+= 2e-6
+-    sleep(0.1)
+-    assert(!t1.eql?(Time.now))
+-    assert(!t1.eql?(t2))
++    t1 = Time.now
++    t2 = Time.at(t1)
++    t3 = t1 + 2e-6
++    t4 = t1 + 1
++    assert(t1.eql?(t1))
++    assert(t1.eql?(t2))
++    assert(!t1.eql?(t3))
++    assert(!t1.eql?(t4))
++    assert(!t1.eql?(t1.getutc))
+   end
+ 
+   def test_getgm
+-    raise NotImplementedError, 'Need to write test_getgm'
++    # TODO: this only tests local -> gm
++    t1 = Time.now
++    loc = Time.at(t1)
++    assert(!t1.gmt?)
++    t2 = t1.getgm
++    assert(!t1.gmt?)
++    assert(t2.gmt?)
++    assert_equal(t1.asctime, loc.asctime)
++    assert_not_equal(t2.asctime, loc.asctime)
++    assert_not_equal(t1.asctime, t2.asctime)
+   end
+ 
+   def test_getlocal
+-    raise NotImplementedError, 'Need to write test_getlocal'
++    # TODO: this only tests gm -> local
++    t1 = Time.now.gmtime
++    utc = Time.at(t1)
++    assert(t1.gmt?)
++    t2 = t1.getlocal
++    assert(t1.gmt?)
++    assert(!t2.gmt?)
++    assert_equal(t1, utc)
++    assert_not_equal(t2.asctime, utc.asctime)
++    assert_not_equal(t1, t2)
+   end
+ 
+   def test_getutc
+-    raise NotImplementedError, 'Need to write test_getutc'
++    test_getgm # REFACTOR to test both calls
+   end
+ 
+   def test_gmt_eh
+@@ -307,49 +319,42 @@
+   end
+ 
+   def test_gmt_offset
+-    raise NotImplementedError, 'Need to write test_gmt_offset'
++    test_utc_offset # REFACTOR to test both methods
+   end
+ 
+   def test_gmtime
++    # TODO: this only tests local -> gm
+     t = Time.now
+     loc = Time.at(t)
+     assert(!t.gmt?)
+     t.gmtime
+     assert(t.gmt?)
+-    assert(t.asctime != loc.asctime)
++    assert_not_equal(t.asctime, loc.asctime)
+   end
+ 
+   def test_gmtoff
+-    raise NotImplementedError, 'Need to write test_gmtoff'
++    test_utc_offset # REFACTOR to test both methods
+   end
+ 
+   def test_hash
+-    t = Time.now
+-    t2 = Time.at(t)
+-    sleep(0.1)
+-    t3 = Time.now
+-    assert_equal(t.hash, t2.hash)
+-    assert_not_equal(t.hash, t3.hash)
++    t1 = @utc
++    t2 = Time.at(t1)
++    t3 = @utc + 1
++    assert_equal(t1.hash, t2.hash)
++    assert_not_equal(t1.hash, t3.hash)
+   end
+ 
+   def test_hour
+     checkComponent(:hour, 3)
+   end
+ 
+-  def test_httpdate
+-    raise NotImplementedError, 'Need to write test_httpdate'
+-  end
+-
+   def test_initialize
+-    t1 = Time.new
+-    sleep 1
+-    t2 = Time.new
+-    d = t2.to_f - t1.to_f
+-    assert(d > 0.9 && d < 1.1)
++    util_class_now(:new)
+   end
+ 
+   def test_inspect
+-    raise NotImplementedError, 'Need to write test_inspect'
++    assert_equal("Sat Feb 03 04:05:06 UTC 2001", @utc.inspect)
++    assert_equal("Sat Feb 03 04:05:06 #{@zone} 2001", @loc.inspect)
+   end
+ 
+   def test_isdst
+@@ -360,50 +365,41 @@
+     # work in some parts of the US, even, so I'm looking for
+     # better ideas
+ 
+-    zone = Time.now.zone
+-
+     # Are we in the US?
+-
+     if ["EST", "EDT",
+         "CST", "CDT",
+         "MST", "MDT",
+-        "PST", "PDT"].include? zone
++        "PST", "PDT"].include? @zone
+ 
+       dtest = [ 
+         [false, 2000, 1, 1],
+         [true,  2000, 7, 1],
++        [true,  2000, 4, 2, 4],
++        [false, 2000, 10, 29, 4],
++        [false, 2000, 4,2,1,59],   # Spring forward
++        [true,  2000, 4,2,3,0],
++        [true,  2000, 10,29,0,59], # Fall back
++        [false, 2000, 10,29,2,0]
+       ]
+ 
+-      dtest.push(
+-                 [true,  2000, 4, 2, 4],
+-                 [false, 2000, 10, 29, 4],
+-                 [false, 2000, 4,2,1,59],   # Spring forward
+-                 [true,  2000, 4,2,3,0],
+-                 [true,  2000, 10,29,0,59], # Fall back
+-                 [false, 2000, 10,29,2,0]
+-                 )
+-
+       dtest.each do |x|
+         result = x.shift
+         assert_equal(result, Time.local(*x).isdst,
+-                     "\nExpected #{x.join(',')} to be dst=#{result}")
++                     "\nExpected Time.local(#{x.join(',')}).isdst == #{result}")
+       end
+     else
+       skipping("Don't know how to do timezones");
+     end
+   end
+ 
+-  def test_iso8601
+-    raise NotImplementedError, 'Need to write test_iso8601'
+-  end
+-
+   def test_localtime
++    # TODO: this only tests gm -> local
+     t = Time.now.gmtime
+     utc = Time.at(t)
+     assert(t.gmt?)
+     t.localtime
+     assert(!t.gmt?)
+-    assert(t.asctime != utc.asctime)
++    assert_not_equal(t.asctime, utc.asctime)
+   end
+ 
+   def test_mday
+@@ -440,14 +436,6 @@
+     end
+   end
+ 
+-  def test_rfc2822
+-    raise NotImplementedError, 'Need to write test_rfc2822'
+-  end
+-
+-  def test_rfc822
+-    raise NotImplementedError, 'Need to write test_rfc822'
+-  end
+-
+   def test_sec
+     checkComponent(:sec, 5)
+   end
+@@ -506,7 +494,10 @@
+   end
+ 
+   def test_succ
+-    raise NotImplementedError, 'Need to write test_succ'
++    t1 = @loc
++    t2 = t1 + 1
++    t3 = t1.succ
++    assert_equal(t2, t3)
+   end
+ 
+   def test_to_a
+@@ -526,7 +517,7 @@
+ 
+   def test_to_f
+     t = Time.at(10000,1066)
+-    assert_equal(10000.001066, t.to_f)
++    assert_in_delta(10000.001066, t.to_f, 1e-7)
+   end
+ 
+   def test_to_i
+@@ -537,9 +528,8 @@
+   end
+ 
+   def test_to_s
+-    flunk "You can't use strftime to test to_s!"
+-    t = Time.now
+-    assert_equal(t.strftime("%a %b %d %H:%M:%S %Z %Y"),t.to_s)
++    assert_equal("Sat Feb 03 04:05:06 UTC 2001", @utc.to_s)
++    assert_equal("Sat Feb 03 04:05:06 #{@zone} 2001", @loc.to_s)
+   end
+ 
+   def test_tv_sec
+@@ -549,48 +539,71 @@
+     assert_equal(10000,t.tv_sec)
+   end
+ 
++  def util_usec(s, u, method)
++    t = Time.at(s,u)
++    assert_equal(u,t.send(method))
++  end
++
+   def test_tv_usec
+-    t = Time.at(10000,1066)
+-    assert_equal(1066,t.tv_usec)
++    util_usec(10000, 1066, :tv_usec)
++    util_usec(10000, 0, :tv_usec)
+   end
+ 
+   def test_usec
+-    t = Time.at(10000,1066)
+-    assert_equal(1066,t.usec)
++    util_usec(10000, 1066, :usec)
++    util_usec(10000, 0, :usec)
+   end
+ 
+   def test_utc
+-    raise NotImplementedError, 'Need to write test_utc'
++    test_gmtime # REFACTOR to test both methods
+   end
+ 
+   def test_utc_eh
+-    raise NotImplementedError, 'Need to write test_utc_eh'
++    test_gmt_eh # REFACTOR to test both methods
+   end
+ 
+   def test_utc_offset
+-    raise NotImplementedError, 'Need to write test_utc_offset'
++    # TODO: figure out the year, month, & day edgecase setups
++    off = @utc - @loc
++    assert_equal(0, @utc.utc_offset)
++    assert_equal(off, @loc.utc_offset)
+   end
+ 
+   def test_wday
+     t = Time.local(2001, 4, 1)
+ 
+-    6.times {|i|
++    7.times { |i|
+       assert_equal(i,t.wday)
+       t += ONEDAYSEC
+     }
+   end
+ 
+-  def test_xmlschema
+-    raise NotImplementedError, 'Need to write test_xmlschema'
+-  end
+-
+   def test_yday
+-    t = Time.local(2001, 1, 1)
+-    365.times {|i|
+-      assert_equal(i+1,t.yday)
+-      t += ONEDAYSEC
+-    }
+-    
++    # non-leap 1/1, 2/28,       3/1, 12/31
++    #     leap 1/1, 2/28, 2/29, 3/1, 12/31
++    # leap century (2000)
++    # want to do a non-leap century, but they are out of range.
++    # any others?
++
++    # non-leap year:
++    assert_equal(  1, Time.local(1999,  1,  1).yday)
++    assert_equal( 59, Time.local(1999,  2, 28).yday)
++    assert_equal( 60, Time.local(1999,  3,  1).yday)
++    assert_equal(365, Time.local(1999, 12, 31).yday)
++
++    # leap century:
++    assert_equal(  1, Time.local(2000,  1,  1).yday)
++    assert_equal( 59, Time.local(2000,  2, 28).yday)
++    assert_equal( 60, Time.local(2000,  2, 29).yday)
++    assert_equal( 61, Time.local(2000,  3,  1).yday)
++    assert_equal(366, Time.local(2000, 12, 31).yday)
++
++    # leap year:
++    assert_equal(  1, Time.local(2004,  1,  1).yday)
++    assert_equal( 59, Time.local(2004,  2, 28).yday)
++    assert_equal( 60, Time.local(2004,  2, 29).yday)
++    assert_equal( 61, Time.local(2004,  3,  1).yday)
++    assert_equal(366, Time.local(2004, 12, 31).yday)
+   end
+ 
+   def test_year
+@@ -603,7 +616,7 @@
+     t = Time.now.gmtime
+     assert_equal(gmt, t.zone)
+     t = Time.now
+-    assert(gmt != t.zone)
++    assert_not_equal(gmt, t.zone)
+   end
+ 
+ end
