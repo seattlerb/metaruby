@@ -182,7 +182,9 @@ class ZZMethod
     args = "(" + args + ")" if args.size > 0
 
     s = "  def #{@name}#{args}; end"
+
     s += ' # `' if @name =~ /`/
+    s = "# HACK #{s}" if @name == "`" || @name == "self.new"
 
     s
   end
@@ -312,6 +314,7 @@ at_exit do
 
   $zz_global_const.each_pair do |k,v|
     next if v =~ /^Z/
+    print "# HACK " if k == "ZDATA"
     puts k + " = " + v.to_s
   end
 

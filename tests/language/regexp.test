@@ -1,0 +1,1652 @@
+$		y	#{$&}	
+$	abc	y		
+$	abc	y	#{$&}	
+$	abc	y	#{$&}-	-
+$	b	y	-	-
+$*	 	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 2: /$*/
+$a	$a	n	-	-
+$b	b	n	-	-	
+$b	b	n	-	-
+$|(a$|b$)	x	y	#{$&}	
+$|(a$|b$)	xa	y	#{$&}-#{$1}	a-a
+$|(a$|b$)	xb	y	#{$&}-#{$1}	b-b
+$|(a)(b$|c$)	x	y	#{$&}	
+$|(a)(b$|c$)	xab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+$|(a)(b$|c$)	xac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+$|(c$|(a$|b$))	x	y	#{$&}	
+$|(c$|(a$|b$))	xa	y	#{$&}-#{$1}-#{$2}	a-a-a
+$|(c$|(a$|b$))	xb	y	#{$&}-#{$1}-#{$2}	b-b-b
+$|(c$|(a$|b$))	xc	y	#{$&}-#{$1}	c-c
+$|(c$|(a|b)$)	x	y	#{$&}	
+$|(c$|(a|b)$)	xa	y	#{$&}-#{$1}-#{$2}	a-a-a
+$|(c$|(a|b)$)	xb	y	#{$&}-#{$1}-#{$2}	b-b-b
+$|(c$|(a|b)$)	xc	y	#{$&}-#{$1}	c-c
+$|(c((a$|b$)))	x	y	#{$&}	
+$|(c((a$|b$)))	xca	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+$|(c((a$|b$)))	xcb	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+$|a(b$|c$)	x	y	#{$&}	
+$|a(b$|c$)	xab	y	#{$&}-#{$1}	ab-b
+$|a(b$|c$)	xac	y	#{$&}-#{$1}	ac-c
+$|b	x	y	#{$&}	
+$|b	xb	y	#{$&}	b
+$|c(a$|b$)	x	y	#{$&}	
+$|c(a$|b$)	xca	y	#{$&}-#{$1}	ca-a
+$|c(a$|b$)	xcb	y	#{$&}-#{$1}	cb-b
+'((((((((((a))))))))))\41	aa	n	-	-
+($|b$)|c$	x	y	#{$&}-#{$1}	-
+($|b$)|c$	xb	y	#{$&}-#{$1}	b-b
+($|b$)|c$	xc	y	#{$&}	c
+(((((((((())))))))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}-#{$8}-#{$9}-#{$10}	----------
+((((((((((a)))))))))	 	c	-	unmatched (: /((((((((((a)))))))))/
+((((((((((a))))))))))	a	y	#{$10}	a
+((((((((((a))))))))))!	a!	y	#{$&}	a!
+((((((((((a))))))))))!	aa	n	-	-
+((((((((((a))))))))))\10	aa	y	#{$&}	aa
+((((((((((a))))))))))\41	a!	y	#{$&}	a!
+((((((((((ab)*)))))))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}-#{$8}-#{$9}	---------
+((((((((()))))))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}-#{$8}-#{$9}	---------
+(((((((((a)))))))))	a	y	#{$&}	a
+(((((((((a)))))))))	a	y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}-#{$8}-#{$9}-	a-a-a-a-a-a-a-a-a-a-
+(((((((((ab)*))))))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}-#{$8}	--------
+(((((((((ab)*))))))))	abab	y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}-#{$8}-#{$9}	abab-abab-abab-abab-abab-abab-abab-abab-abab-ab
+((((((((ab)*)))))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}	-------
+(((((((ab)*))))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}	------
+((((((ab)*)))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}	-----
+(((((ab)*))))		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}	----
+((((ab)*)))		y	#{$&}-#{$1}-#{$2}-#{$3}	---
+(((^a|^b))c)|^de	acf	y	#{$&}-#{$1}-#{$2}-#{$3}	ac-ac-a-a
+(((^a|^b))c)|^de	bcf	y	#{$&}-#{$1}-#{$2}-#{$3}	bc-bc-b-b
+(((^a|^b))c)|^de	def	y	#{$&}	de
+(((^a|^b))c|^d)e	acef	y	#{$&}-#{$1}-#{$2}-#{$3}	ace-ac-a-a
+(((^a|^b))c|^d)e	bcef	y	#{$&}-#{$1}-#{$2}-#{$3}	bce-bc-b-b
+(((^a|^b))c|^d)e	def	y	#{$&}-#{$1}	de-d
+(((a)*(b)*)*)*		y	#{$&}-#{$1}-#{$2}	--
+(((a*))((b*)))*		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}	-----
+(((aa){2})+)	aaaaaaaaaa	y	#{$1}	aaaaaaaa
+(((ab)*))		y	#{$&}-#{$1}-#{$2}	--
+(((a{2}){2})+)	aaaaaaaaaa	y	#{$1}	aaaaaaaa
+(((a|b))c$)|de$	fac	y	#{$&}-#{$1}-#{$2}-#{$3}	ac-ac-a-a
+(((a|b))c$)|de$	fbc	y	#{$&}-#{$1}-#{$2}-#{$3}	bc-bc-b-b
+(((a|b))c$)|de$	fde	y	#{$&}	de
+(((a|b))c)$|de$	fac	y	#{$&}-#{$1}-#{$2}-#{$3}	ac-ac-a-a
+(((a|b))c)$|de$	fbc	y	#{$&}-#{$1}-#{$2}-#{$3}	bc-bc-b-b
+(((a|b))c)$|de$	fde	y	#{$&}	de
+(((a|b))c|d)e$	face	y	#{$&}-#{$1}-#{$2}-#{$3}	ace-ac-a-a
+(((a|b))c|d)e$	fbce	y	#{$&}-#{$1}-#{$2}-#{$3}	bce-bc-b-b
+(((a|b))c|d)e$	fde	y	#{$&}-#{$1}	de-d
+(())*		y	#{$&}-#{$1}-#{$2}	--
+((?:[hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*	ftp://www.test.com	y	#{$&}-#{$1}-#{$2}-	ftp://www.test.com-ftp://-.com-
+((?:aaaa|bbbb)cccc)?	aaaacccc	y	-	-
+((?:aaaa|bbbb)cccc)?	bbbbcccc	y	-	-
+((?>[^()]+)|\([^()]*\))+	((abc(ade)ufh()()x	y	#{$&}	abc(ade)ufh()()x
+((?>a+)b)	aaab	y	#{$1}	aaab
+((?i)a)b	Ab	y	#{$&}:#{$1}	Ab:A
+((?i)a)b	aB	n	-	-
+((?i)a)b	ab	y	#{$&}:#{$1}	ab:a
+((?i:a))b	Ab	y	#{$&}:#{$1}	Ab:A
+((?i:a))b	aB	n	-	-
+((?i:a))b	ab	y	#{$&}:#{$1}	ab:a
+((?m).)c(?!.)	a\nb\nc\n	y	#{$1}	\n
+((?m).)c(?!.)	a\nb\nc\n	y	#{$1}:#{$&}	\n:\nc
+((?m)^a(.))(^b$)	a\nb\nc\n	y	#{$1};#{$2};#{$3}	a\n;\n;b
+((?m)b.)c(?!.)	a\nb\nc\n	y	#{$1}	b\n
+((?m)b.)c(?!.)	a\nb\nc\n	y	#{$1}:#{$&}	b\n:b\nc
+((?x:.) )	x 	y	#{$1}-	x -
+(([a-c])b*?\2)*	ababbbcbc	y	#{$&}-#{$1}-#{$2}	ababb-bb-b
+(([a-c])b*?\2){3}	ababbbcbc	y	#{$&}-#{$1}-#{$2}	ababbbcbc-cbc-c
+(([hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*	htTp://www.test.com	y	#{$&}-#{$1}-#{$2}-	htTp://www.test.com-htTp://-htTp-
+(([hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*	http://www.test.com	y	#{$&}-#{$1}-#{$2}-#{$3}-	http://www.test.com-http://-http-.com-
+((\w+)/)*(\w+)	foo/bar/baz	y	#{$&}-#{$1}-#{$2}-#{$3}-	foo/bar/baz-bar/-bar-baz-
+((^(a|b))c|^d)e	acef	y	#{$&}-#{$1}-#{$2}-#{$3}	ace-ac-a-a
+((^(a|b))c|^d)e	bcef	y	#{$&}-#{$1}-#{$2}-#{$3}	bce-bc-b-b
+((^(a|b))c|^d)e	def	y	#{$&}-#{$1}	de-d
+((^a|^b)|^c)|^d	ae	y	#{$&}-#{$1}-#{$2}	a-a-a
+((^a|^b)|^c)|^d	be	y	#{$&}-#{$1}-#{$2}	b-b-b
+((^a|^b)|^c)|^d	ce	y	#{$&}-#{$1}	c-c
+((^a|^b)|^c)|^d	de	y	#{$&}	d
+((a)(b)c)(d)	abcd	y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-	abcd-abc-a-b-d-
+((a)(b)c)(d)	abcd	y	#{$1}-#{$2}-#{$3}-#{$4}	abc-a-b-d
+((a))	a	y	#{$&}-#{$1}-#{$2}	a-a-a
+((a))	abc	y	#{$&}-#{$1}-#{$2}	a-a-a
+((a))	abc	y	#{$&}-#{$1}-#{$2}-	a-a-a-
+((a))	b	n	-	-
+((a)*(b)*)*		y	#{$&}-#{$1}	-
+((a)*(b)*)*	aba	y	#{$&}-#{$1}-#{$2}-#{$3}	aba--a-b
+((a)*b)*		y	#{$&}	
+((a)*b)*	abb	y	#{$&}-#{$1}-#{$2}	abb-b-a
+((a)*b)*	abbab	y	#{$&}-#{$1}-#{$2}	abbab-ab-a
+((a)*b)*c	c	y	#{$&}	c
+((a)*b*)		y	#{$&}-#{$1}	-
+((a)*b*)	a	y	#{$&}-#{$1}-#{$2}	a-a-a
+((a)*b*)	ab	y	#{$&}-#{$1}-#{$2}	ab-ab-a
+((a)*b*)	b	y	#{$&}-#{$1}	b-b
+((a)*b*)c	c	y	#{$&}-#{$1}	c-
+((a*)(b*))*		y	#{$&}-#{$1}-#{$2}-#{$3}	---
+((a*)(b*))*	aba	y	#{$&}-#{$1}-#{$2}-#{$3}	aba---
+((a*))*		y	#{$&}-#{$1}-#{$2}	--
+((a*))*	aa	y	#{$&}-#{$1}-#{$2}	aa--
+((a*)*(b*)*)*		y	#{$&}-#{$1}-#{$2}-#{$3}	---
+((a*)*(b*)*)*	aba	y	#{$&}-#{$1}-#{$2}-#{$3}	aba--a-b
+((a*)*(b*)*)*	c	y	#{$&}	
+((a*)*)*		y	#{$&}-#{$1}-#{$2}	--
+((a*)*)*	a	y	#{$&}-#{$1}-#{$2}	a--a
+((a*)*)*	ab	y	#{$&}-#{$1}-#{$2}	a--a
+((a*)*)*	b	y	#{$&}	
+((a*)b)*		y	#{$&}	
+((a*)b)*	aabab	y	#{$&}-#{$1}-#{$2}	aabab-ab-a
+((a*)b)*	ab	y	#{$&}-#{$1}-#{$2}	ab-ab-a
+((a*)b)*	abaabaaaab	y	#{$&}-#{$1}-#{$2}	abaabaaaab-aaaab-aaaa
+((a*)b)*	abb	y	#{$&}-#{$1}-#{$2}	abb-b-
+((a*)b)*	abbab	y	#{$&}-#{$1}-#{$2}	abbab-ab-a
+((a*)b*)		y	#{$&}-#{$1}-#{$2}	--
+((a*)b*)	a	y	#{$&}-#{$1}-#{$2}	a-a-a
+((a*)b*)	b	y	#{$&}-#{$1}-#{$2}	b-b-
+((a*)b*)	c	y	#{$&}	
+((a*)b*)c	c	y	#{$&}-#{$1}-#{$2}	c--
+((a*)|b)*	bb	y	#{$&}-#{$1}-#{$2}	bb-b-
+((a*)|b)*c	bbc	y	#{$&}-#{$1}-#{$2}	bbc-b-
+((ab)*)		y	#{$&}-#{$1}	-
+((a{0,})|b)*	bb	y	#{$&}-#{$1}-#{$2}	bb-b-
+((a{0,})|b)*c	bbc	y	#{$&}-#{$1}-#{$2}	bbc-b-
+((a{0,}\b\<)|b)	b	y	#{$&}-#{$1}	b-b
+((a{0,}\b\<)|b)*	b	y	#{$&}-#{$1}	b-b
+((a{0,}{0,0}()\3\b\B\<\>\`\')|b)*	bb	y	#{$&}-#{$1}	bb-b
+((a{4})+)	aaaaaaaaa	y	#{$1}	aaaaaaaa
+((a|b)|c)|d$	ea	y	#{$&}-#{$1}-#{$2}	a-a-a
+((a|b)|c)|d$	eb	y	#{$&}-#{$1}-#{$2}	b-b-b
+((a|b)|c)|d$	ec	y	#{$&}-#{$1}	c-c
+((a|b)|c)|d$	ed	y	#{$&}	d
+((foo)|(bar))*	foobar	y	#{$1}-#{$2}-#{$3}	bar-foo-bar
+()		y	#{$&}-#{$1}	-
+()	a	y	#{$&}-#{$1}	-
+()*		y	#{$&}-#{$1}	-
+()ef	def	y	#{$&}-#{$1}	ef-
+()ef	ef	y	#{$&}-	ef-
+(*)	(null)	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 2: /(*)/
+(+)	(null)	c	-	invalid regular expression; there's no previous pattern, to which '+' would define cardinality at 2: /(+)/
+(.)=\1	x=x	y	#{$&}-#{$1}-	x=x-x-
+(.*)c(.*)	abcde	y	#{$&}-#{$1}-#{$2}	abcde-ab-de
+(.*)c(.*)	abcde	y	#{$&}-#{$1}-#{$2}-	abcde-ab-de-
+(>a+)ab	aaab	n	-	-
+(?# comment	w	c	-	premature end of regular expression: /(?# comment/
+(?)	(null)	c	-	undefined (?...) sequence: /(?)/
+(?:(?i)a)b	Ab	y	#{$&}	Ab
+(?:(?i)a)b	aB	n	-	-
+(?:(?i)a)b	ab	y	#{$&}	ab
+(?:([hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*	FTP://www.test.com	y	#{$&}-#{$1}-#{$2}-	FTP://www.test.com-FTP-.com-
+(?:(f)(o)(o)|(b)(a)(r))*	foobar	y	#{$1}:#{$2}:#{$3}:#{$4}:#{$5}:#{$6}	f:o:o:b:a:r
+(?:..)*?a	aba	y	#{$&}	a
+(?:..)*a	aba	y	#{$&}	aba
+(?:\w)	abc	y	#{$&}-	a-
+(?:\w\s\w)+	a b c	y	#{$&}-	a b-
+(?:a)	a	y	#{$&}-	a-
+(?:a)	aa	y	#{$&}-	a-
+(?:c|d)(?:)(?:a(?:)(?:b)(?:b(?:))(?:b(?:)(?:b)))	cabbbb	y	#{$&}	cabbbb
+(?:c|d)(?:)(?:aaaaaaaa(?:)(?:bbbbbbbb)(?:bbbbbbbb(?:))(?:bbbbbbbb(?:)(?:bbbbbbbb)))	caaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb	y	#{$&}	caaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+(?<!c)b	ab	c	#{$&}	undefined (?...) sequence: /(?<!c)b/
+(?<%)b	-	c	-	undefined (?...) sequence: /(?<%)b/
+(?<=a)b	ab	c	#{$&}	undefined (?...) sequence: /(?<=a)b/
+(?<=x+)y	-	c	-	undefined (?...) sequence: /(?<=x+)y/
+(?=(a+?))(\1ab)	aaab	y	#{$2}	aab
+(?>(a+))b	aaab	y	#{$1}	aaa
+(?>a+)b	aaab	y	-	-
+(?i)		y	-	-
+(?i)$	ABC	y	#{$&}	
+(?i)$b	B	n	-	-
+(?i)((((((((((a))))))))))	A	y	#{$10}	A
+(?i)((((((((((a))))))))))!	A!	y	#{$&}	A!
+(?i)((((((((((a))))))))))!	AA	n	-	-
+(?i)((((((((((a))))))))))\10	AA	y	#{$&}	AA
+(?i)(((((((((a)))))))))	A	y	#{$&}	A
+(?i)((?-i)a)b	AB	n	-	-
+(?i)((?-i)a)b	Ab	n	-	-
+(?i)((?-i)a)b	aB	y	#{$&}:#{$1}	aB:a
+(?i)((?-i)a)b	aB	y	#{$1}	a
+(?i)((?-i)a)b	ab	y	#{$&}:#{$1}	ab:a
+(?i)((?-i:a))b	AB	n	-	-
+(?i)((?-i:a))b	Ab	n	-	-
+(?i)((?-i:a))b	aB	y	#{$&}:#{$1}	aB:a
+(?i)((?-i:a))b	aB	y	#{$1}	a
+(?i)((?-i:a))b	ab	y	#{$&}:#{$1}	ab:a
+(?i)((?-i:a.))b	a\nB	n	-	-
+(?i)((?m-i:a.))b	B\nB	n	-	-
+(?i)((?m-i:a.))b	a\nB	y	#{$1}	a\n
+(?i)((a)(b)c)(d)	ABCD	y	#{$1}-#{$2}-#{$3}-#{$4}	ABC-A-B-D
+(?i)((a))	ABC	y	#{$&}-#{$1}-#{$2}	A-A-A
+(?i)()ef	DEF	y	#{$&}-#{$1}	EF-
+(?i)(*)b	-	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 6: /(?i)(*)b/
+(?i)(.*)c(.*)	ABCDE	y	#{$&}-#{$1}-#{$2}	ABCDE-AB-DE
+(?i)(?-i:a)b	AB	n	-	-
+(?i)(?-i:a)b	Ab	n	-	-
+(?i)(?-i:a)b	aB	y	#{$&}	aB
+(?i)(?-i:a)b	ab	y	#{$&}	ab
+(?i)(?:(?-i)a)b	AB	n	-	-
+(?i)(?:(?-i)a)b	Ab	n	-	-
+(?i)(?:(?-i)a)b	aB	y	#{$&}	aB
+(?i)(?:(?-i)a)b	ab	y	#{$&}	ab
+(?i)(?:(?:(?:(?:(?:(?:(?:(?:(?:(a))))))))))	A	y	#{$1}	A
+(?i)(?:(?:(?:(?:(?:(?:(?:(?:(?:(a|b|c))))))))))	C	y	#{$1}	C
+(?i)([a-c]*)\1	ABCABC	y	#{$1}	ABC
+(?i)([abc])*bcd	ABCD	y	#{$&}-#{$1}	ABCD-A
+(?i)([abc])*d	ABBBCD	y	#{$&}-#{$1}	ABBBCD-C
+(?i)(\.c(pp|xx|c)?$)	IO.c	y	#{$1}	.c
+(?i)(a)b(c)	ABC	y	#{$&}-#{$1}-#{$2}	ABC-A-C
+(?i)(a+|b)*	AB	y	#{$&}-#{$1}	AB-B
+(?i)(a+|b)+	AB	y	#{$&}-#{$1}	AB-B
+(?i)(a+|b)?	AB	y	#{$&}-#{$1}	A-A
+(?i)(a+|b){0,1}	AB	y	#{$&}-#{$1}	A-A
+(?i)(a+|b){0,1}?	AB	y	#{$&}-#{$1}	-
+(?i)(a+|b){0,}	AB	y	#{$&}-#{$1}	AB-B
+(?i)(a+|b){1,}	AB	y	#{$&}-#{$1}	AB-B
+(?i)(ab)\d\1	Ab4ab	y	#{$1}	Ab
+(?i)(ab)\d\1	ab4Ab	y	#{$1}	ab
+(?i)(abc	-	c	-	unmatched (: /(?i)(abc/
+(?i)(abc)\1	ABCABC	y	#{$1}	ABC
+(?i)(abc|)ef	ABCDEF	y	#{$&}-#{$1}	EF-
+(?i)(ab|a)b*c	ABC	y	#{$&}-#{$1}	ABC-AB
+(?i)(ab|ab*)bc	ABC	y	#{$&}-#{$1}	ABC-A
+(?i)(ab|cd)e	ABCDE	y	#{$&}-#{$1}	CDE-CD
+(?i)(a|b)c*d	ABCD	y	#{$&}-#{$1}	BCD-B
+(?i)(a|b|c|d|e)f	EF	y	#{$&}-#{$1}	EF-E
+(?i)(bc+d$|ef*g.|h?i(j|k))	BCDD	n	-	-
+(?i)(bc+d$|ef*g.|h?i(j|k))	EFFG	n	-	-
+(?i)(bc+d$|ef*g.|h?i(j|k))	EFFGZ	y	#{$&}-#{$1}-#{$2}	EFFGZ-EFFGZ-
+(?i)(bc+d$|ef*g.|h?i(j|k))	IJ	y	#{$&}-#{$1}-#{$2}	IJ-IJ-J
+(?i)(bc+d$|ef*g.|h?i(j|k))	REFFGZ	y	#{$&}-#{$1}-#{$2}	EFFGZ-EFFGZ-
+(?i))(	-	c	-	unmatched ): /(?i))(/
+(?i)*a	-	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 5: /(?i)*a/
+(?i)[^ab]*	CDE	y	#{$&}	CDE
+(?i)[a-zA-Z_][a-zA-Z0-9_]*	ALPHA	y	#{$&}	ALPHA
+(?i)[abhgefdc]ij	HIJ	y	#{$&}	HIJ
+(?i)[k]	AB	n	-	-
+(?i)\((.*), (.*)\)	(A, B)	y	#{$2}-#{$1}	B-A
+(?i)\((.*), (.*)\)	(A, B)	y	(#{$2}, #{$1})	(B, A)
+(?i)\.c(pp|xx|c)?$	Changes	n	-	-
+(?i)\.c(pp|xx|c)?$	IO.c	y	-	-
+(?i)^	ABC	y	#{$&}	
+(?i)^(ab|cd)e	ABCDE	n	-	-
+(?i)^(ab|cd)e	ABCDE	n	x#{$1}y	XY
+(?i)^a(bc+|b[eh])g|.h$	ABH	n	-	-
+(?i)^abc	ABCC	y	#{$&}	ABC
+(?i)^abc$	AABC	n	-	-
+(?i)^abc$	ABC	y	#{$&}	ABC
+(?i)^abc$	ABCC	n	-	-
+(?i)a([bc]*)(c*d)	ABCD	y	#{$&}-#{$1}-#{$2}	ABCD-BC-D
+(?i)a([bc]*)(c+d)	ABCD	y	#{$&}-#{$1}-#{$2}	ABCD-B-CD
+(?i)a([bc]*)c*	ABC	y	#{$&}-#{$1}	ABC-BC
+(?i)a([bc]+)(c*d)	ABCD	y	#{$&}-#{$1}-#{$2}	ABCD-BC-D
+(?i)a(bc)d	ABCD	y	#{$1}-\#{$1}-\\#{$1}	BC-#{$1}-\BC
+(?i)a*		y	#{$&}	
+(?i)a**	-	c	-	nested *?+ in regexp: /(?i)a**/
+(?i)a+b+c	AABBABC	y	#{$&}	ABC
+(?i)a.*?c	ABCABC	y	#{$&}	ABC
+(?i)a.*?c	AXYZC	y	#{$&}	AXYZC
+(?i)a.*c	AXYZD	n	-	-
+(?i)a.+?c	ABCABC	y	#{$&}	ABC
+(?i)a.c	ABC	y	#{$&}	ABC
+(?i)a.c	AXC	y	#{$&}	AXC
+(?i)a.{0,5}?c	ABCABC	y	#{$&}	ABC
+(?i)a[	-	c	-	invalid regular expression; '[' can't be the last character ie. can't start range at the end of pattern: /(?i)a[/
+(?i)a[-]?c	AC	y	#{$&}	AC
+(?i)a[-b]	A-	y	#{$&}	A-
+(?i)a[]]b	A]B	y	#{$&}	A]B
+(?i)a[]b	-	c	-	premature end of regular expression: /(?i)a[]b/
+(?i)a[^-b]c	A-C	n	-	-
+(?i)a[^-b]c	ADC	y	#{$&}	ADC
+(?i)a[^]b]c	ADC	y	#{$&}	ADC
+(?i)a[^]b]c	A]C	n	-	-
+(?i)a[^bc]d	ABD	n	-	-
+(?i)a[^bc]d	AED	y	#{$&}	AED
+(?i)a[b-]	A-	y	#{$&}	A-
+(?i)a[b-a]	-	c	-	invalid regular expression: /(?i)a[b-a]/
+(?i)a[b-d]	AAC	y	#{$&}	AC
+(?i)a[b-d]e	ABD	n	-	-
+(?i)a[b-d]e	ACE	y	#{$&}	ACE
+(?i)a[bc]d	ABC	n	-	-
+(?i)a[bc]d	ABD	y	#{$&}	ABD
+(?i)a[bcd]*dcdcde	ADCDCDE	y	#{$&}	ADCDCDE
+(?i)a[bcd]+dcdcde	ADCDCDE	n	-	-
+(?i)a\	-	c	-	invalid regular expression; '\' can't be last character: /(?i)a\/
+(?i)a\(*b	A((B	y	#{$&}	A((B
+(?i)a\(*b	AB	y	#{$&}	AB
+(?i)a\(b	A(B	y	#{$&}-#{$1}	A(B-
+(?i)a\\b	A\B	y	#{$&}	A\B
+(?i)a]	A]	y	#{$&}	A]
+(?i)ab*	XABYABBBZ	y	#{$&}	AB
+(?i)ab*	XAYABBBZ	y	#{$&}	A
+(?i)ab*?bc	ABBBBC	y	#{$&}	ABBBBC
+(?i)ab*bc	ABBC	y	#{$&}	ABBC
+(?i)ab*bc	ABC	y	#{$&}	ABC
+(?i)ab*c	ABC	y	#{$&}	ABC
+(?i)ab+?bc	ABBC	y	#{$&}	ABBC
+(?i)ab+bc	ABBBBC	y	#{$&}	ABBBBC
+(?i)ab+bc	ABC	n	-	-
+(?i)ab+bc	ABQ	n	-	-
+(?i)ab??bc	ABBBBC	n	-	-
+(?i)ab??bc	ABBC	y	#{$&}	ABBC
+(?i)ab??bc	ABC	y	#{$&}	ABC
+(?i)ab??c	ABC	y	#{$&}	ABC
+(?i)abc		n	-	-
+(?i)abc	ABABC	y	#{$&}	ABC
+(?i)abc	ABC	y	#{$&}	ABC
+(?i)abc	ABX	n	-	-
+(?i)abc	AXC	n	-	-
+(?i)abc	XABCY	y	#{$&}	ABC
+(?i)abc	XBC	n	-	-
+(?i)abc$	AABC	y	#{$&}	ABC
+(?i)abc)	-	c	-	unmatched ): /(?i)abc)/
+(?i)abcd	ABCD	y	#{$&}-\#{$&}-\\#{$&}	ABCD-#{$&}-\ABCD
+(?i)abcd*efg	ABCDEFG	y	#{$&}	ABCDEFG
+(?i)ab{0,1}?bc	ABC	y	#{$&}	ABC
+(?i)ab{0,1}?c	ABC	y	#{$&}	ABC
+(?i)ab{0,}?bc	ABBBBC	y	#{$&}	ABBBBC
+(?i)ab{1,3}?bc	ABBBBC	y	#{$&}	ABBBBC
+(?i)ab{1,}?bc	ABBBBC	y	#{$&}	ABBBBC
+(?i)ab{1,}bc	ABQ	n	-	-
+(?i)ab{3,4}?bc	ABBBBC	y	#{$&}	ABBBBC
+(?i)ab{4,5}?bc	ABBBBC	n	-	-
+(?i)ab|cd	ABC	y	#{$&}	AB
+(?i)ab|cd	ABCD	y	#{$&}	AB
+(?i)a{1,}b{1,}c	AABBABC	y	#{$&}	ABC
+(?i)a|b|c|d|e	E	n	-	-
+(?i)multiple words	MULTIPLE WORDS, YEAH	y	#{$&}	MULTIPLE WORDS
+(?i)multiple words of text	UH-UH	n	-	-
+(?i:a)b	Ab	y	#{$&}	Ab
+(?i:a)b	aB	n	-	-
+(?i:a)b	ab	y	#{$&}	ab
+(?m)(?!\A)x	a\nxb\n	y	-	-
+(?m)^.{9}abc.*\n	123\nabcabcabcabc\n	y	-	-
+(?m)^\S\s+aa$	\nx aa	y	-	-
+(?m)^d[x][x][x]	abcd\ndxxx	y	-	-
+(?m)a.*b	acc\nccb	y	#{$&}	acc\nccb
+(?m)a.b	a\nb	y	#{$&}	a\nb
+(?m)a.{4,5}b	acc\nccb	y	#{$&}	acc\nccb
+(?x:((?-x:.) ))	x 	y	#{$1}-	x-
+(?x:^a (?#xxx) (?#yyy) {3}c)	aaac	y	#{$&}	aaac
+([[.]+)	a.[b].	y	#{$1}	.[
+([[:]+)	a:[b]:	y	#{$1}	:[
+([[:alnum:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd01Xy
+([[:alpha:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd
+([[:ascii:]]+)	ABcd01Xy__--  \000\000\255\255	c	-	invalid regular expression; [:ascii:] is not a character class: /([[:ascii:]]+)/
+([[:cntrl:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	\000\000
+([[:digit:]-[:alpha:]]+)	=0-z=	c	-	invalid regular expression; can't use character class as a start value of range: /([[:digit:]-[:alpha:]]+)/
+([[:digit:]-z]+)	=0-z=	c	-	invalid regular expression; can't use character class as a start value of range: /([[:digit:]-z]+)/
+([[:digit:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	01
+([[:graph:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd01Xy__--
+([[:lower:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	cd
+([[:print:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd01Xy__--  
+([[:punct:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	__--
+([[:space:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	  
+([[:upper:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	AB
+([[:xdigit:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd01
+([[=]+)	a=[b]=	y	#{$1}	=[
+([\d-\s]+)	a0- z	c	-	invalid regular expression; can't use character class as a start value of range: /([\d-\s]+)/
+([\d-z]+)	a0-za	c	-	invalid regular expression; can't use character class as a start value of range: /([\d-z]+)/
+([\w:]+::)?(\w+)$	abcd	y	#{$1}-#{$2}	-abcd
+([\w:]+::)?(\w+)$	abcd:	n	-	-
+([\w:]+::)?(\w+)$	xy:z:::abcd	y	#{$1}-#{$2}	xy:z:::-abcd
+([^.]*)\.([^:]*):[T ]+(.*)	track1.title:TBlah blah blah	y	#{$&}-#{$1}-#{$2}-#{$3}	track1.title:TBlah blah blah-track1-title-Blah blah blah
+([^/]*/)*sub1/	d:msgs/tdir/sub1/trial/away.cpp	y	#{$&}-#{$1}	d:msgs/tdir/sub1/-tdir/
+([^N]*N)+	abNNxyz	y	#{$&}-#{$1}	abNN-N
+([^N]*N)+	abNNxyzN	y	#{$&}-#{$1}	abNNxyzN-xyzN
+([^[:alnum:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	__--  \000\000\255\255
+([^[:alpha:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	01
+([^[:ascii:]]+)	ABcd01Xy__--  \000\000\255\255	c	-	invalid regular expression; [:ascii:] is not a character class: /([^[:ascii:]]+)/
+([^[:cntrl:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd01Xy__--  
+([^[:digit:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd
+([^[:lower:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	AB
+([^[:print:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	\000\000\255\255
+([^[:punct:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd01Xy
+([^[:space:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	ABcd01Xy__--
+([^[:upper:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	cd01
+([^[:xdigit:]]+)	ABcd01Xy__--  \000\000\255\255	y	#{$1}	Xy__--  \000\000\255\255
+([a-[:digit:]]+)	za-9z	c	-	invalid regular expression; can't use character class as an end value of range: /([a-[:digit:]]+)/
+([a-\d]+)	za-9z	c	-	invalid regular expression; can't use character class as an end value of range: /([a-\d]+)/
+([a-c]*)\1	abcabc	y	#{$1}	abc
+([a-c]+)\1	abcabc	y	#{$&}-#{$1}	abcabc-abc
+([a-c]+?)c	abcabcabc	y	#{$&}-#{$1}-	abc-ab-
+([a[:xyz:]b]+)	pbaq	c	-	invalid regular expression; [:xyz:] is not a character class: /([a[:xyz:]b]+)/
+([ab])=\1	a=a	y	#{$&}-#{$1}-	a=a-a-
+([ab]*)b	aaaaabaaaababab	y	#{$&}-#{$1}-	aaaaabaaaababab-aaaaabaaaababa-
+([ab]*?)b	aaaaabaaaababab	y	#{$&}-#{$1}-	aaaaab-aaaaa-
+([ab]+)=\1	abba=abba	y	#{$&}-#{$1}-	abba=abba-abba-
+([ab]??)b	bb	y	#{$&}-	b-
+([abc])*bcd	abcd	y	#{$&}-#{$1}	abcd-a
+([abc])*bcd	abcd	y	#{$&}-#{$1}-	abcd-a-
+([abc])*d	abbbcd	y	#{$&}-#{$1}	abbbcd-c
+([abc])*d	abbbcd	y	#{$&}-#{$1}-	abbbcd-c-
+([abc]*)\1	abcabc	y	#{$&}-#{$1}	abcabc-abc
+([abc]*)x	abc	n	-	-
+([abc]*)x	abcx	y	#{$&}-#{$1}	abcx-abc
+([ac])+x	aacx	y	#{$&}-#{$1}	aacx-c
+([xyz]*)x	abcx	y	#{$&}-#{$1}	x-
+(\ba.{0,10}br)	have a web browser	y	#{$1}	a web br
+(\d+\.\d+)	3.1415926	y	#{$1}	3.1415926
+(\s*\w+)?	  aa	y	#{$&}-#{$1}-	  aa-  aa-
+(\w)?(abc)\1b	abcab	n	-	-
+(\w+:)+	one:	y	#{$1}	one:
+(^((a|b))c|^d)e	acef	y	#{$&}-#{$1}-#{$2}-#{$3}	ace-ac-a-a
+(^((a|b))c|^d)e	bcef	y	#{$&}-#{$1}-#{$2}-#{$3}	bce-bc-b-b
+(^((a|b))c|^d)e	def	y	#{$&}-#{$1}	de-d
+(^*	 	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 3: /(^*/
+(^a$)	a	y	#{$&}-#{$1}	a-a
+(^a)	a	y	#{$&}-#{$1}	a-a
+(^a)	ab	y	#{$&}-#{$1}	a-a
+(^a)	ba	n	-	-
+(^a)(b|c)|^d	abe	y	#{$&}-#{$1}-#{$2}	ab-a-b
+(^a)(b|c)|^d	ace	y	#{$&}-#{$1}-#{$2}	ac-a-c
+(^a)(b|c)|^d	df	y	#{$&}	d
+(^a|^b)c	ac	y	#{$&}-#{$1}	ac-a
+(^a|^b)c	bc	y	#{$&}-#{$1}	bc-b
+(^a|^b)c|^d	ace	y	#{$&}-#{$1}	ac-a
+(^a|^b)c|^d	bce	y	#{$&}-#{$1}	bc-b
+(^a|^b)c|^d	de	y	#{$&}	d
+(^a|^b)|^c	ad	y	#{$&}-#{$1}	a-a
+(^a|^b)|^c	bd	y	#{$&}-#{$1}	b-b
+(^a|^b)|^c	cd	y	#{$&}	c
+(^b$)	a\nb\nc\n	y	#{$1}	b
+(^b)	a\nb\n	y	#{$1}	b
+(^b)	a\nb\nc\n	y	#{$1}	b
+(^b)	ab	n	-	-
+(^|a)b	ab	y	-	-
+(^|x)(c)	ca	y	#{$2}	c
+(a$)	a	y	#{$&}-#{$1}	a-a
+(a$)	ab	n	-	-
+(a$)	ba	y	#{$&}-#{$1}	a-a
+(a$)$	ab	n	-	-
+(a$)$	ba	y	#{$&}-#{$1}	a-a
+(a$|$)|c$	x	y	#{$&}-#{$1}	-
+(a$|$)|c$	xa	y	#{$&}-#{$1}	a-a
+(a$|$)|c$	xc	y	#{$&}	c
+(a$|b$)|$	x	y	#{$&}	
+(a$|b$)|$	xa	y	#{$&}-#{$1}	a-a
+(a$|b$)|$	xb	y	#{$&}-#{$1}	b-b
+(a$|b$)|c$	da	y	#{$&}-#{$1}	a-a
+(a$|b$)|c$	db	y	#{$&}-#{$1}	b-b
+(a$|b$)|c$	dc	y	#{$&}	c
+(a(b)c(d(e)f)g)h(i(j)k(l(m)n)o)\1\2\3\4\5\6\7\8	abcdefghijklmnoabcdefgbdefeijklmnojlmnm	y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}-#{$6}-#{$7}-#{$8}	abcdefghijklmnoabcdefgbdefeijklmnojlmnm-abcdefg-b-def-e-ijklmno-j-lmn-m
+(a(b*))|c	a	y	#{$&}-#{$1}-#{$2}	a-a-
+(a(b*))|c	ab	y	#{$&}-#{$1}-#{$2}	ab-ab-b
+(a(b*))|c	c	y	#{$&}	c
+(a)		n	-	-
+(a)	a	y	#{$&}-#{$1}	a-a
+(a)($|c$)|d$	xa	y	#{$&}-#{$1}-#{$2}	a-a-
+(a)($|c$)|d$	xac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+(a)($|c$)|d$	xd	y	#{$&}	d
+(a)(b$|$)|d$	xa	y	#{$&}-#{$1}-#{$2}	a-a-
+(a)(b$|$)|d$	xab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+(a)(b$|$)|d$	xd	y	#{$&}	d
+(a)(b$|c$)|d$	fab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+(a)(b$|c$)|d$	fac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+(a)(b$|c$)|d$	fd	y	#{$&}	d
+(a)(b$|c$)|d$	xab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+(a)(b$|c$)|d$	xac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+(a)(b$|c$)|d$	xd	y	#{$&}	d
+(a)(b)	ab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+(a)(b)	ac	n	-	-
+(a)(b)c|ab	ab	y	#{$&}-#{$1}-#{$2}	ab--
+(a)(b|c)$|d$	fab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+(a)(b|c)$|d$	fac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+(a)(b|c)$|d$	fd	y	#{$&}	d
+(a)*		y	#{$&}	
+(a)*(ab)*	ab	y	#{$&}-#{$2}	a-
+(a)*a	a	y	#{$&}	a
+(a)*ab	aab	y	#{$&}-#{$1}	aab-a
+(a)*ab	ab	y	#{$&}	ab
+(a)*ab	cab	y	y#{$1}	y
+(a)*b	aab	y	#{$&}-#{$1}	aab-a
+(a)*b	ab	y	#{$&}-#{$1}	ab-a
+(a)*b	b	y	#{$&}	b
+(a)+b|aac	aac	y	#{$&}-#{$1}	aac-
+(a)+x	aaax	y	#{$&}-#{$1}	aaax-a
+(a).+\1	aba	y	#{$&}-#{$1}	aba-a
+(a)?(a)+	a	y	#{$1}:#{$2}	:a	-
+(a)\1	a1	n	-	-
+(a)\1	aa	y	#{$&}-#{$1}	aa-a
+(a)b(c)	abc	y	#{$&}-#{$1}-#{$2}	abc-a-c
+(a)b(c)	abc	y	#{$&}-#{$1}-#{$2}-	abc-a-c-
+(a)ba*\1	aba	y	#{$&}-#{$1}	aba-a
+(a){0,3}b	b	y	#{$&}	b
+(a){1,3}b	aaaab	y	#{$1}-#{$&}	a-aaab
+(a){1,3}b	aaab	y	#{$&}-#{$1}	aaab-a
+(a){1,3}b	ab	y	#{$&}-#{$1}	ab-a
+(a)|\1	a	y	-	-
+(a)|\1	x	n	-	-
+(a*)		y	#{$&}-#{$1}	-
+(a*)	a	y	#{$&}-#{$1}	a-a
+(a*)	b	y	#{$&}-	-
+(a*)*		y	#{$&}-#{$1}	-
+(a*)*	aa	y	#{$&}-#{$1}	aa-
+(a*)*(ab)*	ab	y	#{$&}-#{$1}-#{$2}	a-a-
+(a*)*a	aa	y	#{$&}-#{$1}	aa-a
+(a*)*ab	aab	y	#{$&}-#{$1}	aab-a
+(a*)*ab	ab	y	#{$&}-#{$1}	ab-
+(a*)*b	aab	y	#{$&}-#{$1}	aab-aa
+(a*)*b	ab	y	#{$&}-#{$1}	ab-a
+(a*)*b	b	y	#{$&}-#{$1}	b-
+(a*)*b	c	n	-	-
+(a*)*b*c	c	y	#{$&}-#{$1}	c-
+(a*)+	aaaa	y	#{$&}-#{$1}	aaaa-
+(a*)a	a	y	#{$&}-#{$1}	a-
+(a*)a	aa	y	#{$&}-#{$1}	aa-a
+(a*)ab	aab	y	#{$&}-#{$1}	aab-a
+(a*)ab	ab	y	#{$&}-#{$1}	ab-
+(a*)b	ab	y	#{$&}-#{$1}	ab-a
+(a*)b	b	y	#{$&}-#{$1}	b-
+(a*)b+	caab	y	#{$1}	aa
+(a*){0,3}b	aaaab	y	#{$&}-#{$1}	aaaab-
+(a*){1,1}ab	aaaab	y	#{$&}-#{$1}	aaaab-aaa
+(a*){1,3}b	aaab	y	#{$&}-#{$1}	aaab-
+(a*){1,3}b	b	y	#{$&}-#{$1}	b-
+(a*b)*		y	#{$&}	
+(a*b)*	b	y	#{$&}-#{$1}	b-b
+(a*b)*	baa	y	#{$&}-#{$1}	b-b
+(a*b)*	baab	y	#{$&}-#{$1}	baab-aab
+(a*b)*	baabc	y	#{$&}-#{$1}	baab-aab
+(a*b)*c	aabaabc	y	#{$&}-#{$1}	aabaabc-aab
+(a*b)*c	aababc	y	#{$&}-#{$1}	aababc-ab
+(a*b)*c	bbc	y	#{$&}-#{$1}	bbc-b
+(a*b)*c	c	y	#{$&}	c
+(a*b*)*		y	#{$&}-#{$1}	-
+(a*b*)*	a	y	#{$&}-#{$1}	a-
+(a*b*)*	aa	y	#{$&}-#{$1}	aa-
+(a*b*)*	ab	y	#{$&}-#{$1}	ab-
+(a*b*)*	aba	y	#{$&}-#{$1}	aba-
+(a*b*)*	ba	y	#{$&}-#{$1}	ba-
+(a*b*)*	bb	y	#{$&}-#{$1}	bb-
+(a*b*)*	c	y	#{$&}-#{$1}	-
+(a*b*)b	b	y	#{$&}-#{$1}	b-
+(a*c)*b	aacaacd	n	-	-
+(a*c)+b	aacb	y	#{$&}-#{$1}	aacb-aac
+(a*c)?b	b	y	#{$&}	b
+(a*|(b*)*)*c	bc	y	#{$&}-#{$1}-#{$2}	bc-b-b
+(a*|(b*|c*)*)*d	bbd	y	#{$&}-#{$1}-#{$2}	bbd-bb-bb
+(a*|(b*|c*)*)*d	bd	y	#{$&}-#{$1}-#{$2}	bd-b-b
+(a*|(b*|c*)*)*d	ccd	y	#{$&}-#{$1}-#{$2}	ccd-cc-cc
+(a*|(b*|c*)*)*d	cd	y	#{$&}-#{$1}-#{$2}	cd-c-c
+(a*|b)*	bb	y	#{$&}-#{$1}	bb-b
+(a*|b)*c	bbc	y	#{$&}-#{$1}	bbc-b
+(a*|b*)*c	aac	y	#{$&}-#{$1}	aac-aa
+(a*|b*)*c	abc	y	#{$&}-#{$1}	abc-b
+(a*|b*)*c	ac	y	#{$&}-#{$1}	ac-a
+(a*|b*)*c	bbc	y	#{$&}-#{$1}	bbc-bb
+(a*|b*)*c	c	y	#{$&}-#{$1}	c-
+(a*|b*)c	aac	y	#{$&}-#{$1}	aac-aa
+(a*|b*)c	ac	y	#{$&}-#{$1}	ac-a
+(a*|b*)c	bbc	y	#{$&}-#{$1}	bbc-bb
+(a*|b*)c	bc	y	#{$&}-#{$1}	bc-b
+(a*|b*)c	c	y	#{$&}-#{$1}	c-
+(a*|b*|c*)*d	aad	y	#{$&}-#{$1}	aad-aa
+(a*|b*|c*)*d	bbd	y	#{$&}-#{$1}	bbd-bb
+(a*|b*|c*)*d	ccd	y	#{$&}-#{$1}	ccd-cc
+(a+)*		y	#{$&}	
+(a+)*	aa	y	#{$&}-#{$1}	aa-aa
+(a+)*b	b	y	#{$&}	b
+(a+)+\1	aa	y	#{$&}-#{$1}	aa-a
+(a+).\1$	aaaaa	y	#{$&}-#{$1}	aaaaa-aa
+(a+)\1	aa	y	#{$&}-#{$1}	aa-a
+(a+)a\1$	aaa	y	#{$&}-#{$1}	aaa-a
+(a+){0,3}b	ab	y	#{$&}-#{$1}	ab-a
+(a+){0,3}b	b	y	#{$&}	b
+(a+){1,3}b	aaab	y	#{$&}-#{$1}	aaab-aaa
+(a+?*|b)	b	y	#{$&}-#{$1}	-
+(a+?*|b)*	bb	y	#{$&}-#{$1}	bb-b
+(a+?*|b)*c	bbc	y	#{$&}-#{$1}	bbc-b
+(a+?*|b)c	bc	y	#{$&}-#{$1}	bc-b
+(a+|b)*	ab	y	#{$&}-#{$1}	ab-b
+(a+|b)*	ab	y	#{$&}-#{$1}-	ab-b-
+(a+|b)+	ab	y	#{$&}-#{$1}	ab-b
+(a+|b)+	ab	y	#{$&}-#{$1}-	ab-b-
+(a+|b)?	ab	y	#{$&}-#{$1}	a-a
+(a+|b)?	ab	y	#{$&}-#{$1}-	a-a-
+(a+|b){0,1}	ab	y	#{$&}-#{$1}	a-a
+(a+|b){0,}	ab	y	#{$&}-#{$1}	ab-b
+(a+|b){1,}	ab	y	#{$&}-#{$1}	ab-b
+(a.*b)(a.*b)	accbaccccb	y	#{$&}-#{$1}-#{$2}-	accbaccccb-accb-accccb-
+(a?)*		y	#{$&}-#{$1}	-
+(a?)*	aa	y	#{$&}-#{$1}	aa-
+(a?)?	a	y	#{$&}-#{$1}	a-a
+(a?){0,3}b	aaab	y	#{$&}-#{$1}	aaab-a
+(a?){1,3}b	aaab	y	#{$&}-#{$1}	aaab-a
+(a?b)?c	abc	y	#{$&}-#{$1}	abc-ab
+(a\w)(?:,(a\w))+	ab,ac,ad	y	#{$&}-#{$1}-#{$2}-	ab,ac,ad-ab-ad-
+(aa|a)a\1$	aaa	y	#{$&}-#{$1}	aaa-a
+(ab)*		y	#{$&}	
+(ab)*	abab	y	#{$&}-#{$1}	abab-ab
+(ab)*	acab	y	#{$&}-#{$1}	-
+(ab)?(ab)+	ab	y	#{$1}:#{$2}	:ab	-
+(ab*)*		y	#{$&}	
+(ab*)*	aa	y	#{$&}-#{$1}	aa-a
+(ab*)*	abc	y	#{$&}-#{$1}	ab-ab
+(ab*)*c	abac	y	#{$&}-#{$1}	abac-a
+(ab*)*c	abbac	y	#{$&}-#{$1}	abbac-a
+(ab*)*c	abbad	n	-	-
+(ab*)*c	c	y	#{$&}	c
+(abc	 	c	-	unmatched (: /(abc/
+(abc	-	c	-	unmatched (: /(abc/
+(abc)?(abc)+	abc	y	#{$1}:#{$2}	:abc	-
+(abc)\1	abcabc	y	#{$&}-#{$1}	abcabc-abc
+(abc)\1	abcabc	y	#{$1}	abc
+(abc|)ef	abcdef	y	#{$&}-#{$1}	ef-
+(ab|a)b*c	abc	y	#{$&}-#{$1}	abc-ab
+(ab|a)b*c	abc	y	#{$&}-#{$1}-	abc-ab-
+(ab|ab*)bc	abc	y	#{$&}-#{$1}	abc-a
+(ab|ab*)bc	abc	y	#{$&}-#{$1}-	abc-a-
+(ab|cd)e	abcde	y	#{$&}-#{$1}	cde-cd
+(ab|cd)e	abcde	y	#{$&}-#{$1}-	cde-cd-
+(ac*)c*d[ac]*\1	acdacaa	y	#{$&}-#{$1}-	acdac-ac-
+(a{0,}|b)*	bb	y	#{$&}-#{$1}	bb-b
+(a{0,}|b)*c	bbc	y	#{$&}-#{$1}	bbc-b
+(a{1,2}b)*	abaab	y	#{$&}-#{$1}	abaab-aab
+(a{1,})*a	a	y	#{$&}	a
+(a{2,})*aa	aa	y	#{$&}	aa
+(a|)		y	#{$&}-#{$1}	-
+(a|)	a	y	#{$&}-#{$1}	a-a
+(a|)*	a	y	#{$&}-#{$1}	a-a
+(a|^b)	b	y	#{$&}-#{$1}	b-b
+(a|aa)a\1$	aaa	y	#{$&}-#{$1}	aaa-a
+(a|b)$|c$	da	y	#{$&}-#{$1}	a-a
+(a|b)$|c$	db	y	#{$&}-#{$1}	b-b
+(a|b)$|c$	dc	y	#{$&}	c
+(a|b)*c	abc	y	#{$&}-#{$1}	abc-b
+(a|b)*c	ac	y	#{$&}-#{$1}	ac-a
+(a|b)*c	bc	y	#{$&}-#{$1}	bc-b
+(a|b)+c	ac	y	#{$&}-#{$1}	ac-a
+(a|b)?c	ac	y	#{$&}-#{$1}	ac-a
+(a|b)c$|d$	eac	y	#{$&}-#{$1}	ac-a
+(a|b)c$|d$	ebc	y	#{$&}-#{$1}	bc-b
+(a|b)c$|d$	ed	y	#{$&}	d
+(a|b)c*d	abcd	y	#{$&}-#{$1}	bcd-b
+(a|b)c*d	abcd	y	#{$&}-#{$1}-	bcd-b-
+(a|b|c)	a	y	#{$&}-#{$1}	a-a
+(a|b|c)	b	y	#{$&}-#{$1}	b-b
+(a|b|c)	c	y	#{$&}-#{$1}	c-c
+(a|b|c)*	abccba	y	#{$&}-#{$1}	abccba-a
+(a|b|c|d|e)f	ef	y	#{$&}-#{$1}	ef-e
+(a|b|c|d|e)f	ef	y	#{$&}-#{$1}-	ef-e-
+(a|x)*ab	cab	y	y#{$1}	y
+(b$)	ab	y	#{$&}-#{$1}	b-b
+(b$)	ba	n	-	-
+(bc+d$|ef*g.|h?i(j|k))	bcdd	n	-	-	
+(bc+d$|ef*g.|h?i(j|k))	bcdd	n	-	-
+(bc+d$|ef*g.|h?i(j|k))	effg	n	-	-	
+(bc+d$|ef*g.|h?i(j|k))	effg	n	-	-
+(bc+d$|ef*g.|h?i(j|k))	effgz	y	#{$&}-#{$1}-	effgz-effgz-
+(bc+d$|ef*g.|h?i(j|k))	effgz	y	#{$&}-#{$1}-#{$2}	effgz-effgz-
+(bc+d$|ef*g.|h?i(j|k))	ij	y	#{$&}-#{$1}-#{$2}	ij-ij-j
+(bc+d$|ef*g.|h?i(j|k))	ij	y	#{$&}-#{$1}-#{$2}-	ij-ij-j-
+(bc+d$|ef*g.|h?i(j|k))	reffgz	y	#{$&}-#{$1}-	effgz-effgz-
+(bc+d$|ef*g.|h?i(j|k))	reffgz	y	#{$&}-#{$1}-#{$2}	effgz-effgz-
+(b|c)(a$)|d$	fba	y	#{$&}-#{$1}-#{$2}	ba-b-a
+(b|c)(a$)|d$	fca	y	#{$&}-#{$1}-#{$2}	ca-c-a
+(b|c)(a$)|d$	fd	y	#{$&}	d
+(b|c)(a)$|d$	fba	y	#{$&}-#{$1}-#{$2}	ba-b-a
+(b|c)(a)$|d$	fca	y	#{$&}-#{$1}-#{$2}	ca-c-a
+(b|c)(a)$|d$	fd	y	#{$&}	d
+(c(a)*(b)*)*		y	#{$&}	
+(c(a)*(b)*)*	c	y	#{$&}-#{$1}	c-c
+(c(c(a)*(b)*)*)*		y	#{$&}	
+(c*((a*))d*((b*))e*)*		y	#{$&}-#{$1}-#{$2}-#{$3}-#{$4}-#{$5}	-----
+(c[ab]*?)b	cbb	y	#{$&}-#{$1}-	cb-c-
+(c[ab]?)b	cbb	y	#{$&}-#{$1}-	cbb-cb-
+(c[ab]??)b	cbb	y	#{$&}-#{$1}-	cb-c-
+(foo(bar)|second)\2	second	n	-	-
+(foo(bar)|second)\2	secondbar	n	-	-
+(fooq|foo)(qbarx|bar)	fooqbarx	y	#{$&}-#{$1}-#{$2}	fooqbar-fooq-bar
+(fooq|foo)*(qbar)	fooqbar	y	#{$&}-#{$1}-#{$2}	fooqbar-foo-qbar
+(fooq|foo)*(qbar)*	fooqbar	y	#{$&}-#{$1}-#{$2}	fooq-fooq-
+(fooq|foo)*(qbarx|bar)	fooqbarx	y	#{$&}-#{$1}-#{$2}	fooqbar-fooq-bar
+(fooq|foo)*(qbarx|bar)*	fooqbarx	y	#{$&}-#{$1}-#{$2}	fooqbar-fooq-bar
+(fooq|foo)*qbar	fooqbar	y	#{$&}-#{$1}	fooqbar-foo
+(fooq|foo)+(qbarx|bar)	fooqbarx	y	#{$&}-#{$1}-#{$2}	fooqbar-fooq-bar
+(fooq|foo)+(qbarx|bar)+	fooqbarx	y	#{$&}-#{$1}-#{$2}	fooqbar-fooq-bar
+(fooq|foo)qbar	fooqbar	y	#{$&}-#{$1}	fooqbar-foo
+(fooq|fo|o)*(qbar)	fooqbar	y	#{$&}-#{$1}-#{$2}	fooqbar-o-qbar
+(fooq|fo|o)*(qbar)*	fooqbar	y	#{$&}-#{$1}-#{$2}	fooq-fooq-
+(fooq|fo|o)*(qbar|q)*	fooqbar	y	#{$&}-#{$1}-#{$2}	fooq-fooq-
+(fooq|fo|o)*qbar	fooqbar	y	#{$&}-#{$1}	fooqbar-o
+(fooq|fo|o)+(qbar|q)+	fooqbar	y	#{$&}-#{$1}-#{$2}	fooqbar-o-qbar
+(foo|foobar)(bar|barfoo)?\1	foobarfoobar	y	#{$&}-#{$1}	foobarfoo-foo
+(foo|foobarfoo)(bar)*	foobarfoo	y	#{$&}-#{$1}-#{$2}	foobar-foo-bar
+(o()|t())	o	y	#{$&}-#{$1}-#{$2}	o-o-
+(o()|t())-a-(t\2|f\3)	o-a-f	n	-	-
+(o()|t())-a-(t\2|f\3)	o-a-t	y	#{$&}-#{$1}-#{$2}-#{$4}	o-a-t-o--t
+(o()|t())-a-(t\2|f\3)	t-a-f	y	#{$&}-#{$1}-#{$3}-#{$4}	t-a-f-t--f
+(o()|t())-a-(t\2|f\3)	t-a-t	n	-	-
+(o()|t)	o	y	#{$&}-#{$1}-#{$2}	o-o-
+(one()|two())-and-(three\2|four\3)	one-and-four	n	-	-
+(one()|two())-and-(three\2|four\3)	one-and-three	y	#{$&}-#{$1}-#{$2}-#{$4}	one-and-three-one--three
+(one()|two())-and-(three\2|four\3)	two-and-four	y	#{$&}-#{$1}-#{$3}-#{$4}	two-and-four-two--four
+(one()|two())-and-(three\2|four\3)	two-and-three	n	-	-
+(ooooooooooone())-annnnnnnnnnnd-(twooooooooooo\2)	ooooooooooone-annnnnnnnnnnd-twooooooooooo	y	#{$&}-#{$1}-#{$2}-#{$3}	ooooooooooone-annnnnnnnnnnd-twooooooooooo-ooooooooooone--twooooooooooo
+(ooooooooooooooooooooooooone()|twooooooooooooooooooooooooo())	ooooooooooooooooooooooooone	y	#{$&}-#{$1}-#{$2}	ooooooooooooooooooooooooone-ooooooooooooooooooooooooone-
+(ooooooooooooooo|tttttttttttttttt())	ooooooooooooooo	y	#{$&}-#{$1}	ooooooooooooooo-ooooooooooooooo
+(o|t())	o	y	#{$&}-#{$1}	o-o
+(o|t)	o	y	#{$&}-#{$1}	o-o
+(wee|week)(knights|knight)	weeknights	y	#{$&}-#{$1}-#{$2}-	weeknights-wee-knights-
+(wee|week)(knights|night)	weeknights	y	#{$&}-#{$1}-#{$2}	weeknights-wee-knights
+({)	{	c	-	invalid regular expression; there's no previous pattern, to which '{' would define cardinality at 2: /({)/
+({1})	(null)	c	-	invalid regular expression; there's no previous pattern, to which '{' would define cardinality at 2: /({1})/
+({1})	{1}	c	-	invalid regular expression; there's no previous pattern, to which '{' would define cardinality at 2: /({1})/
+(|)	(|)	y	#{$&}	
+)	a	c	-	unmatched ): /)/
+)(	 	c	-	unmatched ): /)(/
+)(	-	c	-	unmatched ): /)(/
+*	(null)	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 1: /*/
+*a	 	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 1: /*a/
++	(null)	c	-	invalid regular expression; there's no previous pattern, to which '+' would define cardinality at 1: /+/
+.		y	#{$&}	
+.		n	-	-
+.	
+.	a	y	#{$&}	a
+.{0,3}b	aaab	y	#{$&}	aaab
+.{0,3}b	ab	y	#{$&}	ab
+.{0,3}b	b	y	#{$&}	b
+.{1}	abbbbc	y	#{$&}	a
+.{3,4}	abbbbc	y	#{$&}	abbb
+:(?:	-	c	-	unmatched (: /:(?:/
+?	(null)	c	-	invalid regular expression; there's no previous pattern, to which '?' would define cardinality at 1: /?/
+[%--a]	%	y	#{$&}	%
+[%--a]	-	y	#{$&}	-
+[%--a]	a	y	#{$&}	a
+[(]	(	y	#{$&}	(
+[)-+--/]	*	y	#{$&}	*
+[)-+--/]	,	n	-	-
+[)-+--/]	.	y	#{$&}	.
+[)-+--/]	/	y	#{$&}	/
+[*]	*	y	#{$&}	*
+[+]	+	y	#{$&}	+
+[--@]	@	y	#{$&}	@
+[-a]	-	y	#{$&}	-
+[-a]	a	y	#{$&}	a
+[.]	.	y	#{$&}	.
+[:]	:	y	#{$&}	:
+[:alpha:]	p	y	#{$&}	p
+[:alpha:]	q	n	-	-
+[:alpha:]{0,3}d	123d	y	#{$&}	d
+[:digit:]+	789	n	-	-
+[:digit:]+	abcd	y	#{$&}	d
+[:wacky:]+	 	n
+[:xdigit:]+	ffe5a	n	-	-
+[?]	?	y	#{$&}	?
+[[:]	[	y	#{$&}	[
+[[:a]	[	y	#{$&}	[
+[[:alnum:]]	0	y	#{$&}	0
+[[:alnum:]]	9	y	#{$&}	9
+[[:alnum:]]	:	n	-	-
+[[:alnum:]]	A	y	#{$&}	A
+[[:alnum:]]	Z	y	#{$&}	Z
+[[:alnum:]]	a	y	#{$&}	a
+[[:alnum:]]	z	y	#{$&}	z
+[[:alpha:]]	2	n	-	-
+[[:alpha:]]	A	y	#{$&}	A
+[[:alpha:]]	Z	y	#{$&}	Z
+[[:alpha:]]	a	y	#{$&}	a
+[[:alpha:]]	z	y	#{$&}	z
+[[:alpha:a]	[	y	#{$&}	[
+[[:cntrl:]]	a	n	-	-
+[[:cntrl:]]		y	#{$&}	
+[[:digit:]-]	-	y	#{$&}	-
+[[:digit:]]	0	y	#{$&}	0
+[[:digit:]]	9	y	#{$&}	9
+[[:digit:]]	a	n	-	-
+[[:digit:]]{0,3}d	123d	y	#{$&}	123d
+[[:digit:]a]	2	y	#{$&}	2
+[[:digit:]a]	a	y	#{$&}	a
+[[:foo:]]	-	c	-	invalid regular expression; [:foo:] is not a character class: /[[:foo:]]/
+[[:graph:]]	 	n	-	-
+[[:graph:]]	!	y	#{$&}	!
+[[:graph:]]	~	y	#{$&}	~
+[[:lower:]]	A	n	-	-
+[[:lower:]]	a	y	#{$&}	a
+[[:lower:]]	z	y	#{$&}	z
+[[:print:]]	 	y	#{$&}	 
+[[:print:]]	~	y	#{$&}	~
+[[:print:]]		n	-	-
+[[:punct:]]	,	y	#{$&}	,
+[[:punct:]]	a	n	-	-
+[[:space:]]	 	y	#{$&}	 
+[[:space:]]	a	n	-	-
+[[:upper:]]	A	y	#{$&}	A
+[[:upper:]]	Z	y	#{$&}	Z
+[[:upper:]]	a	n	-	-
+[[:xdigit:]]	0	y	#{$&}	0
+[[:xdigit:]]	9	y	#{$&}	9
+[[:xdigit:]]	A	y	#{$&}	A
+[[:xdigit:]]	F	y	#{$&}	F
+[[:xdigit:]]	a	y	#{$&}	a
+[[:xdigit:]]	f	y	#{$&}	f
+[[:xdigit:]]	g	n	-	-
+[[]	[	y	#{$&}	[
+[\	(null)	c	-	premature end of regular expression: /[\/
+[\(]	(	y	#{$&}	(
+[\)]	)	y	#{$&}	)
+[\D]	-	y	-	-
+[\D]	1	n	-	-
+[\D]+	1234abc5678	y	#{$&}	abc
+[\W]	-	y	-	-
+[\W]	a	n	-	-
+[\]	\	c	-	premature end of regular expression: /[\]/
+[\^a]	^	y	#{$&}	^
+[\^a]	a	y	#{$&}	a
+[\d-x]	-	c	-	invalid regular expression; can't use character class as a start value of range: /[\d-x]/
+[\d]	-	n	-	-
+[\d]	1	y	-	-
+[\da-fA-F]+	123abc	y	#{$&}	123abc
+[\w]	-	n	-	-
+[\w]	a	y	-	-
+[\w]+	--ab_cd0123--	y	#{$&}	ab_cd0123
+[]]	]	y	#{$&}	]
+[]a]	]	y	#{$&}	]
+[^		c	-	premature end of regular expression: /[^/
+[^-a]	-	n	-	-
+[^[:foo:]]	-	c	-	invalid regular expression; [:foo:] is not a character class: /[^[:foo:]]/
+[^]]	]	n	-	-
+[^]]	a	y	#{$&}	a
+[^a-]	-	n	-	-
+[^a]	
+[^a]{0,3}b	ab	y	#{$&}	b
+[^a]{0,3}b	bcdb	y	#{$&}	bcdb
+[^ab]	c	y	#{$&}	c
+[^ab]*	cde	y	#{$&}	cde
+[^ab]*	cde	y	#{$&}-	cde-
+[^b]	b	n	-	-
+[a$]	$	y	#{$&}	$
+[a%--]	%	y	#{$&}	%
+[a%--]	-	y	#{$&}	-
+[a-]	-	y	#{$&}	-
+[a-]	a	y	#{$&}	a
+[a-a]	a	y	#{$&}	a
+[a-c-f]	e	n	-	-
+[a-e]?d\\e	yyzabecd\eyyz	y	#{$&}-	cd\e-
+[a-zA-Z_][a-zA-Z0-9_]*	alpha	y	#{$&}	alpha
+[a-zA-Z_][a-zA-Z0-9_]*	alpha	y	#{$&}-	alpha-
+[a-z]	2	n	-	-
+[a-z]	z	y	#{$&}	z
+[a[:]b[:c]	abc	y	#{$&}	abc
+[a[:digit:]]	2	y	#{$&}	2
+[a[:digit:]]	a	y	#{$&}	a
+[a[:xyz:	-	c	-	premature end of regular expression: /[a[:xyz:/
+[a[:xyz:]	-	c	-	invalid regular expression; [:xyz:] is not a character class: /[a[:xyz:]/
+[a]*a	aa	y	#{$&}	aa
+[a][]]	a]	y	#{$&}	a]
+[a]{0,3}b	aaab	y	#{$&}	aaab
+[a]{0,3}b	b	y	#{$&}	b
+[a^]	^	y	#{$&}	^
+[ab]	a	y	#{$&}	a
+[ab]	b	y	#{$&}	b
+[ab]	c	n	-	-
+[ab]*c	ac	y	#{$&}	ac
+[ab]+c	ac	y	#{$&}	ac
+[ab]?c	ac	y	#{$&}	ac
+[ab][cd]	ac	y	#{$&}	ac
+[ab][cd]	ae	n	-	-
+[abhgefdc]ij	hij	y	#{$&}	hij
+[abhgefdc]ij	hij	y	#{$&}-	hij-
+[a{0,1}]	}	y	#{$&}	}
+[k]	ab	n	-	-	
+[k]	ab	n	-	-
+[{]	{	y	#{$&}	{
+[|]	|	y	#{$&}	|
+\$	$	y	#{$&}	$
+\((.*), (.*)\)	(a, b)	y	#{$&}-#{$1}-#{$2}-	(a, b)-a-b-
+\((.*), (.*)\)	(a, b)	y	#{$2}-#{$1}	b-a
+\((.*), (.*)\)	(a, b)	y	(#{$2}, #{$1})	(b, a)
+\((\w\. \w+)\)	cd. (A. Tw)	y	-#{$1}-	-A. Tw-
+\(*\)	(()	y	#{$&}	(()
+\(*\)	)	y	#{$&}	)
+\(+\)	(()	y	#{$&}	(()
+\(+\)	()	y	#{$&}	()
+\(?\)	()	y	#{$&}	()
+\(?\)	)	y	#{$&}	)
+\(a	(a	y	#{$&}	(a
+\*	*	y	#{$&}	*
+\*{0,3}a	***a	y	#{$&}	***a
+\.	.	y	#{$&}	.
+\0	0	n	-	-
+\1	1	n	-	-
+\<abc\>	abc	n	-	-
+\Ba\B	-a	n	-	-
+\Ba\B	-a-	n	-	-
+\Ba\B	a-	n	-	-
+\Bx	xyz	n	-	-
+\By\B	xy	n	-	-
+\By\B	xyz	y	-	-
+\By\B	yz	n	-	-
+\By\b	xy	y	-	-
+\Bz	xyz	y	-	-
+\D	-	y	-	-
+\D	1	n	-	-
+\D+	1234abc5678	y	#{$&}	abc
+\GX.*X	aaaXbX	n	-	-
+\W	-	y	-	-
+\W	a	n	-	-
+\[	[	y	#{$&}	[
+\\	\	y	#{$&}	\
+\\{1}	\	y	#{$&}	\
+\^	^	y	#{$&}	^
+\^{1,3}a	a	n	-	-
+\a	a	n	-	-
+\ba\b	-a	y	-	-
+\ba\b	-a-	y	-	-
+\ba\b	a-	y	-	-
+\by\B	yz	y	-	-
+\by\b	xy	n	-	-
+\by\b	xyz	n	-	-
+\by\b	yz	n	-	-
+\d	-	n	-	-
+\d	1	y	-	-
+\d+	99	y	#{$&}-	99-
+\n(^b)	a\nb\n	y	#{$1}	b
+\w	-	n	-	-
+\w	a	y	-	-
+\w+	--ab_cd0123--	y	#{$&}	ab_cd0123
+\x4a	J	y	#{$&}-	J-
+\{	{	y	#{$&}	{
+\{1	{1	y	#{$&}	{1
+\{1\}		n	-	-
+\{a	{a	y	#{$&}	{a
+\|a	|a	y	#{$&}	|a
+]	]	y	#{$&}	]
+^		y	#{$&}	
+^	a	y	#{$&}	
+^	abc	y	#{$&}	
+^$		y	#{$&}	
+^$	a	n	-	-
+^((a|b)+)*ax	aax	y	#{$1}	a
+^((a|bc)+)*ax	aax	y	#{$1}	a
+^(){3,5}	abc	y	a#{$1}	a
+^(.+)?B	AB	y	#{$1}	A
+^(.,){2}c	a,b,c	y	#{$1}	b,
+^(0+)?(?:x(1))?	x1	y	-	-
+^(?:(?:[hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*$	FtP://www.test.com	y	#{$&}-	FtP://www.test.com-
+^(?:(?:[hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*$	FtTP://www.test.com	n	-	-	
+^(?:(?:[hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(?:\.[a-zA-Z0-9\-]+)*$	www.test.com	y	#{$&}-	www.test.com-
+^(?:([hH][tT]{2}[pP]|[fF][tT][pP]):\/\/)?[a-zA-Z0-9\-]+(\.[a-zA-Z0-9\-]+)*$	http://.www.test.com	n	-	-	
+^(?:.,){2}c	a,b,c	y	-	-
+^(?:[^,]*,){2}c	a,b,c	y	-	-
+^(?:a?b?)*$	a--	n	-	-
+^(?:b|a(?=(.)))*\1	abc	y	#{$&}	ab
+^(?=(a+?))\1ab	aaab	n	-	-
+^([0-9a-fA-F]+)(?:x([0-9a-fA-F]+)?)(?:x([0-9a-fA-F]+))?	012cxx0190	y	-	-
+^([^,]*,){0,3}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]*,){2}c	a,b,c	y	#{$1}	b,
+^([^,]*,){3,}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]*,){3}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{0,3},){0,3}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{0,3},){3,}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{0,3},){3}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{1,3},){0,3}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{1,3},){3,}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{1,3},){3}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{1,},){0,3}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{1,},){3,}d	aaa,b,c,d	y	#{$1}	c,
+^([^,]{1,},){3}d	aaa,b,c,d	y	#{$1}	c,
+^([^a-z])|(\^)$	.	y	#{$1}	.
+^([a-z]:)	C:/	n	-	-
+^([ab]*?)(b)?(c)$	abac	y	-#{$2}-	--
+^(^a)	ab	y	#{$&}-#{$1}	a-a
+^(^a)	ba	n	-	-
+^(a(b)?)+$	aba	y	-#{$1}-#{$2}-	-a-b-
+^(a)(b|c)|^d	abe	y	#{$&}-#{$1}-#{$2}	ab-a-b
+^(a)(b|c)|^d	ace	y	#{$&}-#{$1}-#{$2}	ac-a-c
+^(a)(b|c)|^d	df	y	#{$&}	d
+^(a)?(?(1)a|b)+$		c	-	undefined (?...) sequence: /^(a)?(?(1)a|b)+$/
+^(a)?a$	a	y	-#{$1}-	--
+^(a*)*$	ab	n	-	-
+^(a+)*ax	aax	y	#{$1}	a
+^(a+).\1$	aaaa	n	-	-
+^(a\1?)(a\1?)(a\2?)(a\3?)$	aaaaaa	y	#{$1},#{$2},#{$3},#{$4}	a,aa,a,aa
+^(a\1?){4}$	aaaaaa	n	-	-
+^(aa(bb)?)+$	aabbaa	y	-#{$1}-#{$2}-	-aa-bb-
+^(ab|cd)e	abcde	n	-	-	
+^(ab|cd)e	abcde	n	-	-
+^(ab|cd)e	abcde	n	x#{$1}y	xy
+^(a|b)|^c	ad	y	#{$&}-#{$1}	a-a
+^(a|b)|^c	bd	y	#{$&}-#{$1}	b-b
+^(b)	a\nb\n	y	#{$1}	b
+^(b+?|a){1,2}c	bbbac	y	#{$1}	a
+^(b+?|a){1,2}c	bbbbac	y	#{$1}	a
+^*	 	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 2: /^*/
+^*	(null)	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 2: /^*/
+^+	(null)	c	-	invalid regular expression; there's no previous pattern, to which '+' would define cardinality at 2: /^+/
+^.{0,3}b	aaaab	n	-	-
+^?	(null)	c	-	invalid regular expression; there's no previous pattern, to which '?' would define cardinality at 2: /^?/
+^[<>]&	<&OUT	y	#{$&}	<&
+^[^bcd]*(c+)	aexycd	y	#{$1}	c
+^[a]{0,3}$	aaaa	n	-	-
+^\(^a\)	ab	n	-	-
+^\(^a\)	ba	n	-	-
+^\{	{	y	#{$&}	{
+^a	a	y	#{$&}	a
+^a	b
+^a	ba	n	-	-
+^a(?#xxx){3}c	aaac	y	#{$&}	aaac
+^a(bc+|b[eh])g|.h$	abh	y	#{$&}-	bh-
+^a(bc+|b[eh])g|.h$	abh	y	#{$&}-#{$1}	bh-
+^a(b|c)|^d	abe	y	#{$&}-#{$1}	ab-b
+^a(b|c)|^d	ace	y	#{$&}-#{$1}	ac-c
+^a(b|c)|^d	df	y	#{$&}	d
+^ab$	a	n	-	-
+^ab$	ab	y	#{$&}	ab
+^abc	abcc	y	#{$&}	abc
+^abc	abcc	y	#{$&}-	abc-
+^abc$	aabc	n	-	-	
+^abc$	aabc	n	-	-
+^abc$	abc	y	#{$&}	abc
+^abc$	abc	y	#{$&}-	abc-
+^abc$	abcc	n	-	-	
+^abc$	abcc	n	-	-
+^ab{0,3}c	abababc	n	-	-
+^ab|c	aba	y	#{$&}	ab
+^a{1,3}$	aaaa	n	-	-
+^a{1}$	aa	n	-	-
+^a{2}?$	aaa	n	-	-
+^b	a\nb\n	y	#{$&}	b
+^ba|c	aba	n	-	-
+^b|a	b	y	#{$&}	b
+^c|(^a|^b)	ad	y	#{$&}-#{$1}	a-a
+^c|(^a|^b)	bd	y	#{$&}-#{$1}	b-b
+^c|(^a|^b)	cd	y	#{$&}	c
+^c|^(a|b)	ad	y	#{$&}-#{$1}	a-a
+^c|^(a|b)	bd	y	#{$&}-#{$1}	b-b
+^c|^(a|b)	cd	y	#{$&}	c
+^d|(^a)(b|c)	abf	y	#{$&}-#{$1}-#{$2}	ab-a-b
+^d|(^a)(b|c)	acf	y	#{$&}-#{$1}-#{$2}	ac-a-c
+^d|(^a)(b|c)	df	y	#{$&}	d
+^d|(^b|^c)(a)	baf	y	#{$&}-#{$1}-#{$2}	ba-b-a
+^d|(^b|^c)(a)	caf	y	#{$&}-#{$1}-#{$2}	ca-c-a
+^d|(^b|^c)(a)	df	y	#{$&}	d
+^d|(c|(a|b))	de	y	#{$&}	d
+^d|^(a)(b|c)	abf	y	#{$&}-#{$1}-#{$2}	ab-a-b
+^d|^(a)(b|c)	acf	y	#{$&}-#{$1}-#{$2}	ac-a-c
+^d|^(a)(b|c)	df	y	#{$&}	d
+^d|^(b|c)(a)	baf	y	#{$&}-#{$1}-#{$2}	ba-b-a
+^d|^(b|c)(a)	caf	y	#{$&}-#{$1}-#{$2}	ca-c-a
+^d|^(b|c)(a)	df	y	#{$&}	d
+^d|^c(a|b)	cae	y	#{$&}-#{$1}	ca-a
+^d|^c(a|b)	cbe	y	#{$&}-#{$1}	cb-b
+^d|^c(a|b)	de	y	#{$&}	d
+^e(d|c((a|b)))	ecaf	y	#{$&}-#{$1}-#{$2}-#{$3}	eca-ca-a-a
+^e(d|c((a|b)))	ecbf	y	#{$&}-#{$1}-#{$2}-#{$3}	ecb-cb-b-b
+^e(d|c((a|b)))	edf	y	#{$&}-#{$1}	ed-d
+^ed|(^c((a|b)))	caf	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+^ed|(^c((a|b)))	cbf	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+^ed|(^c((a|b)))	edf	y	#{$&}	ed
+^ed|^(c((a|b)))	caf	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+^ed|^(c((a|b)))	cbf	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+^ed|^(c((a|b)))	edf	y	#{$&}	ed
+^{1}	(null)	c	-	invalid regular expression; there's no previous pattern, to which '{' would define cardinality at 2: /^{1}/
+^|a		y	#{$&}	
+^|a	a	y	#{$&}	
+a	ab	y	#{$&}	a
+a	n	-	-
+a	y	#{$&}	a
+a	y	#{$&}	b
+a
+a$	a	y	#{$&}	a
+a$	ab	n	-	-
+a$b	a$b	n	-	-
+a$|b	a	y	#{$&}	a
+a($|c$)|d$	xa	y	#{$&}-#{$1}	a-
+a($|c$)|d$	xac	y	#{$&}-#{$1}	ac-c
+a($|c$)|d$	xd	y	#{$&}	d
+a((b)|(c))d	acd	y	#{$&}-#{$1}-#{$3}	acd-c-c
+a()b	ab	y	#{$&}-#{$1}	ab-
+a(?!b).	abad	y	#{$&}	ad
+a(?:b|(c|e){1,2}?|d)+?(.)	ace	y	#{$1}#{$2}	ce
+a(?:b|c|d)(.)	ace	y	#{$1}	e
+a(?:b|c|d)*(.)	ace	y	#{$1}	e
+a(?:b|c|d)+(.)	acdbcdbe	y	#{$1}	e
+a(?:b|c|d)+?(.)	acdbcdbe	y	#{$1}	d
+a(?:b|c|d)+?(.)	ace	y	#{$1}	e
+a(?:b|c|d){2}(.)	acdbcdbe	y	#{$1}	b
+a(?:b|c|d){4,5}(.)	acdbcdbe	y	#{$1}	b
+a(?:b|c|d){4,5}?(.)	acdbcdbe	y	#{$1}	d
+a(?:b|c|d){5,6}(.)	acdbcdbe	y	#{$1}	e
+a(?:b|c|d){5,6}?(.)	acdbcdbe	y	#{$1}	b
+a(?:b|c|d){5,7}(.)	acdbcdbe	y	#{$1}	e
+a(?:b|c|d){5,7}?(.)	acdbcdbe	y	#{$1}	b
+a(?:b|c|d){6,7}(.)	acdbcdbe	y	#{$1}	e
+a(?:b|c|d){6,7}?(.)	acdbcdbe	y	#{$1}	e
+a(?=c|d).	abad	y	#{$&}	ad
+a(?=d).	abad	y	#{$&}	ad
+a([bc]*)(c*d)	abcd	y	#{$&}-#{$1}-#{$2}	abcd-bc-d
+a([bc]*)(c*d)	abcd	y	#{$&}-#{$1}-#{$2}-	abcd-bc-d-
+a([bc]*)(c+d)	abcd	y	#{$&}-#{$1}-#{$2}	abcd-b-cd
+a([bc]*)(c+d)	abcd	y	#{$&}-#{$1}-#{$2}-	abcd-b-cd-
+a([bc]*)c*	abc	y	#{$&}-#{$1}	abc-bc
+a([bc]*)c*	abc	y	#{$&}-#{$1}-	abc-bc-
+a([bc]+)(c*d)	abcd	y	#{$&}-#{$1}-#{$2}	abcd-bc-d
+a([bc]+)(c*d)	abcd	y	#{$&}-#{$1}-#{$2}-	abcd-bc-d-
+a(b$|$)|d$	xa	y	#{$&}-#{$1}	a-
+a(b$|$)|d$	xab	y	#{$&}-#{$1}	ab-b
+a(b$|$)|d$	xd	y	#{$&}	d
+a(b$|c$)|$	x	y	#{$&}	
+a(b$|c$)|$	xab	y	#{$&}-#{$1}	ab-b
+a(b$|c$)|$	xac	y	#{$&}-#{$1}	ac-c
+a(b$|c$)|d$	fab	y	#{$&}-#{$1}	ab-b
+a(b$|c$)|d$	fac	y	#{$&}-#{$1}	ac-c
+a(b$|c$)|d$	fd	y	#{$&}	d
+a(bc)d	abcd	y	#{$&}-#{$1}-	abcd-bc-
+a(bc)d	abcd	y	#{$1}-\#{$1}-\\#{$1}	bc-#{$1}-\bc
+a*		y	#{$&}	
+a*	aa	y	#{$&}	aa
+a*	aaaa	y	#{$&}-	aaaa-
+a*	baaaa	y		
+a*	x	y		
+a*	y		
+a*(b*c*)	aabbcc	y	#{$&}-#{$1}-	aabbcc-bbcc-
+a**	 	c	-	nested *?+ in regexp: /a**/
+a**	-	c	-	nested *?+ in regexp: /a**/
+a**	a	c	-	nested *?+ in regexp: /a**/
+a*+	a	c	-	nested *?+ in regexp: /a*+/
+a*?	a	y	#{$&}	
+a*\	(null)	c	-	invalid regular expression; '\' can't be last character: /a*\/
+a*ab	aab	y	#{$&}	aab
+a*abc?xyz+pqr{3}ab{2,}xy{4,5}pq{0,6}AB{0,}zz	x	n	-	-
+a*b	aab	y	#{$&}	aab
+a*b\s+c	aaaab    c	y	#{$&}-	aaaab    c-
+a*b\s+c	aaaabfc	n	-	-	
+a+		n	-	-
+a+	a	y	#{$&}	a
+a+	aa	y	#{$&}	aa
+a+*	a	c	-	nested *?+ in regexp: /a+*/
+a++	 	c	-	nested *?+ in regexp: /a++/
+a++	a	c	-	nested *?+ in regexp: /a++/
+a+?	a	y	#{$&}	a
+a+b	a	n	-	-
+a+b+c	aabbabc	y	#{$&}	abc
+a+b+c	aabbabc	y	#{$&}-	abc-
+a.*b	acc\nccb	n	-	-
+a.*c	axyzc	y	#{$&}	axyzc
+a.*c	axyzc	y	#{$&}-	axyzc-
+a.*c	axyzd	n	-	-	
+a.*c	axyzd	n	-	-
+a.+(c|d)	aaaacaaaaad	y	#{$&}-#{$1}-	aaaacaaaaad-d-
+a.+?(c|d)	aaaacaaaaad	y	#{$&}-#{$1}-	aaaac-c-
+a.+?c	abcabc	y	#{$&}	abc
+a.b	a\nb	n	-	-
+a.b	acb	y	#{$&}	acb
+a.c	abc	y	#{$&}	abc
+a.c	abc	y	#{$&}-	abc-
+a.c	axc	y	#{$&}	axc
+a.c	axc	y	#{$&}-	axc-
+a.{4,5}b	acc\nccb	n	-	-
+a?		y	#{$&}	
+a?	a	y	#{$&}	a
+a?	b	y	#{$&}	
+a?*	a	c	-	nested *?+ in regexp: /a?*/
+a?+	a	c	-	nested *?+ in regexp: /a?+/
+a??	a	y	#{$&}	
+a?b	a	n	-	-
+a?b+c*	b	y	#{$&}-	b-
+a[	 	c	-	invalid regular expression; '[' can't be the last character ie. can't start range at the end of pattern: /a[/
+a[	-	c	-	invalid regular expression; '[' can't be the last character ie. can't start range at the end of pattern: /a[/
+a[-]?c	abc	n	-	-
+a[-]?c	ac	y	#{$&}	ac
+a[-b]	a-	y	#{$&}	a-
+a[-b]	aa	n	-	-
+a[\-b]	a-	y	#{$&}	a-
+a[\S]b	a b	n	-	-
+a[\S]b	a-b	y	-	-
+a[\]]b	a]b	y	#{$&}	a]b
+a[\s]b	a b	y	-	-
+a[\s]b	a-b	n	-	-
+a[]]	a]b	y	#{$&}	a]
+a[]]b	a]b	y	#{$&}	a]b
+a[]b	 	c	-	premature end of regular expression: /a[]b/
+a[]b	-	c	-	premature end of regular expression: /a[]b/
+a[^-b]c	a-c	n	-	-
+a[^-b]c	adc	y	#{$&}	adc
+a[^]b]c	a]c	n	-	-
+a[^]b]c	adc	y	#{$&}	adc
+a[^bc]	abd	n	-	-	
+a[^bc]d	abd	n	-	-
+a[^bc]d	aed	y	#{$&}	aed
+a[^bc]d	aed	y	#{$&}-	aed-
+a[b-]	a-	y	#{$&}	a-
+a[b-]	ac	n	-	-
+a[b-a]	 	c	-	invalid regular expression: /a[b-a]/
+a[b-a]	-	c	-	invalid regular expression: /a[b-a]/
+a[b-d]	aac	y	#{$&}	ac
+a[b-d]	aac	y	#{$&}-	ac-
+a[b-d]e	abd	n	-	-	
+a[b-d]e	abd	n	-	-
+a[b-d]e	ace	y	#{$&}	ace
+a[b-d]e	ace	y	#{$&}-	ace-
+a[bc]d	abc	n	-	-	
+a[bc]d	abc	n	-	-
+a[bc]d	abd	y	#{$&}	abd
+a[bc]d	abd	y	#{$&}-	abd-
+a[bcd]*dcdcde	adcdcde	y	#{$&}	adcdcde
+a[bcd]*dcdcde	adcdcde	y	#{$&}-	adcdcde-
+a[bcd]+dcdcde	adcdcde	n	-	-	
+a[bcd]+dcdcde	adcdcde	n	-	-
+a\	 	c	-	invalid regular expression; '\' can't be last character: /a\/
+a\	-	c	-	invalid regular expression; '\' can't be last character: /a\/
+a\(*b	a((b	y	#{$&}	a((b
+a\(*b	a((b	y	#{$&}-	a((b-
+a\(*b	ab	y	#{$&}	ab
+a\(*b	ab	y	#{$&}-	ab-
+a\(b	a(b	y	#{$&}	a(b
+a\(b	a(b	y	#{$&}-	a(b-
+a\(b	a(b	y	#{$&}-#{$1}	a(b-
+a\)	a)	y	#{$&}	a)
+a\+	a+	y	#{$&}	a+
+a\?	a?	y	#{$&}	a?
+a\Sb	a b	n	-	-
+a\Sb	a-b	y	-	-
+a\\b	a\b	y	#{$&}	a\b
+a\\b	a\b	y	#{$&}-	a\b-
+a\^	a^	y	#{$&}	a^
+a\^b	a^b	y	#{$&}	a^b
+a\sb	a b	y	-	-
+a\sb	a-b	n	-	-
+a\{	a{	y	#{$&}	a{
+a\{-1	a{-1	y	#{$&}	a{-1
+a\{-1}	a{-1}	y	#{$&}	a{-1}
+a\{0	a{0	y	#{$&}	a{0
+a\{0,	a{0,	y	#{$&}	a{0,
+a\{0,1	a{0,1	y	#{$&}	a{0,1
+a\{1,0	a{1,0	y	#{$&}	a{1,0
+a\{32768	a{32768	y	#{$&}	a{32768
+a\{32768,	a{32768,	y	#{$&}	a{32768,
+a\|	a|	y	#{$&}	a|
+a\|*	a	y	#{$&}	a
+a\|*	a||	y	#{$&}	a||
+a\|+	a|	y	#{$&}	a|
+a\|+	a||	y	#{$&}	a||
+a\|?	a	y	#{$&}	a
+a\|?	a|	y	#{$&}	a|
+a\|\|	a||	y	#{$&}	a||
+a\|b	a|b	y	#{$&}	a|b
+a\||b	a|	y	#{$&}	a|
+a]	a]	y	#{$&}	a]
+aa$	ac\nb\n	n	-	-
+aa$	b\nac	n	-	-
+aa$	b\nac\n	n	-	-
+aa$	b\nca	n	-	-
+aa$	b\nca\n	n	-	-
+aa$	ca\nb\n	n	-	-
+aa\Z	ac\nb\n	n	-	-
+aa\Z	b\nac	n	-	-
+aa\Z	b\nac\n	n	-	-
+aa\Z	b\nca	n	-	-
+aa\Z	b\nca\n	n	-	-
+aa\Z	ca\nb\n	n	-	-
+aa\z	ac\nb\n	n	-	-
+aa\z	b\nac	n	-	-
+aa\z	b\nac\n	n	-	-
+aa\z	b\nca	n	-	-
+aa\z	b\nca\n	n	-	-
+aa\z	ca\nb\n	n	-	-
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	y	#{$&}	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ab$	ac\nb\n	n	-	-
+ab$	b\nac	n	-	-
+ab$	b\nac\n	n	-	-
+ab$	b\nca	n	-	-
+ab$	b\nca\n	n	-	-
+ab$	ca\nb\n	n	-	-
+ab$|c	aba	n	-	-
+ab*	a	y	#{$&}	a
+ab*	abb	y	#{$&}	abb
+ab*	xabyabbbz	y	#{$&}	ab
+ab*	xabyabbbz	y	#{$&}-	ab-
+ab*	xayabbbz	y	#{$&}	a
+ab*	xayabbbz	y	#{$&}-	a-
+ab*bc	abbbbc	y	#{$&}	abbbbc
+ab*bc	abbbbc	y	#{$&}-	abbbbc-
+ab*bc	abbc	y	#{$&}	abbc
+ab*bc	abbc	y	#{$&}-	abbc-
+ab*bc	abc	y	#{$&}	abc
+ab*bc	abc	y	#{$&}-	abc-
+ab*c	abc	y	#{$&}	abc
+ab*c	abc	y	#{$&}-	abc-
+ab+bc	abbbbc	y	#{$&}	abbbbc
+ab+bc	abbbbc	y	#{$&}-	abbbbc-
+ab+bc	abbc	y	#{$&}	abbc
+ab+bc	abbc	y	#{$&}-	abbc-
+ab+bc	abc	n	-	-	
+ab+bc	abc	n	-	-
+ab+bc	abq	n	-	-	
+ab+bc	abq	n	-	-
+ab?bc	abbbbc	n	-	-	
+ab?bc	abbbbc	n	-	-
+ab?bc	abbc	y	#{$&}	abbc
+ab?bc	abbc	y	#{$&}-	abbc-
+ab?bc	abc	y	#{$&}	abc
+ab?bc	abc	y	#{$&}-	abc-
+ab?c	abc	y	#{$&}	abc
+ab?c	abc	y	#{$&}-	abc-
+ab\Z	ab\nb\n	n	-	-
+ab\Z	ac\nb\n	n	-	-
+ab\Z	b\nac	n	-	-
+ab\Z	b\nac\n	n	-	-
+ab\Z	b\nca	n	-	-
+ab\Z	b\nca\n	n	-	-
+ab\Z	ca\nb\n	n	-	-
+ab\z	ab\nb\n	n	-	-
+ab\z	ac\nb\n	n	-	-
+ab\z	b\nab\n	n	-	-
+ab\z	b\nac	n	-	-
+ab\z	b\nac\n	n	-	-
+ab\z	b\nca	n	-	-
+ab\z	b\nca\n	n	-	-
+ab\z	ca\nb\n	n	-	-
+abb$	ac\nb\n	n	-	-
+abb$	b\nac	n	-	-
+abb$	b\nac\n	n	-	-
+abb$	b\nca	n	-	-
+abb$	b\nca\n	n	-	-
+abb$	ca\nb\n	n	-	-
+abb\Z	abb\nb\n	n	-	-
+abb\Z	ac\nb\n	n	-	-
+abb\Z	b\nac	n	-	-
+abb\Z	b\nac\n	n	-	-
+abb\Z	b\nca	n	-	-
+abb\Z	b\nca\n	n	-	-
+abb\Z	ca\nb\n	n	-	-
+abb\z	abb\nb\n	n	-	-
+abb\z	ac\nb\n	n	-	-
+abb\z	b\nabb\n	n	-	-
+abb\z	b\nac	n	-	-
+abb\z	b\nac\n	n	-	-
+abb\z	b\nca	n	-	-
+abb\z	b\nca\n	n	-	-
+abb\z	ca\nb\n	n	-	-
+abc		n	-	-
+abc	ab	n	-	-
+abc	ababc	y	#{$&}	abc
+abc	ababc	y	#{$&}-	abc-
+abc	abc	y	#{$&}	abc
+abc	abc	y	#{$&}-	abc-
+abc	abx	n	-	-	
+abc	abx	n	-	-
+abc	axc	n	-	-	
+abc	axc	n	-	-
+abc	n	-	-	
+abc	xabcy	y	#{$&}	abc
+abc	xabcy	y	#{$&}-	abc-
+abc	xbc	n	-	-	
+abc	xbc	n	-	-
+abc$	aabc	y	#{$&}	abc
+abc$	aabc	y	#{$&}-	abc-
+abc$	aabcd	n	-	-
+abc)	 	c	-	unmatched ): /abc)/
+abc)	-	c	-	unmatched ): /abc)/
+abc.*?x+yz	abcaaaaaxyzbbbbxyz	y	#{$&}-	abcaaaaaxyz-
+abc.+?x+yz	abcaaaaaxyzbbbbxyz	y	#{$&}-	abcaaaaaxyz-
+abcd	abcd	y	#{$&}-	abcd-
+abcd	abcd	y	#{$&}-\#{$&}-\\#{$&}	abcd-#{$&}-\abcd
+abcd*efg	abcdefg	y	#{$&}	abcdefg
+abcd*efg	abcdefg	y	#{$&}-	abcdefg-
+ab{0,1}bc	abc	y	#{$&}	abc
+ab{0,1}c	abc	y	#{$&}	abc
+ab{0,3}c	abbbc	y	#{$&}	abbbc
+ab{0,}bc	abbbbc	y	#{$&}	abbbbc
+ab{1,3}bc	abbbbc	y	#{$&}	abbbbc
+ab{1,3}c	abbbc	y	#{$&}	abbbc
+ab{1,}bc	abbbbc	y	#{$&}	abbbbc
+ab{1,}bc	abq	n	-	-
+ab{3,4}bc	abbbbc	y	#{$&}	abbbbc
+ab{4,5}bc	abbbbc	n	-	-
+ab|cd	abc	y	#{$&}	ab
+ab|cd	abc	y	#{$&}-	ab-
+ab|cd	abcd	y	#{$&}	ab
+ab|cd	abcd	y	#{$&}-	ab-
+ab|cd	bcda	y	#{$&}-	cd-
+a{0,0}		y	#{$&}	
+a{0,0}	a	y	#{$&}	
+a{0,1}		y	#{$&}	
+a{0,1}	a	y	#{$&}	a
+a{0,1}	b	y	#{$&}	
+a{0,3}a	aaa	y	#{$&}	aaa
+a{0,3}b	aaab	y	#{$&}	aaab
+a{0,3}b	b	y	#{$&}	b
+a{0,}		y	#{$&}	
+a{0,}	a	y	#{$&}	a
+a{0,}	b	y	#{$&}	
+a{0}		y	#{$&}	
+a{0}	a	y	#{$&}	
+a{1,0}	a{1,0}	c	-	can't do {n,m} with n > m: /a{1,0}/
+a{1,3}		n	-	-
+a{1,3}	a	y	#{$&}	a
+a{1,3}	aa	y	#{$&}	aa
+a{1,3}	aaa	y	#{$&}	aaa
+a{1,3}	b	n	-	-
+a{1,3}\{32768	aaa{32768	y	#{$&}	aaa{32768
+a{1,3}b	aaab	y	#{$&}	aaab
+a{1,3}b	ab	y	#{$&}	ab
+a{1,3}{-1}	aaa{-1}	y	#{$&}	aaa{-1}
+a{1,3}{1,2	aaa{1,2	y	#{$&}	aaa{1,2
+a{1,3}{2,1}		c	-	can't do {n,m} with n > m: /a{1,3}{2,1}/
+a{1,}		n	-	-
+a{1,}	a	y	#{$&}	a
+a{1,}	aa	y	#{$&}	aa
+a{1,}	b	n	-	-
+a{1,}b{1,}c	aabbabc	y	#{$&}	abc
+a{1}		n	-	-
+a{1}	a	y	#{$&}	a
+a{1}*		y	#{$&}	
+a{1}*	a	y	#{$&}	a
+a{1}*	aa	y	#{$&}	aa
+a{1}?*		y	#{$&}	
+a{1}?*	aa	y	#{$&}	aa
+a{1}{1}	a	y	#{$&}	a
+a{1}{1}*		y	#{$&}	
+a{1}{1}*	a	y	#{$&}	a
+a{1}{1}*	aa	y	#{$&}	aa
+a{1}{1}*	aaa	y	#{$&}	aaa
+a{1}{1}{1}	a	y	#{$&}	a
+a{1}{1}{2}	a	n	-	-
+a{1}{1}{2}	aa	y	#{$&}	aa
+a{1}{1}{2}	aaa	y	#{$&}	aa
+a{1}{2}	aa	y	#{$&}	aa
+a{2}*		y	#{$&}	
+a{2}*	aa	y	#{$&}	aa
+a{2}*	aaa	y	#{$&}	aa
+a{2}+	aa	y	#{$&}	aa
+a{2}+	aaa	y	#{$&}	aa
+a{2}?		n	-	-
+a{2}?	aa	y	#{$&}	aa
+a{2}{1}	aa	y	#{$&}	aa
+a{2}{2}	aaa	n	-	-
+a{2}{2}	aaaa	y	#{$&}	aaaa
+a{37,17}	-	c	-	can't do {n,m} with n > m: /a{37,17}/
+a{}	a{}	y	#{$&}	a{}
+a|		y	#{$&}	
+a|	a	y	#{$&}	a
+a|$		y	#{$&}	
+a|$	a	y	#{$&}	a
+a|$	x	y	#{$&}	
+a|$	xa	y	#{$&}	a
+a|*	(null)	c	-	invalid regular expression; there's no previous pattern, to which '*' would define cardinality at 3: /a|*/
+a|+	(null)	c	-	invalid regular expression; there's no previous pattern, to which '+' would define cardinality at 3: /a|+/
+a|?	(null)	c	-	invalid regular expression; there's no previous pattern, to which '?' would define cardinality at 3: /a|?/
+a|\$b	$b	y	#{$&}	$b
+a|\*	*	y	#{$&}	*
+a|\+	+	y	#{$&}	+
+a|\?	?	y	#{$&}	?
+a|\{	{	y	#{$&}	{
+a|\{1\}	a	y	#{$&}	a
+a|\{1\}	{1}	y	#{$&}	{1}
+a|^b	b	y	#{$&}	b
+a|b	a	y	#{$&}	a
+a|b	b	y	#{$&}	b
+a|b	c	n	-	-
+a|b	cb	y	#{$&}	b
+a|b$	b	y	#{$&}	b
+a|b|c|d|e	e	y	#{$&}	e
+a|b|c|d|e	e	y	#{$&}-	e-
+a|{1}	(null)	c	-	invalid regular expression; there's no previous pattern, to which '{' would define cardinality at 3: /a|{1}/
+a||b		y	#{$&}	
+a||b	a	y	#{$&}	a
+a||b	b	y	#{$&}	
+b	ab	y	#{$&}	b
+b	b	y	#{$&}	b
+b$|a	b	y	#{$&}	b
+b*c	b	n	-	-
+ba$|c	aba	y	#{$&}	ba
+c	ab	n	-	-
+c	baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	n	-	-
+c$|($|b$)	x	y	#{$&}-#{$1}	-
+c$|($|b$)	xb	y	#{$&}-#{$1}	b-b
+c$|($|b$)	xc	y	#{$&}	c
+c$|(a$|$)	x	y	#{$&}-#{$1}	-
+c$|(a$|$)	xa	y	#{$&}-#{$1}	a-a
+c$|(a$|$)	xc	y	#{$&}	c
+c$|(a$|b$)	da	y	#{$&}-#{$1}	a-a
+c$|(a$|b$)	db	y	#{$&}-#{$1}	b-b
+c$|(a$|b$)	dc	y	#{$&}	c
+c$|(a|b)$	da	y	#{$&}-#{$1}	a-a
+c$|(a|b)$	db	y	#{$&}-#{$1}	b-b
+c$|(a|b)$	dc	y	#{$&}	c
+c($|b$)	xc	y	#{$&}-#{$1}	c-
+c($|b$)	xcb	y	#{$&}-#{$1}	cb-b
+c($|b$)|d$	xc	y	#{$&}-#{$1}	c-
+c($|b$)|d$	xcb	y	#{$&}-#{$1}	cb-b
+c($|b$)|d$	xd	y	#{$&}	d
+c($|b)	xc	y	#{$&}-#{$1}	c-
+c($|b)	xcb	y	#{$&}-#{$1}	cb-b
+c((a)*(b)*)*	c	y	#{$&}-#{$1}	c-
+c(a$|$)	xc	y	#{$&}-#{$1}	c-
+c(a$|$)	xca	y	#{$&}-#{$1}	ca-a
+c(a$|$)|d$	xc	y	#{$&}-#{$1}	c-
+c(a$|$)|d$	xca	y	#{$&}-#{$1}	ca-a
+c(a$|$)|d$	xd	y	#{$&}	d
+c(a$|b$)	ca	y	#{$&}-#{$1}	ca-a
+c(a$|b$)	cb	y	#{$&}-#{$1}	cb-b
+c(a$|b$)|$	x	y	#{$&}	
+c(a$|b$)|$	xca	y	#{$&}-#{$1}	ca-a
+c(a$|b$)|$	xcb	y	#{$&}-#{$1}	cb-b
+c(a|$)	xc	y	#{$&}-#{$1}	c-
+c(a|$)	xca	y	#{$&}-#{$1}	ca-a
+c|^ab	aba	y	#{$&}	ab
+c|^ba	aba	n	-	-
+c|ab$	aba	n	-	-
+c|ba$	aba	y	#{$&}	ba
+d$|($|(a$|b$))	x	y	#{$&}-#{$1}	-
+d$|($|(a$|b$))	xa	y	#{$&}-#{$1}-#{$2}	a-a-a
+d$|($|(a$|b$))	xb	y	#{$&}-#{$1}-#{$2}	b-b-b
+d$|($|(a$|b$))	xd	y	#{$&}	d
+d$|($|(a|b)$)	x	y	#{$&}-#{$1}	-
+d$|($|(a|b)$)	xa	y	#{$&}-#{$1}-#{$2}	a-a-a
+d$|($|(a|b)$)	xb	y	#{$&}-#{$1}-#{$2}	b-b-b
+d$|(a)($|c$)	xa	y	#{$&}-#{$1}-#{$2}	a-a-
+d$|(a)($|c$)	xac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+d$|(a)($|c$)	xd	y	#{$&}	d
+d$|(a)(b$|$)	xa	y	#{$&}-#{$1}-#{$2}	a-a-
+d$|(a)(b$|$)	xab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+d$|(a)(b$|$)	xd	y	#{$&}	d
+d$|(a)(b$|c$)	fab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+d$|(a)(b$|c$)	fac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+d$|(a)(b$|c$)	fd	y	#{$&}	d
+d$|(a)(b|c)$	fab	y	#{$&}-#{$1}-#{$2}	ab-a-b
+d$|(a)(b|c)$	fac	y	#{$&}-#{$1}-#{$2}	ac-a-c
+d$|(a)(b|c)$	fd	y	#{$&}	d
+d$|(b|c)(a$)	fba	y	#{$&}-#{$1}-#{$2}	ba-b-a
+d$|(b|c)(a$)	fca	y	#{$&}-#{$1}-#{$2}	ca-c-a
+d$|(b|c)(a$)	fd	y	#{$&}	d
+d$|(b|c)(a)$	fba	y	#{$&}-#{$1}-#{$2}	ba-b-a
+d$|(b|c)(a)$	fca	y	#{$&}-#{$1}-#{$2}	ca-c-a
+d$|(b|c)(a)$	fd	y	#{$&}	d
+d$|(c$|($|b$))	x	y	#{$&}-#{$1}-#{$2}	--
+d$|(c$|($|b$))	xb	y	#{$&}-#{$1}-#{$2}	b-b-b
+d$|(c$|($|b$))	xc	y	#{$&}-#{$1}	c-c
+d$|(c$|($|b$))	xd	y	#{$&}	d
+d$|(c$|(a$|$))	x	y	#{$&}-#{$1}-#{$2}	--
+d$|(c$|(a$|$))	xa	y	#{$&}-#{$1}-#{$2}	a-a-a
+d$|(c$|(a$|$))	xc	y	#{$&}-#{$1}	c-c
+d$|(c$|(a$|$))	xd	y	#{$&}	d
+d$|(c$|(a$|b$))	ea	y	#{$&}-#{$1}-#{$2}	a-a-a
+d$|(c$|(a$|b$))	eb	y	#{$&}-#{$1}-#{$2}	b-b-b
+d$|(c$|(a$|b$))	ec	y	#{$&}-#{$1}	c-c
+d$|(c$|(a$|b$))	ed	y	#{$&}	d
+d$|(c$|(a|b)$)	ea	y	#{$&}-#{$1}-#{$2}	a-a-a
+d$|(c$|(a|b)$)	eb	y	#{$&}-#{$1}-#{$2}	b-b-b
+d$|(c$|(a|b)$)	ec	y	#{$&}-#{$1}	c-c
+d$|(c$|(a|b)$)	ed	y	#{$&}	d
+d$|(c$|(a|b))$	ea	y	#{$&}-#{$1}-#{$2}	a-a-a
+d$|(c$|(a|b))$	eb	y	#{$&}-#{$1}-#{$2}	b-b-b
+d$|(c$|(a|b))$	ec	y	#{$&}-#{$1}	c-c
+d$|(c$|(a|b))$	ed	y	#{$&}	d
+d$|a($|c$)	xa	y	#{$&}-#{$1}	a-
+d$|a($|c$)	xac	y	#{$&}-#{$1}	ac-c
+d$|a($|c$)	xd	y	#{$&}	d
+d$|a(b$|$)	xa	y	#{$&}-#{$1}	a-
+d$|a(b$|$)	xab	y	#{$&}-#{$1}	ab-b
+d$|a(b$|$)	xd	y	#{$&}	d
+d$|c($|b$)	xc	y	#{$&}-#{$1}	c-
+d$|c($|b$)	xcb	y	#{$&}-#{$1}	cb-b
+d$|c($|b$)	xd	y	#{$&}	d
+d$|c(a$|$)	xc	y	#{$&}-#{$1}	c-
+d$|c(a$|$)	xca	y	#{$&}-#{$1}	ca-a
+d$|c(a$|$)	xd	y	#{$&}	d
+d$|c(a$|b$)	eca	y	#{$&}-#{$1}	ca-a
+d$|c(a$|b$)	ecb	y	#{$&}-#{$1}	cb-b
+d$|c(a$|b$)	ed	y	#{$&}	d
+d($|e((a$|b$)))	xd	y	#{$&}-#{$1}	d-
+d($|e((a$|b$)))	xdea	y	#{$&}-#{$1}-#{$2}-#{$3}	dea-ea-a-a
+d($|e((a$|b$)))	xdeb	y	#{$&}-#{$1}-#{$2}-#{$3}	deb-eb-b-b
+d(c$|e(($|b$)))	xdc	y	#{$&}-#{$1}	dc-c
+d(c$|e(($|b$)))	xde	y	#{$&}-#{$1}-#{$2}-#{$3}	de-e--
+d(c$|e(($|b$)))	xdeb	y	#{$&}-#{$1}-#{$2}-#{$3}	deb-eb-b-b
+d(c$|e((a$|$)))	xdc	y	#{$&}-#{$1}	dc-c
+d(c$|e((a$|$)))	xde	y	#{$&}-#{$1}-#{$2}-#{$3}	de-e--
+d(c$|e((a$|$)))	xdea	y	#{$&}-#{$1}-#{$2}-#{$3}	dea-ea-a-a
+e($|c((a$|b$)))	xe	y	#{$&}-#{$1}	e-
+e($|c((a$|b$)))	xeca	y	#{$&}-#{$1}-#{$2}-#{$3}	eca-ca-a-a
+e($|c((a$|b$)))	xecb	y	#{$&}-#{$1}-#{$2}-#{$3}	ecb-cb-b-b
+e(d$|c(($|b$)))	xec	y	#{$&}-#{$1}-#{$2}-#{$3}	ec-c--
+e(d$|c(($|b$)))	xecb	y	#{$&}-#{$1}-#{$2}-#{$3}	ecb-cb-b-b
+e(d$|c(($|b$)))	xed	y	#{$&}-#{$1}	ed-d
+e(d$|c((a$|$)))	xec	y	#{$&}-#{$1}-#{$2}-#{$3}	ec-c--
+e(d$|c((a$|$)))	xeca	y	#{$&}-#{$1}-#{$2}-#{$3}	eca-ca-a-a
+e(d$|c((a$|$)))	xed	y	#{$&}-#{$1}	ed-d
+e(d$|c((a$|b$)))	feca	y	#{$&}-#{$1}-#{$2}-#{$3}	eca-ca-a-a
+e(d$|c((a$|b$)))	fecb	y	#{$&}-#{$1}-#{$2}-#{$3}	ecb-cb-b-b
+e(d$|c((a$|b$)))	fed	y	#{$&}-#{$1}	ed-d
+e(d$|c((a|b)$))	feca	y	#{$&}-#{$1}-#{$2}-#{$3}	eca-ca-a-a
+e(d$|c((a|b)$))	fecb	y	#{$&}-#{$1}-#{$2}-#{$3}	ecb-cb-b-b
+e(d$|c((a|b)$))	fed	y	#{$&}-#{$1}	ed-d
+e(d$|c((a|b))$)	feca	y	#{$&}-#{$1}-#{$2}-#{$3}	eca-ca-a-a
+e(d$|c((a|b))$)	fecb	y	#{$&}-#{$1}-#{$2}-#{$3}	ecb-cb-b-b
+e(d$|c((a|b))$)	fed	y	#{$&}-#{$1}	ed-d
+e(d$|c((a|b)))$	feca	y	#{$&}-#{$1}-#{$2}-#{$3}	eca-ca-a-a
+e(d$|c((a|b)))$	fecb	y	#{$&}-#{$1}-#{$2}-#{$3}	ecb-cb-b-b
+e(d$|c((a|b)))$	fed	y	#{$&}-#{$1}	ed-d
+ed$|(c(($|b$)))	xc	y	#{$&}-#{$1}-#{$2}-#{$3}	c-c--
+ed$|(c(($|b$)))	xcb	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+ed$|(c(($|b$)))	xed	y	#{$&}	ed
+ed$|(c((a$|$)))	xc	y	#{$&}-#{$1}-#{$2}-#{$3}	c-c--
+ed$|(c((a$|$)))	xca	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+ed$|(c((a$|$)))	xed	y	#{$&}	ed
+ed$|(c((a$|b$)))	fca	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+ed$|(c((a$|b$)))	fcb	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+ed$|(c((a$|b$)))	fed	y	#{$&}	ed
+ed$|(c((a|b)$))	fca	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+ed$|(c((a|b)$))	fcb	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+ed$|(c((a|b)$))	fed	y	#{$&}	ed
+ed$|(c((a|b))$)	fca	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+ed$|(c((a|b))$)	fcb	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+ed$|(c((a|b))$)	fed	y	#{$&}	ed
+ed$|(c((a|b)))$	fca	y	#{$&}-#{$1}-#{$2}-#{$3}	ca-ca-a-a
+ed$|(c((a|b)))$	fcb	y	#{$&}-#{$1}-#{$2}-#{$3}	cb-cb-b-b
+ed$|(c((a|b)))$	fed	y	#{$&}	ed
+foo.bart	foo.bart	y	-	-
+foo\w*\d{4}baz	foobar1234baz	y	#{$&}	foobar1234baz
+i am a green (giant|man|martian)	i am a green man	y	#{$&}-#{$1}-	i am a green man-man-
+multiple words	multiple words, yeah	y	#{$&}	multiple words
+multiple words	multiple words, yeah	y	#{$&}-	multiple words-
+multiple words of text	uh-uh	n	-	-	
+multiple words of text	uh-uh	n	-	-
+round\(((?>[^()]+))\)	_I(round(xs * sz),1)	y	#{$1}	xs * sz
+tt+$	xxxtt	y	-	-
+w(?# comment 1)xy(?# comment 2)z	wxyz	y	#{$&}	wxyz
+x(~~)*(?:(?:F)?)?	x~~	y	-	-
+x\B	xyz	y	-	-
+x\b	xyz	n	-	-
+z(\w\s+(?:\w\s+\w)+)z	za   b bc   cd     dz	y	#{$&}-#{$1}-	za   b bc   cd     dz-a   b bc   cd     d-
+z-a	a	n	-	-
+z\B	xyz	n	-	-

@@ -1,0 +1,566 @@
+2003-07-01  Ryan Davis <ryand-ruby@zenspider.com> and Eric Hodel <drbrain@segment7.net>
+
+	* ALL: First pass port to metaruby, getting TestZArray to pass 4 tests (kinda).
+
+2003-04-12  Tanaka Akira  <akr@m17n.org>
+
+	* language/regexp.test: fix error message on `([a-[:digit:]]+)'.
+
+2003-03-21  Tanaka Akira  <akr@m17n.org>
+
+	* builtin/notTestProcess.rb (TestProcess#wait_child): fix float
+	constant `.1'.
+	(TestProcess#test_s_setpgid): ditto.
+
+2003-03-16  Tanaka Akira  <akr@m17n.org>
+
+	* builtin/ArrayBase.rb, builtin/HashBase.rb, builtin/StringBase.rb, 
+	  builtin/TestFloat.rb, builtin/TestKernel.rb, builtin/TestMarshal.rb,
+	  builtin/TestObjectSpace.rb, builtin/TestStruct.rb,
+	  builtin/TestSymbol.rb, builtin/TestTime.rb: use `__id__' instead of
+	  `id' method to avoid warnings.
+
+	* builtin/TestIO.rb (test_s_popen_spawn): specify pid to wait.
+	  (test_pos=): result of assignment is value of rhs.
+
+2003-02-12  Nobuyoshi Nakada  <nobu.nokada@softhome.net>
+
+	* builtin/TestFile.rb (TestFile::test_s_basename): SUSv3 compliant.
+
+	* builtin/TestFile.rb (TestFile::test_s_dirname): ditto.
+
+	* builtin/TestFile.rb (TestFile::test_s_expand_path): ditto.
+
+2003-02-07  Nobuyoshi Nakada  <nobu.nokada@softhome.net>
+
+	* builtin/TestFloat.rb (TestFloat::test_DIV): no .<digit> floating
+	  literal anymore.
+
+	* builtin/TestThread.rb (TestThread::_wait, TestThread::test_join,
+	  TestThread::test_s_kill): ditto
+
+	* builtin/TestTime.rb (TestTime::test_eql, TestTime::test_hash):
+	  ditto.
+
+2003-01-22  Dave Thomas  <Dave@Thomases.com>
+
+	* rubicon.rb, TestDir.rb, TestKernel.rb: patches fron Nathaniel to
+	tidy up output, particularly under Windows.
+
+2002-12-30  Nobuyoshi Nakada  <nobu.nokada@softhome.net>
+
+	* builtin/TestKernel.rb (TestKernel::test_methods,
+	  TestKernel::test_s_set_trace_func): follow recent changes.
+
+	* language/TestEval.rb (EvTest): ditto.
+
+2002-10-27  Dave Thomas  <Dave@Thomases.com>
+
+	* language/TestEval.rb: Patch from  Anders Bengtsson to remove
+	dependency on support for Kernel#binding (presumably to allow
+	JRuby tests to run).
+
+2002-10-07  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* replace "type" by "class" since Object#type is deprecated in
+	  1.7.3.
+
+2002-09-28  Tanaka Akira  <akr@m17n.org>
+
+	* rubicon.rb: recognize HP-UX to treat it as an Unix variant.
+
+	* builtin/TestIO.rb (test_pid): Use `exec' trick for all Unix
+	variants.
+
+	* builtin/TestFileTest.rb (TestFileTest::test_test): Use 02755 instead
+	of 02644 for setgid bit because setgid bit without execution bit means
+	mandatory locking for Solaris and it fails on NFS.
+	(TestFileTest::test_test): /dev/tty is symlink on Solaris.
+
+	* builtin/TestFloat.rb: Use 0.0/0.0 instead of Math::log(-1.0) to
+	generate NaN because Math::log(-1.0) returns -Infinity instead of NaN
+	on Solaris.
+
+	* builtin/TestThreadGroup.rb (test_list): Avoid deadlock.
+
+2002-09-22  Nobuyoshi Nakada  <nobu.nokada@softhome.net>
+
+	* builtin/TestThread.rb (TestThread::test_abort_on_exception): get
+	  rid of error message sent to stderr, and confirm whether exact
+	  exception was raised from the message.
+
+	* builtin/TestThread.rb (TestThread::test_s_abort_on_exception):
+	  ditto.
+
+	* builtin/TestThread.rb (TestThread::test_safe_level): not depend
+	  on context switch order.
+
+	* builtin/TestThread.rb (TestThread::MyException::test_timeout):
+	  added for optional argument to Thread#join.
+
+2002-08-28  Anders Bengtsson <ndrsbngtssn@yahoo.se>
+
+	* rubicon_tests.rb: Remove the need for Dir.chdir, as JRuby
+	doesn't support it.
+
+2002-08-21  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/StringBase.rb: Booker Bense supplied patch to fix split!
+	behavior.
+
+2002-06-28  Nobuyoshi Nakada  <nobu.nokada@softhome.net>
+
+	* builtin/TestIO.rb (TestIO::test_ungetc): use `?\s' for white
+	  space instead of `?<whitespace>'.
+
+2002-05-30  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestRange.rb (TestRange::test_length): 1.7 no longer
+	  provides Range#length.
+
+	* builtin/TestRange.rb (TestRange::test_size): check should be
+	  done for "size", not "length".
+
+2002-05-21  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestModule.rb (TestModule::test_CMP): <=> comparison
+	  between unrelated classes/modules does not raise an exception on
+	  1.7 now.
+
+2002-03-26  Nobuyoshi Nakada  <nobu.nakada@nifty.ne.jp>
+
+	* builtin/TestIO.rb (TestIO::test_gets_para): IO#gets in paragraph
+	  mode.
+
+2002-03-21  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestDir.rb: Get working under Win2k, based on a patch
+	from Chris Morris
+
+2002-03-10  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestEnumerable.rb (TestEnumerable::test_each_with_index): 
+	  2 tests removed: each_with_index returns self in the latest CVS.
+
+2002-03-08  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestKernel.rb (TestKernel::test_extend): should handle
+	  extend order change.
+
+2002-02-26  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestMarshal.rb (TestMarshal::test_s_dump_load3): new
+	  Marshal.load calls proc for Fixnums.
+
+2002-01-30  Nobuyoshi Nakada  <nobu.nakada@nifty.ne.jp>
+
+	* builtin/TestKanjiIndex.rb: new tests.
+
+2002-01-29  Nobuyoshi Nakada  <nobu.nakada@nifty.ne.jp>
+
+	* builtin/TestFile.rb (TestFile::test_s_expand_path): avoid
+	  warnings in 1.7.
+
+	* builtin/TestKernel.rb (TestKernel::test_s_open1): 1.7 feature.
+
+	* language/TestBlocksProcs.rb (TestBlocksProcs::testYield): ditto.
+
+	* language/TestFloats.rb (TestFloats::test_number_to_string):
+	  strict number check.
+
+	* language/TestFloats.rb (TestFloats::test_malformed): ditto.
+
+	* language/TestFloats.rb (TestFloats::test_string_to_number): ditto.
+
+2002-01-23  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestModule.rb (TestModule::test_CMP): Module#<=> between
+	  unrelated modules now raises exception in 1.7
+
+2002-01-21  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestKernel.rb: should not close io twice.
+
+2002-01-04  Chad Fowler  <chadfowler@chadfowler.com>
+
+	* rubicon.rb: Change VersionNumber class to Version and implemented 
+        some class methods to replace use of $rubyVersion global.  
+        (The #less_than stuff can probably still use some refactoring).
+
+	* builtin/HashBase.rb,builtin/ArrayBase.rb: Added test for #select.  
+        Removed duplication in test_indices and test_indexes, using same 
+        code for test_select.  Not testing deprecated test_ind*es methods 
+        in >=1.7.2 
+  
+        * builtin/*, language/*: All references to $rubyVersion replaced with
+        Version class methods.
+	
+2001-12-27  Dave Thomas  <Dave@Thomases.com>
+
+	* language/TestStrings.rb: Tests for string literals from Matt Armstrong
+
+	* builtin/StringBase.rb: Additional tests in #sub from Matt
+	Armstrong.
+	
+
+2001-11-27  Chad Fowler  <chadfowler@chadfowler.com>
+
+	* language/TestFloats.rb: fixed tests to work on Win32
+
+	* builtin/TestFile__Stat.rb: Guarded known Win32 problems that
+	were previously exposed during Cygwin testing.
+
+	* builtin/TestFile.rb: Guarded known Win32 problems that were
+	previously exposed during Cygwin testing.
+
+	* builtin/TestFile.rb: Windows doesn't like pre-18000-second dates
+	on its files.  Changed the tests to accomodate.
+
+	* builtin/TestFloat.rb: fixed tests to work on Win32.
+
+	* builtin/TestTime.rb: Win32 fixes for asctime and ctime.
+
+2001-11-26  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestFile.rb: Patches from Patrick Cheng for basename and
+	dirname to support ALT_SEPARATOR.
+	
+
+2001-11-19  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestIO.rb, Kernel: Array separator behavior changes back.
+
+
+2001-11-25  Dave Thomas  <Dave@Thomases.com>
+
+	* GNUmakefile: added. Now 'make' picks up GNUmakefile, and nmake
+	the Makefile.
+	
+	* util\checkstat.c (main): Modify to compile with MSVC
+	
+	* builtin\TestIO.rb: MsWin32 doesn't support bi-directional pipes,
+	so start removinh them from the tests.
+
+2001-11-18  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestFile.rb: Chad: changed line length tests to alkklow
+	for \r\n on any WindowsNative platform
+
+	* builtin/TestDir.rb: Chad: added missing Dir#close's, and added a
+	test to illustrate a cygwin known problem.
+
+2001-11-16  Dave Thomas  <Dave@Thomases.com>
+
+	* Makefile: Avoid adding an empty tarball to the tarball when I
+	say 'make tar' :)
+
+	* builtin/TestFile.rb, TestKernel: Cygwin can't support modes when
+	creating fles, so flag these two tests as known problems
+
+	* rubicon.rb: Add support for 'known_problem'
+
+2001-11-15  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/FileInfoTest.rb: If run in a directory with g+s, the
+	Stat tests for gid and uid fail, so explicitly set the file's
+	owner. I'm worried this might not port to all systems: we'll see.
+
+	* builtin/TestFile__Stat.rb, TestFileTest: I'd never tried running
+	Rubicon as root!
+
+2001-11-14  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestThreadGroup.rb: Tidy up spawned threads. Not doing
+	so was hanging dblack machine in some subsequent I/O tests (which
+	seems like a potential bug it its own right, but not one I can
+	track down).
+
+	* builtin/TestFile.rb, TestKernel.rb: Include umask when checking
+	file permissions.
+
+2001-11-13  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestIO.rb, TestKernel.rb: change 'puts' test: as of
+	1.7.2, arrays no longer have their contents joined by "\n" on
+	output. 
+
+2001-11-11  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestIO.rb: Can't test /dev/tty when run from cron.
+
+	* language/TestLoopStuff.rb: Fix warnings about bare regex's in
+	booleans under 1.7
+
+2001-11-11  Tanaka Akira <akr@m17n.org>
+
+	* language/TestRegularExpressions.rb, builtin/TestFile, TestIO:
+	arious fixes for Solaris, plus remove spurious tracing line Dave
+	had left in Regexp stuff.
+
+2001-11-10  Dave Thomas  <Dave@Thomases.com>
+
+	* language/TestRegularExpressions.rb: Guy Decoux supplied a total
+	of almost 3,000 regular expression tests, based on various P*
+	language ones.
+
+	* builtin/ArrayBase.rb: Matt Armstrong submitted patches for
+	indexing past the end of an array.
+
+2001-11-09  Dave Thomas  <Dave@Thomases.com>
+
+	* Various: Add support for generating the results in XML format,
+	and start working on getting the tests more consistent on the
+	Windows platforms.
+
+2001-11-04  Masaki Suketa <masaki.suketa@nifty.ne.jp>
+
+	* StringBase, TestClass, TestFile, TestMath: found various tests
+	which used assert(....) instead of asert_equal etc...
+
+2001-11-02    <dave@pragmaticprogrammer.com>
+
+	* Various: Start getting tests to run under MsWin32. Add
+	better support for OS dependent blocks of code.
+
+2001-10-25  Dave Thomas  <Dave@Thomases.com>
+
+	* Various: Fixes to remove implicit dependence on order of tests
+	(found when NT ran under Lapidary, which uses different order to
+	runit).
+
+2001-10-25  Nobu Nakad <nobu.nokada@softhome.net>
+	* language/TestFlip.rb: Added. Test .. and ... operators
+
+	* AllTests.rb: Invoking without arguments, run testsuits under
+	rubicon's directory, not current directory.
+
+	* builtin/StringBase.rb: Tests for String#[re] bug fix.
+
+	* builtin/TestFile.rb: On linux with devfsd, /dev/fd0 is not a
+	block device.
+
+	* builtin/TestKernel.rb: Allocation framework changed at 1.7.1
+	2001-10-16. Alias of global variable improved (DT: only on 1.7)
+
+	* builtin/TestModulePrivate.rb: Module#instance_methods doesn't
+	preserve the order.
+
+	* builtin/TestRegexp.rb: Duped Regexp's ID differs from original's
+	one.
+
+	* builtin/TestThread.rb: Should wait until t1 wake up.
+
+	* language/TestScope.rb: Tests for special variables($_, $~ and so
+	on) and thread (modified by DT: only for >= 1.7)
+
+2001-08-02  Dave Thomas  <Dave@Thomases.com>
+
+	* rubicon.rb (runChild): Fix typo (thanks to Yamada-san for
+	finding it)
+
+2001-07-27    <dave@pragmaticprogrammer.com>
+
+	* builtin\StringBase.rb: Use of $= is deprecated as of 1.7.1
+
+	* builtin\TestIO.rb: Under Windows, the CR is stripped out of
+	lines we read, so we can't simply add the length of the input to
+	arrive at the file position. Putting files into binary mode fixes
+	this.
+
+	* builtin\TestFixnum.rb: On my windows box, 0**-1 returns -Infinity,
+	rather that +Infinity. Who cares as long as it's infinite... :)
+
+	* builtin\TestStruct__Tms.rb (TimesClass): Under Windows, burning
+	CPU by creating and deleting a directory 5,000 times takes forever
+	and is effectively non-interruptable. Change it to loop for no
+	more than three seconds. Also start removing the Cygwin
+	unsupported stuff.
+
+2001-07-27    <dave@pragmaticprogrammer.com>
+	Start getting stuff to work under Windows. First we get Cygwin working,
+	and then we attack the MSVC version.
+	
+	* builtin\TestFile.rb: Can't test fifo's under Windows.
+	File sizes of files containing newlines are different under DOS.
+
+	* builtin\TestDir.rb: Need to close the directory at the end of
+	tests in order to allow Windows to delete it.
+
+	* builtin\TestTime.rb: Under Windows the clock resolution means
+	that we need to insert a sleep to have two consecutive Time.now's
+	be different.
+
+	* builtin\TestKernel.rb: Cygwin apparently doesn't honor a signal disposition 
+	of 'IGNORE', so skip the test under test_s_trap
+
+2001-07-25  Hugh Sasse
+
+	* FileTest.rb: Add File.join tests in light of ruby-talk:18512
+
+2001-07-23  Patrick Cheng <pcyc@hotmail.com>
+
+	* rubicon.rb: Make files r/w before deleting.
+
+2001-06-11  Dave Thomas  <Dave@Thomases.com>
+
+	* Fixed a couple of warnings resulting from running tests in one
+	pass. 
+
+	* Makefile: changed default target to run library and builtins
+	tests in a single pass, so we now get just one summary table
+	
+	
+
+2001-06-10  Dave Thomas  <Dave@Thomases.com>
+
+	* language/*: added all the tests from the standard test.rb
+	file. Most of these go into various files in the language
+	subdirectory, but some are class specific. The latter go into the
+	appropriate files in builtins
+
+2001-06-05  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestModule.rb: list of constants should be sorted before
+	  comparison.
+
+2001-04-23  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestFixnum.rb: -1 (in fact, negative integers in
+	  general) should be considered as infinite sequence of 1 bits,
+	  so that checkBits() test on -1 should be removed.
+
+2001-03-28  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestTime.rb: Time.zone now returns 'UTC' rather than 'GMT'
+
+	* builtin/TestStruct__Tms.rb,TestTime,TestProcess: the .times
+ 	method moved to Process in 1.7
+
+2001-03-20  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestMarshal.rb: Add test for Bignum marshalling.
+
+2001-02-19  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/StringBase.rb: I finally agreed that "FooBar"[6,2]
+	  returning nil is a bug (line 17).
+
+2001-02-06  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/ArrayBase.rb: Split out testing of Array-like classes
+	from Array itself. This allows Matju to test his ArrayMixin
+	classes using rubicon.
+
+2001-02-04  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestKernel.rb: Remove begin/end from .id tests: the
+	bug's been fixed.
+
+2001-02-03  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestProc.rb: #arity values changes at 1.6.2
+
+	* builtin/TestArray.rb: Behavior of sort! changes at 1.7
+
+2001-01-18  Dave Thomas  <Dave@Thomases.com>
+
+	* language/TestFloats.rb: Add Aleksi's new tests (thanks).
+
+2001-01-17  Dave Thomas  <Dave@Thomases.com>
+
+	* Makefile (test): Allow name of interpreter to be overridded, so
+	that we can test multiple Ruby's on the same box
+
+2001-01-17  Yukihiro Matsumoto  <matz@ruby-lang.org>
+
+	* builtin/TestKernel.rb: replace NotImplementError by
+	  NotImplementedError. 
+
+2001-01-13  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/many: Old tests had a bug where they'd try to taint
+	frozen objects. Changed the order to taint first, then freeze.
+
+2001-01-11  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestBignum.rb: Fixes to operators used for === and eql?
+	(Hugh Sasse)
+
+	* builtin/TestFixnum.rb: Replaced an assert_equal with
+	assert_flequal, and added a description to MOD (Hugh Sasse).
+
+2001-01-10  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestString.rb: Added patches to test .dup behavior from
+	Hugh Sasse.
+
+	* builtin/TestFloat.rb: Added a number of patches from Hugh Sasse.
+
+2000-11-19  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestArray.rb: (test_sort!) The test for sort! was wrong: it shouldn't 
+	return nil for 0 or 1 length arrays (thanks to Ryan Davis)
+
+2000-11-16  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestTime.rb: (test_isdst) Don't do isdst check unless in the US
+	(anyone got any ideas on how to test this globally)?
+
+2000-11-16  Yukihiro Matsumoto <matz@zetabits.com>
+
+	* builtin/TestThread.rb: (test_run) Fixed a timing problem.
+
+2000-10-28  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestObjectSpace.rb: (test_s_finalizers) Brian Feldman
+	added test.
+
+2000-10-23  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestKernel.rb (test_s_trap): Fix a race condition.
+
+	* builtin/TestDir.rb: Remove dependence on order of entries
+	returned by directory operations.
+
+	* builtin/TestIO.rb: Brian Feldman: Make exception returned by
+ 	File#pos=-1 and seek(-1) less system specific. Use .read, not
+ 	.sysread, in reopen tests.
+
+	* builtin/TestFile__Stat.rb: Brian Feldman: make /dev/fd0 tests
+	Linux specific. Make group tests (gid, grpowned) Linux specific.
+	Check stickiness using a directory, not file.
+
+	* builtin/TestFileTest.rb: Brian Feldman: sticky test now checks a 
+	directory for portability. Make /dev/fd0 Linux specific. Make
+	grpowned and /dev/fd0 tests Linux specific
+
+	* rubicon.rb: Add classification routines for operating systems 
+
+	* builtin/TestArray.rb: Brian Feldman/Aleksi Niemlä: retain test
+	for pre 1.6.2 push behavior.
+
+	* rubicon.rb (tidyup): Brian Feldman: delete directories as well
+	as files out of _test (used by above).
+
+	* util/checkstat.c (main): Brian Feldman: Make checkstat more
+	portable to systems where the fields in a struct stat don't fit in 
+	to an int.
+
+2000-10-20  Dave Thomas  <Dave@Thomases.com>
+
+	* builtin/TestArray.rb: Aleksi again. Add test for array.push with 
+	no argument.
+
+	* builtin/TestTime.rb: Thanks to Aleksi for this one. We can't
+	create local times of 1970,1,1,0,0,0 when we're east of Greenwich, 
+	so I hacked the dates forward a year. Also changed isdst to remove 
+	checks for US changes from DST to standard time when not in the
+	US, and tidied layout a tad
+
+	* rubicon.rb (VersionNumber): Add a class to encapsulate Ruby versions
+
+	* builtin/TestFile.rb: create local socket, rather than relying on 
+	/tmp/.X11 stuff
+
+	* builtin/TestFileTest.rb: ditto
+

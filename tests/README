@@ -1,0 +1,170 @@
+This is 'rubicon', a test suite for Ruby and it's libraries.
+
+
+Warning:
+========
+
+This software is pre-alpha. It works on my box, and that's all I
+know ;-)  Be warned that you're entering the unknown here.
+
+
+Prerequisites:
+==============
+
+  1. These tests were written for Ruby 1.6 and later.
+
+  2. You'll need RubyUnit installed. You need 0.2.2 as a minimum.
+     RubyUnit is available from the RAA, or directly at
+
+         http://homepage1.nifty.com/markey/ruby/rubyunit/rubyunit_e.html
+
+  3. We're slowly getting the tests to run on Windows boxes, but it's
+     a struggle. All help gratefully received.
+
+
+Installation:
+=============
+
+  You've done it. Simply untar the files into a convenient directory.
+  (If you aren't actually reading this from your copy of the
+  distribution, then see "Contacts:", below.)
+
+
+Structure:
+==========
+
+   Eventually, rubicon will test all of Ruby: the core interpreter,
+   the libraries, and various add on modules.  For now, though, we
+   have tests for the built-in libraries, and some for the language
+   features. The tests for the builtins are in the subdirectory
+   'builtin', and those for the language are in 'language'. Over time, 
+   different directories will be added with additional sets of tests
+   (networking, for example).
+
+   In order to run the tests, we need a small amount of support code,
+   written in C. This is in the 'util' directory.
+
+Running:
+========
+
+   To run all the tests, simply issue:
+
+      make
+
+   at the top level.
+
+
+   To run all the builtin tests, cd to the 'builtin' directory and
+   issue:
+
+      ruby AllBuiltinTests.rb
+
+   To run the tests for a particular builtin class, go to the builtin
+   directory and issue:
+
+      ruby Test<classname>.rb
+
+   for example
+
+      ruby TestBignum.rb
+
+
+   To run an individual test for a particular class, put its name as a 
+   parameter
+
+       ruby TestBignum.rb test_OR
+
+
+
+Submitting Results to the Rubicon Result Repository
+===================================================
+
+    (experimental service)
+
+    http://www.rubygarden.org/triple-r/index.html is a database which
+    stores Rubicon results. It welcomes all results, but we're
+    particularly interested in Ruby version/architecture combinations
+    we don't yet have.
+
+    To submit a result, stay in the top-level directory and do:
+
+
+       ruby AllTests.rb -op xml | ruby post.rb
+
+    Eventually we'll tidy this up.
+
+
+Changing:
+=========
+
+    Feel free to add tests and strengthen existing ones. I'd
+    appreciate context diffs of the changes. All I'd ask is that you
+    not add any version of system specific stuff without dropping me a 
+    line first: I've got some ideas of how to integrate this cleanly
+    which I'd like to talk through with folks.
+
+
+Environmental Tests:
+====================
+
+    Some tests depend on the environment in which they run. Guard
+    these with appropriate conditions:
+
+    - if your test depends on the Ruby version, using the Version class 
+      methods. Always passing in either a string or a range of strings in 
+      the form "1.6.2".   Version is defined in rubicon.rb.
+
+          Version.in("1.6.3".."1.6.6") do
+            # stuff that is meant to work in Ruby versions
+            # 1.6.3 to 1.6.6
+          end
+
+          Version.greater_than("1.6.2") do
+            # code that depends on ruby version greater than 1.6.2
+          end
+      
+
+    - if your test depends on the operating system type, use the
+      comparison classes. There's a class defined for each target
+      operating system and environment (for example, Linux has one
+      class, and Windows has MsWin32, Cygwin, and MinGW). These
+      classes define class methods to allow you to include and exclude
+      blocks of code depending on the OS that Rubicon is running
+      under.
+
+          MsWin32.only do
+            # stuff for MsWin only
+          end
+
+          Windows.or_variant do
+            # all Windows variants
+          end
+
+          Linux.dont do
+            # don't run this under Linux
+          end
+
+      Have a look near the top of rubicon.rb for details.
+
+
+Contacts:
+=========
+
+    Rubicon is available from the Ruby CVS repository:
+
+      $ cvs -d :pserver:anonymous@cvs.ruby-lang.org:/src login
+      (Logging in to anonymous@cvs.ruby-lang.org)
+      CVS password:  (anonymous)
+      $ cvs -z4 -d :pserver:anonymous@cvs.ruby-lang.org:/src co rubicon
+
+
+
+Regards
+
+
+Dave Thomas
+The Pragmatic Programmers, LLC
+
+      
+
+  

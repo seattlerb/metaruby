@@ -7,6 +7,7 @@ FILES = array.rb bignum.rb class.rb compar.rb dir.rb enum.rb error.rb eval.rb fi
 
 all: everything.rb
 	ruby -w everything.rb
+	ruby -w metaruby.rb
 
 everything.rb: $(FILES) Makefile port.rb
 	ruby -w tie-it-all-together.rb > everything.rb
