@@ -1,0 +1,35 @@
+#include "port.h"
+require 'port'
+# HACK	error = rb_define_class_under(rb_mErrno, name, rb_eSystemCallError);;
+# HACK	rb_define_const(error, "Errno", INT2NUM(n));
+    rb_eException   = rb_define_class("Exception", rb_cObject);
+    rb_define_singleton_method(rb_eException, "exception", rb_class_new_instance, -1);
+    rb_define_method(rb_eException, "exception", exc_exception, -1);
+    rb_define_method(rb_eException, "initialize", exc_initialize, -1);
+    rb_define_method(rb_eException, "to_s", exc_to_s, 0);
+    rb_define_method(rb_eException, "to_str", exc_to_s, 0);
+    rb_define_method(rb_eException, "message", exc_to_s, 0);
+    rb_define_method(rb_eException, "inspect", exc_inspect, 0);
+    rb_define_method(rb_eException, "backtrace", exc_backtrace, 0);
+    rb_define_method(rb_eException, "set_backtrace", exc_set_backtrace, 1);
+    rb_eSystemExit  = rb_define_class("SystemExit", rb_eException);
+    rb_eFatal  	    = rb_define_class("fatal", rb_eException);
+    rb_eInterrupt   = rb_define_class("Interrupt", rb_eException);
+    rb_eSignal      = rb_define_class("SignalException", rb_eException);
+    rb_eStandardError = rb_define_class("StandardError", rb_eException);
+    rb_eTypeError   = rb_define_class("TypeError", rb_eStandardError);
+    rb_eArgError    = rb_define_class("ArgumentError", rb_eStandardError);
+    rb_eIndexError  = rb_define_class("IndexError", rb_eStandardError);
+    rb_eRangeError  = rb_define_class("RangeError", rb_eStandardError);
+    rb_eScriptError = rb_define_class("ScriptError", rb_eException);
+    rb_eSyntaxError = rb_define_class("SyntaxError", rb_eScriptError);
+    rb_eNameError   = rb_define_class("NameError", rb_eScriptError);
+    rb_eLoadError   = rb_define_class("LoadError", rb_eScriptError);
+    rb_eNotImpError = rb_define_class("NotImplementedError", rb_eScriptError);
+    rb_define_global_const("NotImplementError", rb_eNotImpError.name.intern);
+    rb_eRuntimeError = rb_define_class("RuntimeError", rb_eStandardError);
+    rb_eSecurityError = rb_define_class("SecurityError", rb_eStandardError);
+    rb_eNoMemError = rb_define_class("NoMemoryError", rb_eException);
+    rb_eSystemCallError = rb_define_class("SystemCallError", rb_eStandardError);
+    rb_define_method(rb_eSystemCallError, "errno", syserr_errno, 0);
+    rb_mErrno = rb_define_module("Errno");
