@@ -4,8 +4,8 @@ require 'io'
 
     rb_mFileTest = rb_define_module("FileTest");
 
-# HACK    rb_define_module_function(rb_mFileTest, name, func, argc);
-# HACK    rb_define_singleton_method(rb_cFile, name, func, argc);
+# IGNORE    rb_define_module_function(rb_mFileTest, name, func, argc);
+# IGNORE    rb_define_singleton_method(rb_cFile, name, func, argc);
     rb_cFile = rb_define_class("File", rb_cIO);
     rb_define_singleton_method(rb_cFile, "stat",  rb_file_s_stat, 1);
     rb_define_singleton_method(rb_cFile, "lstat", rb_file_s_lstat, 1);
@@ -31,7 +31,7 @@ rb_define_const(rb_cFile, "Separator", File::SEPARATOR.to_s);
 rb_define_const(rb_cFile, "SEPARATOR", File::SEPARATOR.to_s);
     rb_define_singleton_method(rb_cFile, "split",  rb_file_s_split, 1);
     rb_define_singleton_method(rb_cFile, "join",   rb_file_s_join, -2);
-# HACK not on windoze    rb_define_const(rb_cFile, "ALT_SEPARATOR", "\\");
+# TODO make conditional on OS: windoze=rb_define_const(rb_cFile, "ALT_SEPARATOR", "\\");
     rb_define_const(rb_cFile, "ALT_SEPARATOR", Qnil);
 rb_define_const(rb_cFile, "PATH_SEPARATOR", File::PATH_SEPARATOR.to_s);
     rb_define_method(rb_cIO, "stat",  rb_io_stat, 0);
@@ -91,6 +91,6 @@ rb_define_const(rb_mFConst, "LOCK_NB", File::Constants::LOCK_NB);
     rb_define_method(rb_cStat, "setgid?",  rb_stat_sgid, 0);
     rb_define_method(rb_cStat, "sticky?",  rb_stat_sticky, 0);
 
-# HACK: brought over from io.rb to avoid circular references
+# NOTE: brought over from io.rb to avoid circular references
     rb_define_singleton_method(rb_cFile, "open",  rb_file_s_open, -1);
     rb_define_method(rb_cFile, "initialize",  rb_file_initialize, -1);

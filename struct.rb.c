@@ -1,12 +1,12 @@
 #include "port.h"
 require 'port'
-#	nstr = rb_define_class_under(klass, cname, klass);
-# HACK    rb_define_singleton_method(nstr, "new", struct_alloc, -1);
-# HACK    rb_define_singleton_method(nstr, "[]", struct_alloc, -1);
-# HACK    rb_define_singleton_method(nstr, "members", rb_struct_s_members, 0);
-# HACK	    rb_define_method_id(nstr, id, ref_func[i], 0);
-# HACK	    rb_define_method_id(nstr, id, rb_struct_ref, 0);
-# HACK	rb_define_method_id(nstr, rb_id_attrset(id), rb_struct_set, 1);
+# IGNORE	nstr = rb_define_class_under(klass, cname, klass);
+# IGNORE    rb_define_singleton_method(nstr, "new", struct_alloc, -1);
+# IGNORE    rb_define_singleton_method(nstr, "[]", struct_alloc, -1);
+# IGNORE    rb_define_singleton_method(nstr, "members", rb_struct_s_members, 0);
+	    rb_define_method_id(nstr, id, ref_func[i], 0);
+	    rb_define_method_id(nstr, id, rb_struct_ref, 0);
+	rb_define_method_id(nstr, rb_id_attrset(id), rb_struct_set, 1);
     rb_cStruct = rb_define_class("Struct", rb_cObject);
     rb_define_singleton_method(rb_cStruct, "new", rb_struct_s_def, -1);
     rb_define_method(rb_cStruct, "initialize", rb_struct_initialize, -2);

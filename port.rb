@@ -5,6 +5,16 @@ def toposort(x,hash,sofar=[])
   sofar
 end
 
+def zz_cleanup(val)
+  val = :nil if val.nil?
+  if val.is_a? Symbol then
+    val = val.to_s
+  elsif val.is_a? String then
+    val = "'#{val}'"
+  end
+  val
+end
+
 $zz_global_functions = []
 $zz_global_const = {}
 
@@ -54,9 +64,6 @@ class ZZAbstractKlass
   end
 
   def addConst(key, val)
-    val = val.to_s if val.is_a? Symbol
-    val = "'#{val}'" if val.is_a? String
-
     @consts[key] = val.to_s
   end
 
@@ -99,12 +106,14 @@ class ZZKlass < ZZAbstractKlass
     sk = @superklass ? "< #{@superklass.name}" : ""
     x = []
     x << "class #{@name} #{sk}"
+
+    x += (@consts.keys.map do |key| "  #{key} = #{@consts[key]}"; end).sort
+
     x += (@klassmethods.map do |x| x.inspect; end).sort
     x += (@privatemethods.map do |x| x.inspect; end).sort
     x += (@methods.map do |x| x.inspect; end).sort
 
-    x += (@consts.keys.map do |key| "#{key} = #{@consts[key]}"; end).sort
-# HACK    x += (@aliases.keys.map do |key| "#{key} = #{@consts[key]}"; end).sort
+    x += (@aliases.keys.map do |key| "  alias #{@aliases[key]} #{key}"; end).sort
 
     x += @innerclasses.map do |x| x.inspect; end
 
@@ -137,12 +146,14 @@ class ZZModule < ZZAbstractKlass
   def inspect
     x = []
     x << "module #{@name}"
+
+    x += (@consts.keys.map do |key| "  #{key} = #{@consts[key]}"; end).sort
+
     x += @klassmethods.map do |x| x.inspect; end
     x += @privatemethods.map do |x| x.inspect; end
     x += @methods.map do |x| x.inspect; end
 
-    x += (@consts.keys.map do |key| "#{key} = #{@consts[key]}"; end).sort
-# HACK    x += (@aliases.keys.map do |key| "#{key} = #{@consts[key]}"; end).sort
+    x += (@aliases.keys.map do |key| "  alias #{@aliases[key]} #{key}"; end).sort
 
     x += @innerclasses.map do |x| x.inspect; end
     x << "end"
@@ -224,22 +235,26 @@ def zz_define_alias(klass, old, new)
   klass.addAlias(old, new)
 end
 
+def zz_define_const(klass, name, val)
+  klass.addConst(name, zz_cleanup(val))
+end
+
 def zz_define_global_function(name, arity)
+  name = 'zz_' + name unless name =~ /\`/
+
   $zz_global_functions << ZZMethod.new(name, arity)
 end
 
 def zz_define_global_const(name, val)
-  if val.is_a? Symbol then
-    val = val.to_s
-  elsif val.is_a? String then
-    val = "'#{val}'"
-  end
+  val = zz_cleanup(val)
 
   $zz_global_const["Z" + name] = val
 end
 
-def zz_define_const(klass, name, val)
-  klass.addConst(name, val)
+def zz_define_variable(name, val)
+  val = zz_cleanup(val)
+
+  $zz_global_const[name] = val
 end
 
 ############################################################
@@ -262,7 +277,7 @@ def zz_define_class_variable(klass, name, val)
 end
 
 def zz_define_hooked_variable(name)
-# HACK  not_implemented_yet
+  not_implemented_yet
 end
 
 def zz_define_method_id(klass, name, arity)
@@ -278,11 +293,7 @@ def zz_define_protected_method(klass, name, arity)
 end
 
 def zz_define_readonly_variable(name, var)
-# HACK  not_implemented_yet
-end
-
-def zz_define_variable(name, var)
-# HACK  not_implemented_yet
+  not_implemented_yet
 end
 
 def zz_define_virtual_variable(name, getter, setter)
@@ -340,6 +351,10 @@ at_exit do
     next unless v =~ /^Z/
     puts k + " = " + v.to_s
   end
+
+  puts
+  puts "__END__"
+  puts
 
 end
 

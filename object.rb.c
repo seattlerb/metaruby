@@ -11,7 +11,7 @@ require 'port'
     rb_define_method(rb_mKernel, "eql?", rb_obj_equal, 1);
     rb_define_method(rb_mKernel, "hash", rb_obj_id, 0);
     rb_define_method(rb_mKernel, "id", rb_obj_id, 0);
-# HACK    rb_define_method(rb_mKernel, "__id__", rb_obj_id, 0);
+# IGNORE rb_define_method(rb_mKernel, "__id__", rb_obj_id, 0);
     rb_define_method(rb_mKernel, "type", rb_obj_class, 0);
     rb_define_method(rb_mKernel, "class", rb_obj_class, 0);
     rb_define_method(rb_mKernel, "clone", rb_obj_clone, 0);
@@ -93,7 +93,8 @@ rb_define_global_const("NIL", :NIL);
     rb_define_singleton_method(rb_cClass, "new", rb_class_s_new, -1);
     rb_define_singleton_method(rb_cClass, "inherited", rb_class_s_inherited, 1);
     rb_cData = rb_define_class("Data", rb_cObject);
-# HACK    rb_define_singleton_method(ruby_top_self, "to_s", main_to_s, 0);
+# IGNORE    rb_define_singleton_method(ruby_top_self, "to_s", main_to_s, 0);
+rb_define_global_function("to_s", main_to_s, 0);
     rb_cTrueClass = rb_define_class("TrueClass", rb_cObject);
     rb_define_method(rb_cTrueClass, "to_s", true_to_s, 0);
     rb_define_method(rb_cTrueClass, "&", true_and, 1);

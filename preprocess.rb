@@ -10,16 +10,8 @@ gsub!(/\bQnil\b/, 'NIL')
 gsub!(/\bQtrue\b/, 'TRUE')
 gsub!(/\bQfalse\b/, 'FALSE')
 
-if /zz_define_(module_id|class_id)/ then
+if /zz_define_((module|class|method)_id|(readonly|hooked|virtual)_variable)/ then
   $_ = "# IGNORE " + $_
-end
-
-if /zz_define_(hooked_variable|virtual_variable|readonly_variable)/ then
-  $_ = "# HACK " + $_
-end
-
-gsub!(/(zz_define_hooked_variable\(\"[^\"]+\").*/) do
-  $1 + ")"
 end
 
 # finally, strip all c function pointers out

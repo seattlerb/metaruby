@@ -3,7 +3,7 @@ require 'port'
 require 'object'
 require 'error'
 
-# HACK	rb_define_global_const("TOPLEVEL_BINDING", rb_f_binding(ruby_top_self));
+rb_define_global_const("TOPLEVEL_BINDING", :binding)
 		klass = rb_define_class_id(node->nd_cname, super);
 		module = rb_define_module_id(node->nd_cname);
     rb_define_virtual_variable("$@", errat_getter, errat_setter);
@@ -25,7 +25,7 @@ require 'error'
     rb_define_global_function("global_variables", rb_f_global_variables, 0);
     rb_define_global_function("local_variables", rb_f_local_variables, 0);
     rb_define_method(rb_mKernel, "send", rb_f_send, -1);
-# HACK    rb_define_method(rb_mKernel, "__send__", rb_f_send, -1);
+# IGNORE    rb_define_method(rb_mKernel, "__send__", rb_f_send, -1);
     rb_define_method(rb_mKernel, "instance_eval", rb_obj_instance_eval, -1);
     rb_define_private_method(rb_cModule, "append_features", rb_mod_append_features, 1);
     rb_define_private_method(rb_cModule, "extend_object", rb_mod_extend_object, 1);
@@ -45,9 +45,12 @@ require 'error'
     rb_define_private_method(rb_cModule, "define_method", rb_mod_define_method, -1);
     rb_define_singleton_method(rb_cModule, "nesting", rb_mod_nesting, 0);
     rb_define_singleton_method(rb_cModule, "constants", rb_mod_s_constants, 0);
-# HACK rb_define_singleton_method(ruby_top_self, "include", top_include, -1);
-# HACK rb_define_singleton_method(ruby_top_self, "public", top_public, -1);
-# HACK rb_define_singleton_method(ruby_top_self, "private", top_private, -1);
+# IGNORE rb_define_singleton_method(ruby_top_self, "include", top_include, -1);
+# IGNORE rb_define_singleton_method(ruby_top_self, "public", top_public, -1);
+# IGNORE rb_define_singleton_method(ruby_top_self, "private", top_private, -1);
+rb_define_global_function("include", top_include, -1);
+rb_define_global_function("public", top_public, -1);
+rb_define_global_function("private", top_private, -1);
     rb_define_method(rb_mKernel, "extend", rb_obj_extend, -1);
     rb_define_global_function("trace_var", rb_f_trace_var, -1);
     rb_define_global_function("untrace_var", rb_f_untrace_var, -1);

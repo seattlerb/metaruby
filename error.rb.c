@@ -1,7 +1,7 @@
 #include "port.h"
 require 'port'
-# HACK	error = rb_define_class_under(rb_mErrno, name, rb_eSystemCallError);;
-# HACK	rb_define_const(error, "Errno", INT2NUM(n));
+# IGNORE error = rb_define_class_under(rb_mErrno, name, rb_eSystemCallError);;
+# IGNORE rb_define_const(error, "Errno", INT2NUM(n));
     rb_eException   = rb_define_class("Exception", rb_cObject);
     rb_define_singleton_method(rb_eException, "exception", rb_class_new_instance, -1);
     rb_define_method(rb_eException, "exception", exc_exception, -1);

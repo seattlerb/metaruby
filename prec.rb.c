@@ -1,6 +1,6 @@
 #include "port.h"
 require 'port'
-# HACK    rb_define_singleton_method(include, "induced_from", prec_induced_from, 1);
+# IGNORE    rb_define_singleton_method(include, "induced_from", prec_induced_from, 1);
     rb_mPrecision = rb_define_module("Precision");
     rb_define_singleton_method(rb_mPrecision, "append_features", prec_append_features, 1);
     rb_define_method(rb_mPrecision, "prec", prec_prec, 1);
