@@ -4,6 +4,9 @@ require 'rubicon'
 #
 # Note - real testing of class semantics occurs in language stuff
 
+# TODO: until we get more implmentation and possibly a new parser,
+# these tests are invalid. I don't have a way to create ZClass
+# instances with subclasses at this time.
 
 class TestZClass < Rubicon::TestCase
 
@@ -51,9 +54,9 @@ class TestZClass < Rubicon::TestCase
     assert_same(ZClass, c.class)
     assert_same(Object, c.superclass)
 
-    c = ZClass.new(Fixnum)
+    c = ZClass.new(ZFixnum)
     assert_same(ZClass, c.class)
-    assert_same(Fixnum, c.superclass)
+    assert_same(ZFixnum, c.superclass)
   end
 
   def test_00_new_basic

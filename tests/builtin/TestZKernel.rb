@@ -4,8 +4,8 @@ require 'rubicon'
 class TestZKernel < Rubicon::TestCase
 
   def test_EQUAL # '=='
-    o1 = Object.new
-    o2 = Object.new
+    o1 = ZObject.new
+    o2 = ZObject.new
     assert(o1 == o1)
     assert(o2 == o2)
     assert(o1 != o2)
@@ -13,8 +13,8 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_MATCH # '=~'
-    o1 = Object.new
-    o2 = Object.new
+    o1 = ZObject.new
+    o2 = ZObject.new
     assert(!(o1 =~ o1))
     assert(!(o2 =~ o2))
     assert(o1 !~ o2)
@@ -22,8 +22,8 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_VERY_EQUAL # '==='
-    o1 = Object.new
-    o2 = Object.new
+    o1 = ZObject.new
+    o2 = ZObject.new
     assert(o1 === o1)
     assert(o2 === o2)
     assert(!(o1 === o2))
@@ -32,12 +32,12 @@ class TestZKernel < Rubicon::TestCase
   def test___id__
     # naive test - no 2 ids the same
     objs = []
-    ObjectSpace.each_object { |obj| objs << obj.__id__ }
+    ZObjectSpace.each_object { |obj| objs << obj.__id__ }
     objs.sort!
     0.upto(objs.size-2) {|i| assert(objs[i] != objs[i+1]) }
 
     assert_equal(1.__id__, (3-2).__id__)
-    assert_instance_of(Fixnum, 1.__id__)
+    assert_instance_of(ZFixnum, 1.__id__)
   end
 
   class SendTest
@@ -57,11 +57,11 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_class
-    assert_instance_of(Class, 1.class)
-    assert_equal(Fixnum, 1.class)
-    assert_equal(Class, TestZKernel.class)
-    assert_equal(Class, TestZKernel.class.class)
-    assert_equal(Module, ZEnumerable.class)
+    assert_instance_of(ZClass, 1.class)
+    assert_equal(ZFixnum, 1.class)
+    assert_equal(ZClass, TestZKernel.class)
+    assert_equal(ZClass, TestZKernel.class.class)
+    assert_equal(ZModule, ZEnumerable.class)
   end
 
   class CloneTest
@@ -76,7 +76,7 @@ class TestZKernel < Rubicon::TestCase
     assert(s1.str.__id__ == s2.str.__id__)
     assert(s1.__id__     != s2.__id__)
 
-    foo = Object.new
+    foo = ZObject.new
     def foo.test
       "test"
     end
@@ -128,16 +128,16 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_eql?
-    o1 = Object.new
-    o2 = Object.new
+    o1 = ZObject.new
+    o2 = ZObject.new
     assert(o1.eql?(o1))
     assert(o2.eql?(o2))
     assert(!(o1.eql?(o2)))
   end
 
   def test_equal?
-    o1 = Object.new
-    o2 = Object.new
+    o1 = ZObject.new
+    o2 = ZObject.new
     assert(o1.equal?(o1))
     assert(o2.equal?(o2))
     assert(!(o1.equal?(o2)))
@@ -212,7 +212,7 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_hash
-    assert_instance_of(Fixnum, "hello".hash)
+    assert_instance_of(ZFixnum, "hello".hash)
     s1 = "hello"
     s2 = "hello"
     assert(s1.__id__ != s2.__id__)
@@ -224,19 +224,19 @@ class TestZKernel < Rubicon::TestCase
 
   def test_id
     objs = []
-    ObjectSpace.each_object { |obj| objs << obj.__id__ }
+    ZObjectSpace.each_object { |obj| objs << obj.__id__ }
     s1 = objs.size
     assert_equal(s1, objs.uniq.size)
 
     assert_equal(1.__id__, (3-2).__id__)
-    assert_instance_of(Fixnum, 1.__id__)
+    assert_instance_of(ZFixnum, 1.__id__)
   end
 
   def test_inspect
-    assert_instance_of(String, 1.inspect)
-    assert_instance_of(String, /a/.inspect)
-    assert_instance_of(String, "hello".inspect)
-    assert_instance_of(String, self.inspect)
+    assert_instance_of(ZString, 1.inspect)
+    assert_instance_of(ZString, /a/.inspect)
+    assert_instance_of(ZString, "hello".inspect)
+    assert_instance_of(ZString, self.inspect)
   end
 
   def test_instance_eval
@@ -247,9 +247,9 @@ class TestZKernel < Rubicon::TestCase
 
   def test_instance_of?
     s = "hello"
-    assert(s.instance_of?(String))
-    assert(!s.instance_of?(Object))
-    assert(!s.instance_of?(Class))
+    assert(s.instance_of?(ZString))
+    assert(!s.instance_of?(ZObject))
+    assert(!s.instance_of?(ZClass))
     assert(self.instance_of?(TestZKernel))
   end
 
@@ -271,32 +271,32 @@ class TestZKernel < Rubicon::TestCase
 
   def test_is_a?
     s = "hello"
-    assert(s.is_a?(String))
-    assert(s.is_a?(Object))
-    assert(!s.is_a?(Class))
+    assert(s.is_a?(ZString))
+    assert(s.is_a?(ZObject))
+    assert(!s.is_a?(ZClass))
     assert(self.is_a?(ZTestKernel))
-    assert(ZTestKernel.is_a?(Class))
-    assert(ZTestKernel.is_a?(Module))
-    assert(ZTestKernel.is_a?(Object))
+    assert(ZTestKernel.is_a?(ZClass))
+    assert(ZTestKernel.is_a?(ZModule))
+    assert(ZTestKernel.is_a?(ZObject))
 
     a = []
     assert(a.is_a?(Array))
-    assert(a.is_a?(Enumerable))
+    assert(a.is_a?(ZEnumerable))
   end
 
   def test_kind_of?
     s = "hello"
-    assert(s.kind_of?(String))
-    assert(s.kind_of?(Object))
-    assert(!s.kind_of?(Class))
+    assert(s.kind_of?(ZString))
+    assert(s.kind_of?(ZObject))
+    assert(!s.kind_of?(ZClass))
     assert(self.kind_of?(ZTestKernel))
-    assert(ZTestKernel.kind_of?(Class))
-    assert(ZTestKernel.kind_of?(Module))
-    assert(ZTestKernel.kind_of?(Object))
+    assert(ZTestKernel.kind_of?(ZClass))
+    assert(ZTestKernel.kind_of?(ZModule))
+    assert(ZTestKernel.kind_of?(ZObject))
 
     a = []
     assert(a.kind_of?(Array))
-    assert(a.kind_of?(Enumerable))
+    assert(a.kind_of?(ZEnumerable))
   end
 
   def MethodTest1
@@ -352,7 +352,7 @@ class TestZKernel < Rubicon::TestCase
 
   def test_methods
     assert_set_equal(ZTestKernel.instance_methods(true), self.methods)
-    assert_set_equal(%w(one three four)  + Object.instance_methods(true), 
+    assert_set_equal(%w(one three four)  + ZObject.instance_methods(true), 
         MethodsTest.new.methods)
   end
 
@@ -375,18 +375,18 @@ class TestZKernel < Rubicon::TestCase
     end
 
   def test_private_methods
-    assert_set_equal(%w(two six) + Object.new.private_methods,
+    assert_set_equal(%w(two six) + ZObject.new.private_methods,
                   PrivateMethods.new.private_methods)
   end
 
   def test_protected_methods
-    assert_set_equal(%w(three seven) + Object.new.protected_methods,
+    assert_set_equal(%w(three seven) + ZObject.new.protected_methods,
                   PrivateMethods.new.protected_methods)
   end
 
   def test_public_methods
     assert_set_equal(ZTestKernel.instance_methods(true), self.public_methods)
-    assert_set_equal(%w(one four)  + Object.instance_methods(true), 
+    assert_set_equal(%w(one four)  + ZObject.instance_methods(true), 
         MethodsTest.new.public_methods)
   end
 
@@ -447,21 +447,21 @@ class TestZKernel < Rubicon::TestCase
 
   def test_to_a
     Version.less_than("1.7.2") do
-      o = Object.new
+      o = ZObject.new
       assert_equal([o], o.to_a)   # rest tested in individual classes
     end
   end
 
   def test_to_s
-    o = Object.new
-    assert_match(o.to_s, /^#<Object:0x[0-9a-f]+>/)
+    o = ZObject.new
+    assert_match(o.to_s, /^#<ZObject:0x[0-9a-f]+>/)
   end
 
   def test_type
-    assert_instance_of(Class, self.class)
+    assert_instance_of(ZClass, self.class)
     assert_equal(ZTestKernel, self.class)
-    assert_equal(String, "hello".class)
-    assert_equal(Bignum, (10**40).class)
+    assert_equal(ZString, "hello".class)
+    assert_equal(ZBignum, (10**40).class)
   end
 
   def test_untaint
@@ -510,8 +510,8 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_s_Integer
-    assert_instance_of(Fixnum, Integer(1))
-    assert_instance_of(Bignum, Integer(10**30))
+    assert_instance_of(ZFixnum, Integer(1))
+    assert_instance_of(ZBignum, Integer(10**30))
     assert_equal(123,    Integer(123.99))
     assert_equal(-123,   Integer(-123.99))
     a = Integer(1.0e30) - 10**30
@@ -520,11 +520,11 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_s_String
-    assert_instance_of(String, String(123))
-    assert_equal("123", String(123))
-    assert_equal("123.45", String(123.45))
-    assert_equal("123",    String([1, 2, 3]))
-    assert_equal("Hello",  String(Caster.new))
+    assert_instance_of(ZString, ZString(123))
+    assert_equal("123", ZString(123))
+    assert_equal("123.45", ZString(123.45))
+    assert_equal("123",    ZString([1, 2, 3]))
+    assert_equal("Hello",  ZString(Caster.new))
   end
 
   def test_s_BACKTICK
@@ -573,7 +573,7 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_s_autoload
-    File.open("_dummy.rb", "w") do |f|
+    ZFile.open("_dummy.rb", "w") do |f|
      f.print <<-EOM
       module Module_Test
         VAL = 123
@@ -585,7 +585,7 @@ class TestZKernel < Rubicon::TestCase
     assert_not_nil(defined? Module_Test::VAL)
     assert_equal(123, Module_Test::VAL)
     assert($".include?("./_dummy.rb"))#"
-    File.delete("./_dummy.rb")
+    ZFile.delete("./_dummy.rb")
   end
 
   def bindproc(val)
@@ -782,7 +782,7 @@ class TestZKernel < Rubicon::TestCase
 
     ensure
       tf.close(true)
-      File.unlink "xyzzy.dat" if p
+      ZFile.unlink "xyzzy.dat" if p
     end
 
   end
@@ -887,30 +887,30 @@ class TestZKernel < Rubicon::TestCase
     def test_s_fork
       f = fork
       if f.nil?
-	File.open("_pid", "w") {|f| f.puts $$}
+	ZFile.open("_pid", "w") {|f| f.puts $$}
 	exit 99
       end
       begin
 	Process.wait
 	assert_equal(99<<8, $?)
-	File.open("_pid") do |file|
+	ZFile.open("_pid") do |file|
 	  assert_equal(file.gets.to_i, f)
 	end
       ensure
-	File.delete("_pid")
+	ZFile.delete("_pid")
       end
       
       f = fork do
-	File.open("_pid", "w") {|f| f.puts $$}
+	ZFile.open("_pid", "w") {|f| f.puts $$}
       end
       begin
 	Process.wait
 	assert_equal(0<<8, $?)
-	File.open("_pid") do |file|
+	ZFile.open("_pid") do |file|
 	  assert_equal(file.gets.to_i, f)
 	end
       ensure
-	File.delete("_pid")
+	ZFile.delete("_pid")
       end
     end
   end
@@ -939,11 +939,11 @@ class TestZKernel < Rubicon::TestCase
 
   def setupFiles
     setupTestDir
-    File.open("_test/_file1", "w") do |f|
+    ZFile.open("_test/_file1", "w") do |f|
       f.puts "0: Line 1"
       f.puts "1: Line 2"
     end
-    File.open("_test/_file2", "w") do |f|
+    ZFile.open("_test/_file2", "w") do |f|
       f.puts "2: Line 1"
       f.puts "3: Line 2"
     end
@@ -1002,7 +1002,7 @@ class TestZKernel < Rubicon::TestCase
   def test_s_global_variables
     g1 = global_variables
     assert_instance_of(Array, g1)
-    assert_instance_of(String, g1[0])
+    assert_instance_of(ZString, g1[0])
     assert(!g1.include?("$fred"))
     eval "$fred = 1"
     g2 = global_variables
@@ -1083,7 +1083,7 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_s_load
-    File.open("_dummy_load.rb", "w") do |f|
+    ZFile.open("_dummy_load.rb", "w") do |f|
      f.print <<-EOM
       module Module_Load
         VAL = 234
@@ -1097,7 +1097,7 @@ class TestZKernel < Rubicon::TestCase
     assert(!$".include?("./_dummy_load.rb"))#"
 
     # Prove it's reloaded
-    File.open("_dummy_load.rb", "w") do |f|
+    ZFile.open("_dummy_load.rb", "w") do |f|
      f.print <<-EOM
       module Module_Load
         VAL1 = 456
@@ -1108,7 +1108,7 @@ class TestZKernel < Rubicon::TestCase
     assert_equal(456, Module_Load::VAL1)
 
     # check that the sandbox works
-    File.open("_dummy_load.rb", "w") do |f|
+    ZFile.open("_dummy_load.rb", "w") do |f|
      f.print <<-EOM
       GLOBAL_VAL = 789
       EOM
@@ -1118,7 +1118,7 @@ class TestZKernel < Rubicon::TestCase
     load("./_dummy_load.rb", false)
     assert_not_nil(defined? GLOBAL_VAL)
     assert_equal(789, GLOBAL_VAL)
-    File.delete("./_dummy_load.rb")
+    ZFile.delete("./_dummy_load.rb")
   end
 
   def local_variable_test(c)
@@ -1150,29 +1150,29 @@ class TestZKernel < Rubicon::TestCase
     begin
       file1 = "_test/_file1"
       
-      assert_exception(Errno::ENOENT) { File.open("_gumby") }
+      assert_exception(ZErrno::ENOENT) { ZFile.open("_gumby") }
       
       # test block/non block forms
       
       f = open(file1)
       begin
-        assert_instance_of(File, f)
+        assert_instance_of(ZFile, f)
       ensure
         f.close
       end
       
-      assert_nil(open(file1) { |f| assert_equal(File, f.class)})
+      assert_nil(open(file1) { |f| assert_equal(ZFile, f.class)})
       
       # test modes
       
       modes = [
         %w( r w r+ w+ a a+ ),
-        [ File::RDONLY, 
-          File::WRONLY | File::CREAT,
-          File::RDWR,
-          File::RDWR   + File::TRUNC + File::CREAT,
-          File::WRONLY + File::APPEND + File::CREAT,
-          File::RDWR   + File::APPEND + File::CREAT
+        [ ZFile::RDONLY, 
+          ZFile::WRONLY | ZFile::CREAT,
+          ZFile::RDWR,
+          ZFile::RDWR   + ZFile::TRUNC + ZFile::CREAT,
+          ZFile::WRONLY + ZFile::APPEND + ZFile::CREAT,
+          ZFile::RDWR   + ZFile::APPEND + ZFile::CREAT
         ]]
 
       for modeset in modes
@@ -1184,7 +1184,7 @@ class TestZKernel < Rubicon::TestCase
         # file: empty
         open(file1, mode) { |f| 
           assert_nil(f.gets)
-          assert_exception(IOError) { f.puts "wombat" }
+          assert_exception(ZIOError) { f.puts "wombat" }
         }
         
         mode = modeset.shift      # "w"
@@ -1192,7 +1192,7 @@ class TestZKernel < Rubicon::TestCase
         # file: empty
         open(file1, mode) { |f| 
           assert_nil(f.puts("wombat"))
-          assert_exception(IOError) { f.gets }
+          assert_exception(ZIOError) { f.gets }
         }
         
         mode = modeset.shift      # "r+"
@@ -1221,7 +1221,7 @@ class TestZKernel < Rubicon::TestCase
         # file: koala
         open(file1, mode) { |f| 
           assert_nil(f.puts("wombat"))
-          assert_exception(IOError) { f.gets }
+          assert_exception(ZIOError) { f.gets }
         }
         
         mode = modeset.shift      # "a+"
@@ -1243,20 +1243,20 @@ class TestZKernel < Rubicon::TestCase
       
       open(filen, "w") {}
       begin
-        assert(File.exists?(filen))
+        assert(ZFile.exists?(filen))
       ensure
-        File.delete(filen)
+        ZFile.delete(filen)
       end
 
       Version.greater_or_equal("1.7") do
         open(filen, "w", 0444) {}
         begin
-          assert(File.exists?(filen))
+          assert(ZFile.exists?(filen))
           Cygwin.known_problem do
-            assert_equal(0444 & ~File.umask, File.stat(filen).mode & 0777)
+            assert_equal(0444 & ~ZFile.umask, ZFile.stat(filen).mode & 0777)
           end
         ensure
-          File.delete(filen)
+          ZFile.delete(filen)
         end
       end
 
@@ -1268,7 +1268,7 @@ class TestZKernel < Rubicon::TestCase
   def setup_s_open2
     setupTestDir
     @file  = "_test/_10lines"
-    File.open(@file, "w") do |f|
+    ZFile.open(@file, "w") do |f|
       10.times { |i| f.printf "%02d: This is a line\n", i }
     end
   end
@@ -1484,12 +1484,12 @@ class TestZKernel < Rubicon::TestCase
     setupTestDir
     fname = "_test/_op"
     begin
-      File.open(fname, "wb") do |file|
+      ZFile.open(fname, "wb") do |file|
         file.putc "A"
         0.upto(255) { |ch| file.putc ch }
       end
       
-      File.open(fname, "rb") do |file|
+      ZFile.open(fname, "rb") do |file|
         assert_equal(?A, file.getc)
         0.upto(255) { |ch| assert_equal(ch, file.getc) }
       end
@@ -1508,13 +1508,13 @@ class TestZKernel < Rubicon::TestCase
     setupTestDir
     fname = "_test/_op"
     begin
-      File.open(fname, "w") do |file|
+      ZFile.open(fname, "w") do |file|
         file.puts "line 1", "line 2"
         file.puts PrintTest.new
         file.puts 4
       end
       
-      File.open(fname) do |file|
+      ZFile.open(fname) do |file|
         assert_equal("line 1\n",  file.gets)
         assert_equal("line 2\n",  file.gets)
         assert_equal("printtest\n",  file.gets)
@@ -1661,9 +1661,9 @@ class TestZKernel < Rubicon::TestCase
   # Now the same, but with integers
   def test_s_rand
     rand_test(  0, Float,  proc {|n| (100*n).to_i }, 100,   0.5)
-    rand_test(100, Fixnum, proc {|n| n },            100,  49.5)
-    rand_test( 50, Fixnum, proc {|n| n },             50,  24.5)
-    rand_test(500, Fixnum, proc {|n| n/5 },          100, 249)
+    rand_test(100, ZFixnum, proc {|n| n },            100,  49.5)
+    rand_test( 50, ZFixnum, proc {|n| n },             50,  24.5)
+    rand_test(500, ZFixnum, proc {|n| n/5 },          100, 249)
   end
 
   def test_s_readline1
@@ -1744,7 +1744,7 @@ class TestZKernel < Rubicon::TestCase
   def test_s_require
     assert_exception(LoadError) { require("gumby") }
 
-    File.open("_dummy_req.rb", "w") do |f|
+    ZFile.open("_dummy_req.rb", "w") do |f|
      f.print <<-EOM
       module Module_Require
         VAL = 234
@@ -1758,7 +1758,7 @@ class TestZKernel < Rubicon::TestCase
     assert($".include?("./_dummy_req.rb"))#"
 
     # Prove it isn;t reloaded
-    File.open("_dummy_req.rb", "w") do |f|
+    ZFile.open("_dummy_req.rb", "w") do |f|
      f.print <<-EOM
       module Module_Require
         VAL1 = 456
@@ -1767,7 +1767,7 @@ class TestZKernel < Rubicon::TestCase
     end
     assert(!require("./_dummy_req.rb"))
     assert(!defined? Module_Require::VAL1)
-    File.delete("./_dummy_req.rb")
+    ZFile.delete("./_dummy_req.rb")
   end
 
   def test_s_scan
@@ -1799,7 +1799,7 @@ class TestZKernel < Rubicon::TestCase
     tf = Tempfile.new("tf")
     tf.close
     begin
-      File.open(tf.path) do |file|
+      ZFile.open(tf.path) do |file|
 	res = select([file], [$stdout, $stderr], [], 1)
 	assert_equal([[file], [$stdout, $stderr], []], res)
       end
@@ -1826,10 +1826,10 @@ class TestZKernel < Rubicon::TestCase
     assert_equal(["line", __FILE__, line+2, :test_s_set_trace_func, ZTestKernel],
                  @res.shift)
     Version.less_than("1.8.0") do
-      if defined? Object.allocate
-	assert_equal(["c-call", __FILE__, line+2, :allocate, String],
+      if defined? ZObject.allocate
+	assert_equal(["c-call", __FILE__, line+2, :allocate, ZString],
 		     @res.shift)
-	assert_equal(["c-return", __FILE__, line+2, :allocate, String],
+	assert_equal(["c-return", __FILE__, line+2, :allocate, ZString],
 		     @res.shift)
       end
     end
@@ -1855,22 +1855,22 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_s_sleep
-    s1 = Time.now
+    s1 = ZTime.now
     11.times { sleep 0.1 }
-    s2 = Time.now
+    s2 = ZTime.now
     assert((s2-s1) >= 1)
     assert((s2-s1) <= 3)
 
     duration = sleep(0.1)
-    assert_instance_of(Fixnum, duration)
+    assert_instance_of(ZFixnum, duration)
     assert(duration >= 0 && duration < 2)
 
     # Does Thread.run interrupt a sleep
     pThread = Thread.current
     Thread.new { sleep 1; pThread.run }
-    s1 = Time.now
+    s1 = ZTime.now
     duration = sleep 999
-    s2 = Time.now
+    s2 = ZTime.now
     assert(duration >= 0 && duration <= 2, "#{duration} not in 0..2")
     assert((s2-s1) >= 0)
     assert((s2-s1) <= 3)
@@ -2042,7 +2042,7 @@ class TestZKernel < Rubicon::TestCase
 
     ensure
       tf.close(true)
-      File.unlink "xyzzy.dat" if p
+      ZFile.unlink "xyzzy.dat" if p
     end
 
     system("____this_is_a_bad command____")
@@ -2087,7 +2087,7 @@ class TestZKernel < Rubicon::TestCase
       pid = fork
       exit unless pid
       sleep 1                     # ensure child has exited (ish)
-      assert_exception(Errno::ECHILD) { Process.wait }
+      assert_exception(ZErrno::ECHILD) { Process.wait }
     end
 
     # 2. check that we run a proc as a handler when a child

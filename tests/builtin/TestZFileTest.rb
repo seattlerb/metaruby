@@ -18,14 +18,14 @@ class TestZFileTest < FileInfoTest
   end
 
   def test_hlink
-    File.link(@file1, "_link")
+    ZFile.link(@file1, "_link")
     begin
       assert(!test(?-, @file1,  @file2))
       assert(test(?-,  @file1,  @file1))
       assert(test(?-,  @file1, "_link"))
       assert(test(?-,  "_link", @file1))
     ensure
-      File.unlink("_link")
+      ZFile.unlink("_link")
     end
   end
 
@@ -35,35 +35,35 @@ class TestZFileTest < FileInfoTest
 
   def test_test
     fileg = "_test/_fileg"
-    File.open(fileg, File::CREAT, 02755) { }
+    ZFile.open(fileg, ZFile::CREAT, 02755) { }
     
     filek = "_test/_filek"
     Dir.mkdir(filek, 01644)
-    File.chmod(01644, filek)
+    ZFile.chmod(01644, filek)
 
     filel = filep = filer = fileu = nil
 
     Windows.dont do
       filel = "_test/_filel"
-      File.symlink(@file1, filel)
+      ZFile.symlink(@file1, filel)
       
       filep = "_test/_filep"
       system "mkfifo #{filep}"
       assert_equal(0, $?)
 
       filer = "_test/_filer"
-      File.open(filer, File::CREAT, 0222) { }
+      ZFile.open(filer, ZFile::CREAT, 0222) { }
 
       fileu = "_test/_fileu"
-      File.open(fileu, File::CREAT, 04644) { }
+      ZFile.open(fileu, ZFile::CREAT, 04644) { }
     end
 
     
     filew = "_test/_filew"
-    File.open(filew, File::CREAT, 0444) { }
+    ZFile.open(filew, ZFile::CREAT, 0444) { }
     
     filez = "_test/_filez"
-    File.open(filez, File::CREAT|File::WRONLY, 0644) { |f| f.puts "hi" }
+    ZFile.open(filez, ZFile::CREAT|ZFile::WRONLY, 0644) { |f| f.puts "hi" }
     filez_size = $os <= WindowsNative ? 4 : 3
 
     filesock = sock = nil

@@ -18,8 +18,8 @@ class TestZException < Rubicon::TestCase
     assert_nil(ZException.exception.backtrace)
     begin
       line=__LINE__; file=__FILE__; raise MSG
-    rescue RuntimeError => detail
-      assert_equal(RuntimeError, detail.class)
+    rescue ZRuntimeError => detail
+      assert_equal(ZRuntimeError, detail.class)
       assert_equal(MSG, detail.message)
       expected = "#{file}:#{line}:in `test_backtrace'"
       assert_equal(expected, detail.backtrace[0])
@@ -27,24 +27,24 @@ class TestZException < Rubicon::TestCase
   end
 
   def test_exception
-    e = IOError.new
-    assert_equal(IOError, e.class)
-    assert_equal(IOError, e.exception.class)
+    e = ZIOError.new
+    assert_equal(ZIOError, e.class)
+    assert_equal(ZIOError, e.exception.class)
     assert_equal(e,       e.exception)
 
-    e = IOError.new
+    e = ZIOError.new
     e1 = e.exception(MSG)
-    assert_equal(IOError, e1.class)
+    assert_equal(ZIOError, e1.class)
     assert_equal(MSG,     e1.message)
   end
 
   def test_message
-    e = IOError.new(MSG)
+    e = ZIOError.new(MSG)
     assert_equal(MSG, e.message)
   end
 
   def test_set_backtrace
-    e = IOError.new
+    e = ZIOError.new
     a = %w( here there everywhere )
     assert_equal(a, e.set_backtrace(a))
     assert_equal(a, e.backtrace)

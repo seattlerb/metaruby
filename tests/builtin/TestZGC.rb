@@ -4,6 +4,7 @@ require 'rubicon'
 
 class TestZGC < Rubicon::TestCase
 
+  # TODO: this test sucks
   def test_garbage_collect
     # This is the test from the standard test.rb
     begin

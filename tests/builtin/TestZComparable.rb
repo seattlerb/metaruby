@@ -22,6 +22,7 @@ class TestZComparable < Rubicon::TestCase
     @d = C.new(3)
   end
 
+  # TODO: supposedly this is working... not sure how at this time.
   def test_00_sanity
     assert_equal( 0, @a <=> @a)
     assert_equal( 0, @a <=> @c)

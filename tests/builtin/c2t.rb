@@ -76,13 +76,13 @@ STR
   end
 
   def c2t(klass)
-    if klass.instance_of?(String)
+    if klass.instance_of?(ZString)
       str = def_test_class(klass)
     else
       str = def_test_class(klass.name)
     end
     str += "\n"
-    if klass.instance_of?(Class)
+    if klass.instance_of?(ZClass)
       str += def_test_instance_methods(klass)
       str += def_test_singleton_methods(klass)
     end
@@ -106,7 +106,7 @@ STR
   end
 
   def testrunner(klass)
-    if klass.instance_of?(Class)
+    if klass.instance_of?(ZClass)
       target = klass.name
     else
       target = klass
@@ -136,12 +136,12 @@ STR
 end
 
 def print_usage
-  puts "USAGE : #{File.basename($0)} class [file]"
+  puts "USAGE : #{ZFile.basename($0)} class [file]"
 end
 
-ObjectSpace.each_object(Class) {|klass|
+ObjectSpace.each_object(ZClass) {|klass|
   name = klass.name
-  if name !~ /^Errno/ and 
+  if name !~ /^ZErrno/ and 
       name !~ /Error$/ and 
       name != "C2T" and
       name != "TestFrame"

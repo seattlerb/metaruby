@@ -92,8 +92,8 @@ class StringBase < Rubicon::TestCase
     assert_equal(S("FooBar"), s)
     s[-3,3] = S("Foo")
     assert_equal(S("FooFoo"), s)
-    assert_exception (IndexError) { s[7,3] =  S("Bar") }
-    assert_exception (IndexError) { s[-7,3] = S("Bar") }
+    assert_exception(IndexError) { s[7,3] =  S("Bar") }
+    assert_exception(IndexError) { s[-7,3] = S("Bar") }
 
     s = S("FooBar")
     s[0..2] = S("A")
@@ -102,8 +102,8 @@ class StringBase < Rubicon::TestCase
     assert_equal(S("AFoo"), s)
     s[-4..-4] = S("Foo")
     assert_equal(S("FooFoo"), s)
-    assert_exception (RangeError) { s[7..10]   = S("Bar") }
-    assert_exception (RangeError) { s[-7..-10] = S("Bar") }
+    assert_exception(RangeError) { s[7..10]   = S("Bar") }
+    assert_exception(RangeError) { s[-7..-10] = S("Bar") }
 
     s = S("FooBar")
     s[/^F../]= S("Bar")
@@ -114,19 +114,19 @@ class StringBase < Rubicon::TestCase
       s[/xyzzy/] = S("None")
       assert_equal(S("BarFoo"), s)
     else
-      assert_exception (IndexError) { s[/xyzzy/] = S("None") }
+      assert_exception(IndexError) { s[/xyzzy/] = S("None") }
     end
     if @aref_re_nth
       s[/([A-Z]..)([A-Z]..)/, 1] = S("Foo")
       assert_equal(S("FooFoo"), s)
       s[/([A-Z]..)([A-Z]..)/, 2] = S("Bar")
       assert_equal(S("FooBar"), s)
-      assert_exception (IndexError) { s[/([A-Z]..)([A-Z]..)/, 3] = "None" }
+      assert_exception(IndexError) { s[/([A-Z]..)([A-Z]..)/, 3] = "None" }
       s[/([A-Z]..)([A-Z]..)/, -1] = S("Foo")
       assert_equal(S("FooFoo"), s)
       s[/([A-Z]..)([A-Z]..)/, -2] = S("Bar")
       assert_equal(S("BarFoo"), s)
-      assert_exception (IndexError) { s[/([A-Z]..)([A-Z]..)/, -3] = "None" }
+      assert_exception(IndexError) { s[/([A-Z]..)([A-Z]..)/, -3] = "None" }
     end
 
     s = S("FooBar")
@@ -1159,13 +1159,13 @@ class StringBase < Rubicon::TestCase
   def test_to_s
     a = S("me")
     assert_equal("me", a.to_s)
-    assert_equal(a.__id__, a.to_s.__id__) if @cls == String
+    assert_equal(a.__id__, a.to_s.__id__) if @cls == ZString
   end
 
   def test_to_str
     a = S("me")
     assert_equal("me", a.to_s)
-    assert_equal(a.__id__, a.to_s.__id__) if @cls == String
+    assert_equal(a.__id__, a.to_s.__id__) if @cls == ZString
   end
 
   def test_tr

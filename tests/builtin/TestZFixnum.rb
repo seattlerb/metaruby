@@ -1,6 +1,7 @@
 $: << File.dirname($0) << File.join(File.dirname($0), "..")
 require 'rubicon'
 
+# TODO: need a .to_z
 
 class TestZFixnum < Rubicon::TestCase
 
@@ -127,10 +128,10 @@ class TestZFixnum < Rubicon::TestCase
     assert_equal(-8, (-1) << 3)
 
     a = 1 << (1.size*8 - 2)
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
 
     a = (-1) << (1.size*8 - 1)
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
   end
 
   def test_LT # '<'
@@ -152,7 +153,7 @@ class TestZFixnum < Rubicon::TestCase
     assert_equal(77, 100 - 20 - 3)
 
     a = MIN - 1
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
   end
 
   def test_MOD # '%'
@@ -188,7 +189,7 @@ class TestZFixnum < Rubicon::TestCase
 
     a = -1 * MIN
     assert_equal(-MIN, a)
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
 
     assert_flequal(9.5, 19 * 0.5)
   end
@@ -211,7 +212,7 @@ class TestZFixnum < Rubicon::TestCase
 
     a = MAX + 1
     assert(a > MAX)
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
   end
 
   def test_POW # '**'
@@ -265,7 +266,7 @@ class TestZFixnum < Rubicon::TestCase
 
     a = MIN.abs
     assert_equal(a, MAX+1)
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
   end
 
   def test_downto
@@ -305,7 +306,7 @@ class TestZFixnum < Rubicon::TestCase
     assert_equal(0, (-1).next)
     assert(MIN.next > MIN)
     a = MAX.next
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
   end
 
   def test_remainder
@@ -354,7 +355,7 @@ class TestZFixnum < Rubicon::TestCase
     assert_equal(0, (-1).succ)
     assert(MIN.succ > MIN)
     a = MAX.succ
-    assert_instance_of(Bignum, a)
+    assert_instance_of(ZBignum, a)
   end
 
   def test_times

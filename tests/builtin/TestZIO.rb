@@ -13,16 +13,16 @@ class TestZIO < Rubicon::TestCase
     @file  = "_test/_10lines"
     @file1 = "_test/_99lines"
 
-    File.open(@file, "w") do |f|
+    ZFile.open(@file, "w") do |f|
       10.times { |i| f.printf "%02d: This is a line\n", i }
     end
-    File.open(@file1, "w") do |f|
+    ZFile.open(@file1, "w") do |f|
       99.times { |i| f.printf "Line %02d\n", i }
     end
   end
 
   def teardown
-    File.delete(@file) if File.exist?(@file)
+    ZFile.delete(@file) if ZFile.exist?(@file)
     teardownTestDir
   end
 
@@ -35,8 +35,8 @@ class TestZIO < Rubicon::TestCase
   # ---------------------------------------------------------------
 
   def test_s_foreach
-    assert_exception(Errno::ENOENT) { File.foreach("gumby") {} }
-    assert_exception(LocalJumpError) { File.foreach(@file) }
+    assert_exception(ZErrno::ENOENT) { ZFile.foreach("gumby") {} }
+    assert_exception(LocalJumpError) { ZFile.foreach(@file) }
     
     count = 0
     ZIO.foreach(@file) do |line|
@@ -64,7 +64,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_s_new
-    f = File.open(@file)
+    f = ZFile.open(@file)
     io = ZIO.new(f.fileno, "r")
     begin
       count = 0
@@ -78,12 +78,12 @@ class TestZIO < Rubicon::TestCase
       end
     end
 
-    f = File.open(@file)
+    f = ZFile.open(@file)
     io = ZIO.new(f.fileno, "r")
 
     begin
       f.close
-      assert_exception(Errno::EBADF) { io.gets }
+      assert_exception(ZErrno::EBADF) { io.gets }
     ensure
       io.close
       begin
@@ -92,7 +92,7 @@ class TestZIO < Rubicon::TestCase
       end
     end
 
-    f = File.open(@file, "r")
+    f = ZFile.open(@file, "r")
     f.sysread(3*LINE_LENGTH)
     io = ZIO.new(f.fileno, "r")
     begin
@@ -235,7 +235,7 @@ class TestZIO < Rubicon::TestCase
   end    
 
   def test_s_readlines
-    assert_exception(Errno::ENOENT) { ZIO.readlines('gumby') }
+    assert_exception(ZErrno::ENOENT) { ZIO.readlines('gumby') }
 
     lines = ZIO.readlines(@file)
     assert_equal(10, lines.size)
@@ -249,13 +249,13 @@ class TestZIO < Rubicon::TestCase
     assert_nil(select(nil, nil, nil, 0))
     assert_exception(ArgumentError) { ZIO.select(nil, nil, nil, -1) }
     
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       res = ZIO.select([file], [$stdout, $stderr], [file,$stdout,$stderr], 1)
       assert_equal([[file], [$stdout, $stderr], []], res)
     end
     
 #     read, write = *ZIO.pipe
-#     read.fcntl(F_SETFL, File::NONBLOCK)
+#     read.fcntl(F_SETFL, ZFile::NONBLOCK)
   
 #     assert_nil(select([read], nil,  [read], .1))
 #     write.puts "Hello"
@@ -275,7 +275,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_LSHIFT # '<<'
-    File.open(@file, "w") do |file|
+    ZFile.open(@file, "w") do |file|
       io = ZIO.new(file.fileno, "w")
       io << 1 << "\n" << Dummy.new << "\n" << "cat\n"
       io.close
@@ -293,7 +293,7 @@ class TestZIO < Rubicon::TestCase
 
   def test_clone
     # check file position shared
-    File.open(@file, "r") do |file|
+    ZFile.open(@file, "r") do |file|
       io = []
       io[0] = ZIO.new(file.fileno, "r")
       begin
@@ -319,7 +319,7 @@ class TestZIO < Rubicon::TestCase
     read, write = *ZIO.pipe
     begin
       read.close
-      assert_exception(IOError) { read.gets }
+      assert_exception(ZIOError) { read.gets }
     ensure
       begin
         read.close
@@ -336,7 +336,7 @@ class TestZIO < Rubicon::TestCase
 	pipe.puts "Hello"
 	assert_equal("Hello\n", pipe.gets)
 	pipe.close_read
-	assert_exception(IOError) { pipe.gets }
+	assert_exception(ZIOError) { pipe.gets }
       ensure
 	pipe.close_write
       end
@@ -350,13 +350,13 @@ class TestZIO < Rubicon::TestCase
       pipe.puts "Hello"
       assert_equal("Hello\n", pipe.gets)
       pipe.close_write
-      assert_exception(IOError) { pipe.puts "Hello" }
+      assert_exception(ZIOError) { pipe.puts "Hello" }
       pipe.close
     end
   end
 
   def test_closed?
-    f = File.open(@file)
+    f = ZFile.open(@file)
     assert(!f.closed?)
     f.close
     assert(f.closed?)
@@ -373,7 +373,7 @@ class TestZIO < Rubicon::TestCase
 
   def test_each
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.each do |line|
         num = line[0..1].to_i
         assert_equal(count, num)
@@ -383,7 +383,7 @@ class TestZIO < Rubicon::TestCase
     end
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.each(nil) do |contents|
         contents.split(/\n/).each do |line|
           num = line[0..1].to_i
@@ -395,7 +395,7 @@ class TestZIO < Rubicon::TestCase
     assert_equal(10, count)
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.each(' ') do |thing|
         count += 1
       end
@@ -417,7 +417,7 @@ class TestZIO < Rubicon::TestCase
       "08: This is a line\n" +
       "09: This is a line\n" 
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.each_byte do |b|
         assert_equal(data[count], b)
         count += 1
@@ -428,7 +428,7 @@ class TestZIO < Rubicon::TestCase
 
   def test_each_line
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.each_line do |line|
         num = line[0..1].to_i
         assert_equal(count, num)
@@ -438,7 +438,7 @@ class TestZIO < Rubicon::TestCase
     end
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.each_line(nil) do |contents|
         contents.split(/\n/).each do |line|
           num = line[0..1].to_i
@@ -450,7 +450,7 @@ class TestZIO < Rubicon::TestCase
     assert_equal(10, count)
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.each_line(' ') do |thing|
         count += 1
       end
@@ -459,7 +459,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_eof
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       10.times do
         assert(!file.eof)
         assert(!file.eof?)
@@ -507,7 +507,7 @@ class TestZIO < Rubicon::TestCase
       "08: This is a line\n" +
       "09: This is a line\n" 
     
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       while (ch = file.getc)
         assert_equal(data[count], ch)
         count += 1
@@ -519,7 +519,7 @@ class TestZIO < Rubicon::TestCase
 
   def test_gets
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       while (line = file.gets)
         num = line[0..1].to_i
         assert_equal(count, num)
@@ -530,7 +530,7 @@ class TestZIO < Rubicon::TestCase
     end
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       while (contents = file.gets(nil))
         contents.split(/\n/).each do |line|
           num = line[0..1].to_i
@@ -542,7 +542,7 @@ class TestZIO < Rubicon::TestCase
     assert_equal(10, count)
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       while (thing = file.gets(' '))
         count += 1
       end
@@ -551,10 +551,10 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_gets_para
-    File.open(@file, "w") do |file|
+    ZFile.open(@file, "w") do |file|
       file.print "foo\n"*4096, "\n"*4096, "bar"*4096, "\n"*4096, "zot\n"*1024
     end
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       assert_equal("foo\n"*4096+"\n", file.gets(""))
       assert_equal("bar"*4096+"\n\n", file.gets(""))
       assert_equal("zot\n"*1024, file.gets(""))
@@ -567,13 +567,13 @@ class TestZIO < Rubicon::TestCase
 
   # see tty?
   def test_isatty
-    File.open(@file) { |f|  assert(!f.isatty) }
+    ZFile.open(@file) { |f|  assert(!f.isatty) }
     MsWin32.only do 
-      File.open("con") { |f| assert(f.isatty) }
+      ZFile.open("con") { |f| assert(f.isatty) }
     end
     MsWin32.dont do
       begin
-        File.open("/dev/tty") { |f| assert(f.isatty) }
+        ZFile.open("/dev/tty") { |f| assert(f.isatty) }
       rescue
         # in run from (say) cron, /dev/tty can't be opened
       end
@@ -582,7 +582,7 @@ class TestZIO < Rubicon::TestCase
 
   def test_lineno
     count = 1
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       while (line = file.gets)
         assert_equal(count, file.lineno)
         count += 1
@@ -593,7 +593,7 @@ class TestZIO < Rubicon::TestCase
     end
 
     count = 1
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       while (line = file.gets('i'))
         assert_equal(count, file.lineno)
         count += 1
@@ -603,7 +603,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_lineno=
-    File.open(@file) do |f|
+    ZFile.open(@file) do |f|
       assert_equal(0, f.lineno)
       assert_equal(123, f.lineno = 123)
       assert_equal(123, f.lineno)
@@ -634,7 +634,7 @@ class TestZIO < Rubicon::TestCase
 
   def test_pos
     pos = 0
-    File.open(@file, "rb") do |file|
+    ZFile.open(@file, "rb") do |file|
       assert_equal(0, file.pos)
       while (line = file.gets)
         pos += line.length
@@ -646,7 +646,7 @@ class TestZIO < Rubicon::TestCase
   def test_pos=
     nums = [ 5, 8, 0, 1, 0 ]
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.pos = 999
       assert_nil(file.gets)
       assert_kindof_exception(SystemCallError) { file.pos = -1 }
@@ -659,7 +659,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_print
-    File.open(@file, "w") do |file|
+    ZFile.open(@file, "w") do |file|
       file.print "hello"
       file.print 1,2
       $_ = "wombat\n"
@@ -673,7 +673,7 @@ class TestZIO < Rubicon::TestCase
       $, = nil
     end
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       content = file.gets(nil)
       assert_equal("hello12wombat\n3,4:5,6:\n", content)
     end
@@ -684,24 +684,24 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_putc
-    File.open(@file, "wb") do |file|
+    ZFile.open(@file, "wb") do |file|
       file.putc "A"
       0.upto(255) { |ch| file.putc ch }
     end
 
-    File.open(@file, "rb") do |file|
+    ZFile.open(@file, "rb") do |file|
       assert_equal(?A, file.getc)
       0.upto(255) { |ch| assert_equal(ch, file.getc) }
     end
   end
 
   def test_puts
-    File.open(@file, "w") do |file|
+    ZFile.open(@file, "w") do |file|
       file.puts "line 1", "line 2"
       file.puts [ Dummy.new, 4 ]
     end
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       assert_equal("line 1\n",  file.gets)
       assert_equal("line 2\n",  file.gets)
       assert_equal("dummy\n",   file.gets)
@@ -710,7 +710,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_read
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       content = file.read
       assert_equal(SAMPLE.length*10, content.length)
       count = 0
@@ -721,7 +721,7 @@ class TestZIO < Rubicon::TestCase
       end
     end
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       assert_equal("00: This is ", file.read(12))
       assert_equal("a line\n01: T", file.read(12))
     end
@@ -741,7 +741,7 @@ class TestZIO < Rubicon::TestCase
       "08: This is a line\n" +
       "09: This is a line\n" 
     
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       190.times do |count|
         ch = file.readchar
         assert_equal(data[count], ch)
@@ -753,7 +753,7 @@ class TestZIO < Rubicon::TestCase
 
   def test_readline
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       10.times do |count|
         line = file.readline
         num = line[0..1].to_i
@@ -764,7 +764,7 @@ class TestZIO < Rubicon::TestCase
     end
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       contents = file.readline(nil)
       contents.split(/\n/).each do |line|
         num = line[0..1].to_i
@@ -776,7 +776,7 @@ class TestZIO < Rubicon::TestCase
     assert_equal(10, count)
 
     count = 0
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       41.times do |count|
         thing = file.readline(' ')
         count += 1
@@ -786,12 +786,12 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_readlines
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       lines = file.readlines
       assert_equal(10, lines.size)
     end
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       lines = file.readlines(nil)
       assert_equal(1, lines.size)
       assert_equal(SAMPLE.length*10, lines[0].size)
@@ -799,11 +799,11 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_reopen1
-    f1 = File.new(@file)
+    f1 = ZFile.new(@file)
     assert_equal("00: This is a line\n", f1.gets)
     assert_equal("01: This is a line\n", f1.gets)
 
-    f2 = File.new(@file1)
+    f2 = ZFile.new(@file1)
     assert_equal("Line 00\n", f2.gets)
     assert_equal("Line 01\n", f2.gets)
 
@@ -816,11 +816,11 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_reopen2 
-    f1 = File.new(@file)
+    f1 = ZFile.new(@file)
     assert_equal("00: This is a line\n", f1.read(SAMPLE.length))
     assert_equal("01: This is a line\n", f1.read(SAMPLE.length))
 
-    f2 = File.new(@file1)
+    f2 = ZFile.new(@file1)
     assert_equal("Line 00\n", f2.read(8))
     assert_equal("Line 01\n", f2.read(8))
 
@@ -833,7 +833,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_rewind
-    f1 = File.new(@file)
+    f1 = ZFile.new(@file)
     assert_equal("00: This is a line\n", f1.gets)
     assert_equal("01: This is a line\n", f1.gets)
     f1.rewind
@@ -850,7 +850,7 @@ class TestZIO < Rubicon::TestCase
   def test_seek
     nums = [ 5, 8, 0, 1, 0 ]
 
-    File.open(@file, "rb") do |file|
+    ZFile.open(@file, "rb") do |file|
       file.seek(999, ZIO::SEEK_SET)
       assert_nil(file.gets)
       assert_kindof_exception(SystemCallError) { file.seek(-1) }
@@ -862,7 +862,7 @@ class TestZIO < Rubicon::TestCase
     end
 
     nums = [5, -2, 4, -7, 0 ]
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       count = -1
       file.seek(0)
       for pos in nums
@@ -875,7 +875,7 @@ class TestZIO < Rubicon::TestCase
 
     nums = [ 5, 8, 1, 10, 1 ]
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       file.seek(0)
       for pos in nums
         assert_equal(0, file.seek(-LINE_LENGTH*pos, ZIO::SEEK_END))
@@ -888,7 +888,7 @@ class TestZIO < Rubicon::TestCase
   # Stat is pretty much tested elsewhere, so we're minimal here
   def test_stat
     io = ZIO.new($stdin.fileno)
-    assert_instance_of(File::Stat, io.stat)
+    assert_instance_of(ZFile::Stat, io.stat)
     io.close
   end
 
@@ -915,7 +915,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_sysread
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       assert_equal("", file.sysread(0))
       assert_equal("0", file.sysread(1))
       assert_equal("0:", file.sysread(2))
@@ -927,14 +927,14 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_syswrite
-    File.open(@file, "w") do |file|
+    ZFile.open(@file, "w") do |file|
       file.syswrite ""
       file.syswrite "hello"
       file.syswrite 1
       file.syswrite "\n"
     end
 
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       assert_equal("hello1\n", file.gets)
     end
   end
@@ -942,7 +942,7 @@ class TestZIO < Rubicon::TestCase
   # see also pos
   def test_tell
     pos = 0
-    File.open(@file, "rb") do |file|
+    ZFile.open(@file, "rb") do |file|
       assert_equal(0, file.tell)
       while (line = file.gets)
         pos += line.length
@@ -959,13 +959,13 @@ class TestZIO < Rubicon::TestCase
 
   # see isatty
   def test_tty?
-    File.open(@file) { |f|  assert(!f.tty?) }
+    ZFile.open(@file) { |f|  assert(!f.tty?) }
     MsWin32.only do 
-      File.open("con") { |f| assert(f.tty?) }
+      ZFile.open("con") { |f| assert(f.tty?) }
     end
     MsWin32.dont do
       begin
-        File.open("/dev/tty") { |f| assert(f.isatty) }
+        ZFile.open("/dev/tty") { |f| assert(f.isatty) }
       rescue
         # Can't open from crontab jobs
       end
@@ -973,7 +973,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_ungetc
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       assert_equal(?0, file.getc)
       assert_equal(?0, file.getc)
       assert_equal(?:, file.getc)
@@ -987,7 +987,7 @@ class TestZIO < Rubicon::TestCase
   end
 
   def test_write
-    File.open(@file, "w") do |file|
+    ZFile.open(@file, "w") do |file|
       assert_equal(10, file.write('*' * 10))
       assert_equal(5,  file.write('!' * 5))
       assert_equal(0,  file.write(''))
@@ -996,7 +996,7 @@ class TestZIO < Rubicon::TestCase
       assert_equal(1,  file.write("\n"))
     end
     
-    File.open(@file) do |file|
+    ZFile.open(@file) do |file|
       assert_equal("**********!!!!!12.3\n", file.gets)
     end
   end

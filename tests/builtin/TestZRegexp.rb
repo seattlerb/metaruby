@@ -1,6 +1,7 @@
 $: << File.dirname($0) << File.join(File.dirname($0), "..")
 require 'rubicon'
 
+# TODO: requires to_z
 
 class TestZRegexp < Rubicon::TestCase
 

@@ -1,8 +1,10 @@
 $: << File.dirname($0) << File.join(File.dirname($0), "..")
 require 'rubicon'
 
+# TODO: requires parser support
+
 #
-# This is the test of all the private methods of Module that can really
+# This is the test of all the private methods of ZModule that can really
 # only be tested indirectly
 #
 

@@ -42,7 +42,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_AREF # '[]'
-    $stderr.puts "def test_AREF # '[]'"
     t = ZThread.current
     t2 = ZThread.new { sleep 60 }
 
@@ -61,7 +60,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_ASET # '[]='
-    $stderr.puts "def test_ASET # '[]='"
     t = ZThread.current
     t2 = ZThread.new { sleep 60 }
 
@@ -80,7 +78,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_abort_on_exception
-    $stderr.puts "def test_abort_on_exception"
     # Test default
     assert_equal(false, ZThread.current.abort_on_exception)
     ZThread.current.abort_on_exception = true
@@ -92,7 +89,6 @@ class TestZThread < Rubicon::TestCase
   class MyException < Exception; end
 
   def test_abort_on_exception=()
-    $stderr.puts "def test_abort_on_exception=()"
     save_stderr = nil
     begin
       begin
@@ -119,7 +115,7 @@ class TestZThread < Rubicon::TestCase
         msg = open("xyzzy.dat") {|f| f.gets}
       ensure
         $stderr.reopen(save_stderr)
-        File.unlink("xyzzy.dat")
+        ZFile.unlink("xyzzy.dat")
       end
       assert_match(msg, /\(TestZThread::MyException\)$/)
     rescue Exception
@@ -128,7 +124,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_alive?
-    $stderr.puts "def test_alive?"
     t1 = t2 = nil
     thread_control do
       t1 = ZThread.new { _signal; ZThread.stop }
@@ -148,7 +143,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_exit
-    $stderr.puts "def test_exit"
     t = ZThread.new { ZThread.current.exit }
     t.join
     assert_equals(t,t.exit)
@@ -156,7 +150,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_join
-    $stderr.puts "def test_join"
     sum = 0
     t = ZThread.new do
       5.times { sum += 1; sleep 0.1 }
@@ -186,7 +179,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_key?
-    $stderr.puts "def test_key?"
     t = ZThread.current
     t2 = ZThread.new { sleep 60 }
 
@@ -199,7 +191,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_kill
-    $stderr.puts "def test_kill"
     t = ZThread.new { ZThread.current.kill }
     t.join
     assert_equals(t, t.kill)
@@ -207,12 +198,10 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_priority
-    $stderr.puts "def test_priority"
     assert_equals(0, ZThread.current.priority)
   end
 
   def test_priority=()
-    $stderr.puts "def test_priority=()"
     Cygwin.only do
       assert_fail("ZThread priorities seem broken under Cygwin")
       return
@@ -253,7 +242,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_raise
-    $stderr.puts "def test_raise"
     madeit = false
     t = nil
 
@@ -271,7 +259,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_run
-    $stderr.puts "def test_run"
     wokeup = false
     t1 = nil
     thread_control do
@@ -301,7 +288,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_safe_level
-    $stderr.puts "def test_safe_level"
     t = ZThread.new do
       assert_equals(0, ZThread.current.safe_level)
       $SAFE=1
@@ -320,7 +306,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_status
-    $stderr.puts "def test_status"
     a = b = c = nil
 
     thread_control do
@@ -345,7 +330,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_stop?
-    $stderr.puts "def test_stop?"
     a = nil
     thread_control do
       a = ZThread.new { _signal; ZThread.stop }
@@ -356,7 +340,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_value
-    $stderr.puts "def test_value"
     t=[]
     10.times { |i|
       t[i] = ZThread.new { i }
@@ -369,7 +352,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_wakeup
-    $stderr.puts "def test_wakeup"
     madeit = false
     t = ZThread.new { ZThread.stop; madeit = true }
     assert_equals(false, madeit)
@@ -382,7 +364,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_abort_on_exception
-    $stderr.puts "def test_s_abort_on_exception"
     assert_equal(false,ZThread.abort_on_exception)
     ZThread.abort_on_exception = true
     assert_equal(true,ZThread.abort_on_exception)
@@ -391,7 +372,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_abort_on_exception=
-      $stderr.puts "def test_s_abort_on_exception="
     save_stderr = nil
 
     begin
@@ -419,13 +399,12 @@ class TestZThread < Rubicon::TestCase
     ensure
       ZThread.abort_on_exception = false
       $stderr.reopen(save_stderr)
-      File.unlink("xyzzy.dat")
+      ZFile.unlink("xyzzy.dat")
     end
     assert_match(msg, /\(TestZThread::MyException\)$/)
   end
 
   def test_s_critical
-    $stderr.puts "def test_s_critical"
     assert_equal(false,ZThread.critical)
     ZThread.critical = true
     assert_equal(true,ZThread.critical)
@@ -434,7 +413,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_critical=
-      $stderr.puts "def test_s_critical="
     count = 0
     a = nil
     thread_control do
@@ -443,7 +421,7 @@ class TestZThread < Rubicon::TestCase
     end
 
     ZThread.critical = true
-    saved = count # Fixnum, will copy the value
+    saved = count # ZFixnum, will copy the value
     10000.times { |i| Math.sin(i) ** Math.tan(i/2) }
     assert_equal(saved, count)
 
@@ -453,7 +431,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_current
-    $stderr.puts "def test_s_current"
     t = nil
     thread_control do
       t = ZThread.new { _signal; ZThread.stop }
@@ -463,7 +440,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_exit
-    $stderr.puts "def test_s_exit"
     t = ZThread.new { ZThread.exit }
     t.join
     assert_equals(t, t.exit)
@@ -475,7 +451,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_fork
-    $stderr.puts "def test_s_fork"
     madeit = false
     t = ZThread.fork { madeit = true }
     t.join
@@ -483,7 +458,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_kill
-    $stderr.puts "def test_s_kill"
     count = 0
     t = ZThread.new { loop { ZThread.pass; count += 1 }}
     sleep 0.1
@@ -495,7 +469,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_list
-    $stderr.puts "def test_s_list"
     t = []
     100.times { t << ZThread.new { ZThread.stop } }
     assert_equals(101, ZThread.list.length)
@@ -504,7 +477,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_main
-    $stderr.puts "def test_s_main"
     t = nil
     thread_control do
       t = ZThread.new { _signal; ZThread.stop }
@@ -515,7 +487,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_new
-    $stderr.puts "def test_s_new"
     madeit = false
     t = ZThread.new { madeit = true }
     t.join
@@ -523,7 +494,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_pass
-    $stderr.puts "def test_s_pass"
     madeit = false
     t = ZThread.new { ZThread.pass; madeit = true }
     t.join
@@ -531,7 +501,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_start
-    $stderr.puts "def test_s_start"
     t = nil
     thread_control do
       t = SubThread.new { _signal; ZThread.stop }
@@ -547,7 +516,6 @@ class TestZThread < Rubicon::TestCase
   end
 
   def test_s_stop
-    $stderr.puts "def test_s_stop"
     t = nil
     thread_control do
       t = ZThread.new { ZThread.critical = true; _signal; ZThread.stop }
@@ -559,7 +527,6 @@ class TestZThread < Rubicon::TestCase
 
   if ZThread.instance_method(:join).arity != 0
     def test_timeout
-      $stderr.puts "def test_timeout"
       start = Time.now
       t = ZThread.new do
 	sleep 3

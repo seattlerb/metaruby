@@ -413,13 +413,13 @@ class TestZTime < Rubicon::TestCase
   end
 
   def test_s_gm
-    assert_exception(ArgumentError) { ZTime.gm }
+    assert_exception(ZArgumentError) { ZTime.gm }
     assert(ZTime.gm(2000) != ZTime.local(2000))
     assert_equal(ZTime.gm(2000), ZTime.gm(2000,1,1,0,0,0))
     assert_equal(ZTime.gm(2000,nil,nil,nil,nil,nil), ZTime.gm(2000,1,1,0,0,0))
-    assert_exception(ArgumentError) { ZTime.gm(2000,0) }
-    assert_exception(ArgumentError) { ZTime.gm(2000,13) }
-    assert_exception(ArgumentError) { ZTime.gm(2000,1,1,24) }
+    assert_exception(ZArgumentError) { ZTime.gm(2000,0) }
+    assert_exception(ZArgumentError) { ZTime.gm(2000,13) }
+    assert_exception(ZArgumentError) { ZTime.gm(2000,1,1,24) }
     ZTime.gm(2000,1,1,23)
     @@months.each do |month, num| 
       assert_equal(ZTime.gm(2000,month), ZTime.gm(2000,num,1,0,0,0))
@@ -432,13 +432,13 @@ class TestZTime < Rubicon::TestCase
   end
 
   def test_s_local
-    assert_exception(ArgumentError) { ZTime.local }
+    assert_exception(ZArgumentError) { ZTime.local }
     assert(ZTime.gm(2000) != ZTime.local(2000))
     assert_equal(ZTime.local(2000), ZTime.local(2000,1,1,0,0,0))
     assert_equal(ZTime.local(2000,nil,nil,nil,nil,nil), ZTime.local(2000,1,1,0,0,0))
-    assert_exception(ArgumentError) { ZTime.local(2000,0) }
-    assert_exception(ArgumentError) { ZTime.local(2000,13) }
-    assert_exception(ArgumentError) { ZTime.local(2000,1,1,24) }
+    assert_exception(ZArgumentError) { ZTime.local(2000,0) }
+    assert_exception(ZArgumentError) { ZTime.local(2000,13) }
+    assert_exception(ZArgumentError) { ZTime.local(2000,1,1,24) }
     ZTime.local(2000,1,1,23)
     @@months.each do |month, num| 
       assert_equal(ZTime.local(2000,month), ZTime.local(2000,num,1,0,0,0))
@@ -454,13 +454,13 @@ class TestZTime < Rubicon::TestCase
     #
     # Test insufficient arguments
     #
-    assert_exception(ArgumentError) { ZTime.mktime }
+    assert_exception(ZArgumentError) { ZTime.mktime }
     assert(ZTime.gm(2000) != ZTime.mktime(2000))
     assert_equal(ZTime.mktime(2000), ZTime.mktime(2000,1,1,0,0,0))
     assert_equal(ZTime.mktime(2000,nil,nil,nil,nil,nil), ZTime.mktime(2000,1,1,0,0,0))
-    assert_exception(ArgumentError) { ZTime.mktime(2000,0) }
-    assert_exception(ArgumentError) { ZTime.mktime(2000,13) }
-    assert_exception(ArgumentError) { ZTime.mktime(2000,1,1,24) }
+    assert_exception(ZArgumentError) { ZTime.mktime(2000,0) }
+    assert_exception(ZArgumentError) { ZTime.mktime(2000,13) }
+    assert_exception(ZArgumentError) { ZTime.mktime(2000,1,1,24) }
     ZTime.mktime(2000,1,1,23)
 
     #

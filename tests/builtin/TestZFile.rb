@@ -22,7 +22,7 @@ class TestZFile < Rubicon::TestCase
   end
 
   def teardown
-    ZFile.delete @file if File.exist?(@file)
+    ZFile.delete @file if ZFile.exist?(@file)
     teardownTestDir
   end
 
@@ -34,15 +34,15 @@ class TestZFile < Rubicon::TestCase
 
   def test_s_basename
     assert_equal("_touched", ZFile.basename(@file))
-    assert_equal("tmp", ZFile.basename(File.join("/tmp")))
-    assert_equal("b",   ZFile.basename(File.join(*%w( g f d s a b))))
+    assert_equal("tmp", ZFile.basename(ZFile.join("/tmp")))
+    assert_equal("b",   ZFile.basename(ZFile.join(*%w( g f d s a b))))
     assert_equal("tmp", ZFile.basename("/tmp", ".*"))
     assert_equal("tmp", ZFile.basename("/tmp", ".c"))
     assert_equal("tmp", ZFile.basename("/tmp.c", ".c"))
     assert_equal("tmp", ZFile.basename("/tmp.c", ".*"))
     assert_equal("tmp.o", ZFile.basename("/tmp.o", ".c"))
     Version.greater_or_equal("1.8.0") do
-      assert_equal("tmp", ZFile.basename(File.join("/tmp/")))
+      assert_equal("tmp", ZFile.basename(ZFile.join("/tmp/")))
       assert_equal("/",   ZFile.basename("/"))
       assert_equal("/",   ZFile.basename("//"))
       assert_equal("base", ZFile.basename("dir///base", ".*"))
@@ -58,20 +58,20 @@ class TestZFile < Rubicon::TestCase
       assert_equal("base.o", ZFile.basename("dir//base.o/", ".c"))
     end
     Version.less_than("1.8.0") do
-      assert_equal("", ZFile.basename(File.join("/tmp/")))
+      assert_equal("", ZFile.basename(ZFile.join("/tmp/")))
       assert_equal("",   ZFile.basename("/"))
     end
 
     Version.greater_or_equal("1.7.2") do
       unless ZFile::ALT_SEPARATOR.nil?
-        assert_equal("base", ZFile.basename("dir" + File::ALT_SEPARATOR + "base")) 
+        assert_equal("base", ZFile.basename("dir" + ZFile::ALT_SEPARATOR + "base")) 
       end
     end
   end
 
   def test_s_chmod
     base = $os == Cygwin ? 0444 : 0
-    assert_exception(Errno::ENOENT) { ZFile.chmod(0, "_gumby") }
+    assert_exception(ZErrno::ENOENT) { ZFile.chmod(0, "_gumby") }
     assert_equal(0, ZFile.chmod(0))
     Dir.chdir("_test")
     begin
@@ -102,25 +102,25 @@ class TestZFile < Rubicon::TestCase
   def test_s_delete
     Dir.chdir("_test")
     assert_equal(0, ZFile.delete)
-    assert_exception(Errno::ENOENT) { ZFile.delete("gumby") }
+    assert_exception(ZErrno::ENOENT) { ZFile.delete("gumby") }
     assert_equal(2, ZFile.delete("_file1", "_file2"))
   end
 
   def test_s_dirname
-    assert_equal("/",         ZFile.dirname(File.join("/tmp")))
-    assert_equal("g/f/d/s/a", ZFile.dirname(File.join(*%w( g f d s a b))))
+    assert_equal("/",         ZFile.dirname(ZFile.join("/tmp")))
+    assert_equal("g/f/d/s/a", ZFile.dirname(ZFile.join(*%w( g f d s a b))))
     assert_equal("/",         ZFile.dirname("/"))
 
     Version.greater_or_equal("1.8.0") do
-      assert_equal("/",       ZFile.dirname(File.join("/tmp/")))
+      assert_equal("/",       ZFile.dirname(ZFile.join("/tmp/")))
     end
     Version.less_than("1.8.0") do
-      assert_equal("/tmp",    ZFile.dirname(File.join("/tmp/")))
+      assert_equal("/tmp",    ZFile.dirname(ZFile.join("/tmp/")))
     end
 
     Version.greater_or_equal("1.7.2") do
       unless ZFile::ALT_SEPARATOR.nil? 
-        assert_equal("dir", ZFile.dirname("dir" + File::ALT_SEPARATOR + "base")) 
+        assert_equal("dir", ZFile.dirname("dir" + ZFile::ALT_SEPARATOR + "base")) 
       end
     end
   end
@@ -133,17 +133,17 @@ class TestZFile < Rubicon::TestCase
     end
 
     assert_equal(base,                 ZFile.expand_path(''))
-    assert_equal(ZFile.join(base, 'a'), File.expand_path('a'))
-    assert_equal(ZFile.join(base, 'a'), File.expand_path('a', nil)) # V0.1.1
+    assert_equal(ZFile.join(base, 'a'), ZFile.expand_path('a'))
+    assert_equal(ZFile.join(base, 'a'), ZFile.expand_path('a', nil)) # V0.1.1
 
     # Because of Ruby-Talk:18512
-    assert_equal(ZFile.join(base, 'a.'),    File.expand_path('a.')) 
-    assert_equal(ZFile.join(base, '.a'),    File.expand_path('.a')) 
-    assert_equal(ZFile.join(base, 'a..'),   File.expand_path('a..')) 
-    assert_equal(ZFile.join(base, '..a'),   File.expand_path('..a')) 
-    assert_equal(ZFile.join(base, 'a../b'), File.expand_path('a../b')) 
+    assert_equal(ZFile.join(base, 'a.'),    ZFile.expand_path('a.')) 
+    assert_equal(ZFile.join(base, '.a'),    ZFile.expand_path('.a')) 
+    assert_equal(ZFile.join(base, 'a..'),   ZFile.expand_path('a..')) 
+    assert_equal(ZFile.join(base, '..a'),   ZFile.expand_path('..a')) 
+    assert_equal(ZFile.join(base, 'a../b'), ZFile.expand_path('a../b')) 
 
-    b1 = ZFile.join(base.split(File::SEPARATOR)[0..-2])
+    b1 = ZFile.join(base.split(ZFile::SEPARATOR)[0..-2])
     assert_equal(b1, ZFile.expand_path('..'))
 
     assert_equal('/tmp',   ZFile.expand_path('', '/tmp'))
@@ -175,7 +175,7 @@ class TestZFile < Rubicon::TestCase
 		       ZFile.expand_path("~#{name}/a", "/tmp/gumby"))
 	end
       end
-    rescue Errno::ENOENT
+    rescue ZErrno::ENOENT
       skipping("~user")
     end
   end
@@ -197,9 +197,9 @@ class TestZFile < Rubicon::TestCase
 
       Windows.dont do
 	begin
-	  tests[ZFile.expand_path(File.readlink("/dev/tty"), "/dev")] =
+	  tests[ZFile.expand_path(ZFile.readlink("/dev/tty"), "/dev")] =
 	    "characterSpecial"
-	rescue Errno::EINVAL
+	rescue ZErrno::EINVAL
 	  tests["/dev/tty"] = "characterSpecial"
 	end
       end
@@ -235,7 +235,7 @@ class TestZFile < Rubicon::TestCase
       %w( ),
       %w( a b .. c )
     ].each do |a|
-      assert_equal(a.join(ZFile::SEPARATOR), File.join(*a))
+      assert_equal(a.join(ZFile::SEPARATOR), ZFile.join(*a))
     end
   end
 
@@ -248,7 +248,7 @@ class TestZFile < Rubicon::TestCase
       Windows.dont do
 	assert_equal(2, ZFile.stat("_file1").nlink)
 	assert_equal(2, ZFile.stat("_file3").nlink)
-	assert(ZFile.stat("_file1").ino == File.stat("_file3").ino)
+	assert(ZFile.stat("_file1").ino == ZFile.stat("_file3").ino)
       end
     ensure
       Dir.chdir("..")
@@ -276,7 +276,7 @@ class TestZFile < Rubicon::TestCase
   def test_s_open
     file1 = "_test/_file1"
 
-    assert_exception(Errno::ENOENT) { ZFile.open("_gumby") }
+    assert_exception(ZErrno::ENOENT) { ZFile.open("_gumby") }
 
     # test block/non block forms
     
@@ -287,18 +287,18 @@ class TestZFile < Rubicon::TestCase
       f.close
     end
 
-    assert_nil(ZFile.open(file1) { |f| assert_equal(File, f.class)})
+    assert_nil(ZFile.open(file1) { |f| assert_equal(ZFile, f.class)})
 
     # test modes
 
     modes = [
       %w( r w r+ w+ a a+ ),
       [ ZFile::RDONLY, 
-        ZFile::WRONLY | File::CREAT,
+        ZFile::WRONLY | ZFile::CREAT,
         ZFile::RDWR,
-        ZFile::RDWR   + File::TRUNC + File::CREAT,
-        ZFile::WRONLY + File::APPEND + File::CREAT,
-        ZFile::RDWR   + File::APPEND + File::CREAT
+        ZFile::RDWR   + ZFile::TRUNC + ZFile::CREAT,
+        ZFile::WRONLY + ZFile::APPEND + ZFile::CREAT,
+        ZFile::RDWR   + ZFile::APPEND + ZFile::CREAT
         ]]
 
     for modeset in modes
@@ -310,7 +310,7 @@ class TestZFile < Rubicon::TestCase
       # file: empty
       ZFile.open(file1, mode) { |f| 
         assert_nil(f.gets)
-        assert_exception(IOError) { f.puts "wombat" }
+        assert_exception(ZIOError) { f.puts "wombat" }
       }
 
       mode = modeset.shift      # "w"
@@ -318,7 +318,7 @@ class TestZFile < Rubicon::TestCase
       # file: empty
       ZFile.open(file1, mode) { |f| 
         assert_nil(f.puts("wombat"))
-        assert_exception(IOError) { f.gets }
+        assert_exception(ZIOError) { f.gets }
       }
 
       mode = modeset.shift      # "r+"
@@ -347,7 +347,7 @@ class TestZFile < Rubicon::TestCase
       # file: koala
       ZFile.open(file1, mode) { |f| 
         assert_nil(f.puts("wombat"))
-        assert_exception(IOError) { f.gets }
+        assert_exception(ZIOError) { f.gets }
       }
       
       mode = modeset.shift      # "a+"
@@ -374,11 +374,11 @@ class TestZFile < Rubicon::TestCase
       ZFile.delete(filen)
     end
     
-    ZFile.open(filen, File::CREAT, 0444) {}
+    ZFile.open(filen, ZFile::CREAT, 0444) {}
     begin
       assert(ZFile.exists?(filen))
       Cygwin.known_problem do
-        assert_equal(0444 & ~ZFile.umask, File.stat(filen).mode & 0777)
+        assert_equal(0444 & ~ZFile.umask, ZFile.stat(filen).mode & 0777)
       end
     ensure
       ZFile.delete(filen)
@@ -390,13 +390,13 @@ class TestZFile < Rubicon::TestCase
       Dir.chdir("_test")
       ZFile.symlink("_file1", "_file3") # may fail
       assert_equal("_file1", ZFile.readlink("_file3"))
-      assert_exception(Errno::EINVAL) { ZFile.readlink("_file1") }
+      assert_exception(ZErrno::EINVAL) { ZFile.readlink("_file1") }
     end
   end
 
   def test_s_rename
     Dir.chdir("_test")
-    assert_exception(Errno::ENOENT) { ZFile.rename("gumby", "pokey") }
+    assert_exception(ZErrno::ENOENT) { ZFile.rename("gumby", "pokey") }
     assert_equal(0, ZFile.rename("_file1", "_renamed"))
     assert(!ZFile.exists?("_file1"))
     assert(ZFile.exists?("_renamed"))
@@ -405,7 +405,7 @@ class TestZFile < Rubicon::TestCase
 
   def test_s_size
     file = "_test/_file1"
-    assert_exception(Errno::ENOENT) { ZFile.size("gumby") }
+    assert_exception(ZErrno::ENOENT) { ZFile.size("gumby") }
     assert_equal(0, ZFile.size(file))
     ZFile.open(file, "w") { |f| f.puts "123456789" }
     if $os == MsWin32
@@ -419,14 +419,14 @@ class TestZFile < Rubicon::TestCase
     %w{ "/", "/tmp", "/tmp/a", "/tmp/a/b", "/tmp/a/b/", "/tmp//a",
         "/tmp//"
     }.each { |file|
-      assert_equals( [ ZFile.dirname(file), File.basename(file) ],
+      assert_equals( [ ZFile.dirname(file), ZFile.basename(file) ],
                      ZFile.split(file), file )
     }
   end
 
   # Stat is pretty much tested elsewhere, so we're minimal here
   def test_s_stat
-    assert_instance_of(ZFile::Stat, File.stat("."))
+    assert_instance_of(ZFile::Stat, ZFile.stat("."))
   end
 
 
@@ -472,7 +472,7 @@ class TestZFile < Rubicon::TestCase
   def test_s_unlink
     Dir.chdir("_test")
     assert_equal(0, ZFile.unlink)
-    assert_exception(Errno::ENOENT) { ZFile.unlink("gumby") }
+    assert_exception(ZErrno::ENOENT) { ZFile.unlink("gumby") }
     assert_equal(2, ZFile.unlink("_file1", "_file2"))
   end
 
@@ -547,10 +547,10 @@ class TestZFile < Rubicon::TestCase
       if pid
 	ZFile.open("_file1", "w") { |f|
 	  trap("USR1") {
-	    assert_equal(false, f.flock(ZFile::LOCK_EX | File::LOCK_NB))
+	    assert_equal(false, f.flock(ZFile::LOCK_EX | ZFile::LOCK_NB))
 	    Process.kill "KILL", pid
 	    Process.waitpid(pid, 0)
-	    assert_equal(0, f.flock(ZFile::LOCK_EX | File::LOCK_NB))
+	    assert_equal(0, f.flock(ZFile::LOCK_EX | ZFile::LOCK_NB))
 	    return
 	  }
 	  sleep 10

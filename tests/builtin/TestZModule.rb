@@ -1,6 +1,8 @@
 $: << File.dirname($0) << File.join(File.dirname($0), "..")
 require 'rubicon'
 
+# TODO: requires parser support
+
 $m0 = ZModule.nesting
 unless defined? ExpectedException
   Version.less_than("1.7") do
@@ -90,8 +92,8 @@ class TestZModule < Rubicon::TestCase
     end
 
     assert_equal( 0, Object <=> Object)
-    assert_equal(-1, String <=> Object)
-    assert_equal( 1, Object <=> String)
+    assert_equal(-1, ZString <=> Object)
+    assert_equal( 1, Object <=> ZString)
   end
 
   def test_GE # '>='
@@ -99,9 +101,9 @@ class TestZModule < Rubicon::TestCase
     assert(Mixin >= Mixin)
     assert(!(User >= Mixin))
 
-    assert(Object >= String)
-    assert(String >= String)
-    assert(!(String >= Object))
+    assert(Object >= ZString)
+    assert(ZString >= ZString)
+    assert(!(ZString >= Object))
   end
 
   def test_GT # '>'
@@ -109,9 +111,9 @@ class TestZModule < Rubicon::TestCase
     assert(!(Mixin > Mixin))
     assert(!(User  > Mixin))
 
-    assert(Object > String)
-    assert(!(String > String))
-    assert(!(String > Object))
+    assert(Object > ZString)
+    assert(!(ZString > ZString))
+    assert(!(ZString > Object))
   end
 
   def test_LE # '<='
@@ -119,9 +121,9 @@ class TestZModule < Rubicon::TestCase
     assert(Mixin <= Mixin)
     assert(!(Mixin <= User))
 
-    assert(String <= Object)
-    assert(String <= String)
-    assert(!(Object <= String))
+    assert(ZString <= Object)
+    assert(ZString <= ZString)
+    assert(!(Object <= ZString))
   end
 
   def test_LT # '<'
@@ -129,16 +131,16 @@ class TestZModule < Rubicon::TestCase
     assert(!(Mixin < Mixin))
     assert(!(Mixin < User))
 
-    assert(String < Object)
-    assert(!(String < String))
-    assert(!(Object < String))
+    assert(ZString < Object)
+    assert(!(ZString < ZString))
+    assert(!(Object < ZString))
   end
 
   def test_VERY_EQUAL # '==='
     assert(Object === self)
     assert(Rubicon::TestCase === self)
     assert(TestModule === self)
-    assert(!(String === self))
+    assert(!(ZString === self))
   end
 
   def test_ancestors
@@ -146,10 +148,10 @@ class TestZModule < Rubicon::TestCase
     assert_equal([Mixin],            Mixin.ancestors)
 
     assert_equal([Object, Kernel],   Object.ancestors)
-    assert_equal([String, 
-                   Enumerable, 
+    assert_equal([ZString, 
+                   ZEnumerable, 
                    Comparable,
-                   Object, Kernel],  String.ancestors)
+                   Object, Kernel],  ZString.ancestors)
   end
 
   def test_class_eval
@@ -188,7 +190,7 @@ class TestZModule < Rubicon::TestCase
     assert_equal([], Mixin.included_modules)
     assert_equal([Mixin], User.included_modules)
     assert_equal([Kernel], Object.included_modules)
-    assert_equal([Enumerable, Comparable, Kernel], String.included_modules)
+    assert_equal([ZEnumerable, Comparable, Kernel], ZString.included_modules)
   end
 
   def test_instance_methods
@@ -219,7 +221,7 @@ class TestZModule < Rubicon::TestCase
   end
 
   def test_name
-    assert_equal("Fixnum", Fixnum.name)
+    assert_equal("ZFixnum", ZFixnum.name)
     assert_equal("TestModule::Mixin",  Mixin.name)
     assert_equal("TestModule::User",   User.name)
   end

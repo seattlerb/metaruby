@@ -48,7 +48,7 @@ module Rubicon
     end
 
     def truth_table(method, *result)
-      for a in [ false, true ]
+      for a in [ ZFALSE, ZTRUE ]
         res = result.shift
         assert_equal(method.call(a), res)
         assert_equal(method.call(a ? self : nil), res)

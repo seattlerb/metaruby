@@ -30,7 +30,7 @@ class TestZMarshal < Rubicon::TestCase
 
     s = ZMarshal.dump(b)
 
-    assert_instance_of(String, s)
+    assert_instance_of(ZString, s)
 
     newb = ZMarshal.load(s)
     assert_equal(10,       newb.b1.a1)
@@ -48,18 +48,18 @@ class TestZMarshal < Rubicon::TestCase
     assert_equal(20,       b.b1.a2)
     assert_equal("wombat", b.b2)
 
-    File.open("_dl", "w") { |f| ZMarshal.dump(b, f) }
+    ZFile.open("_dl", "w") { |f| ZMarshal.dump(b, f) }
     
     begin
       newb = nil
-      File.open("_dl") { |f| newb = ZMarshal.load(f) }
+      ZFile.open("_dl") { |f| newb = ZMarshal.load(f) }
 
       assert_equal(10,       newb.b1.a1)
       assert_equal(20,       newb.b1.a2)
       assert_equal("wombat", newb.b2)
       
     ensure
-      File.delete("_dl")
+      ZFile.delete("_dl")
     end
   end
 
@@ -68,7 +68,7 @@ class TestZMarshal < Rubicon::TestCase
     s = ZMarshal.dump(b)
 
     res = []
-    newb = ZMarshal.load(s, proc { |obj| res << obj unless obj.kind_of?(Fixnum)})
+    newb = ZMarshal.load(s, proc { |obj| res << obj unless obj.kind_of?(ZFixnum)})
 
     assert_equal(10,       newb.b1.a1)
     assert_equal(20,       newb.b1.a2)
@@ -102,7 +102,7 @@ class TestZMarshal < Rubicon::TestCase
 
     s = ZMarshal.dump(b)
 
-    assert_instance_of(String, s)
+    assert_instance_of(ZString, s)
 
     newb = ZMarshal.restore(s)
     assert_equal(10,       newb.b1.a1)

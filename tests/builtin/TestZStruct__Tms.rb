@@ -18,7 +18,7 @@ class TestZStruct__Tms < Rubicon::TestCase
       
       name = pid ? "_parent" : "_child"
       
-      Dir.rmdir(name) if File.exists?(name)
+      Dir.rmdir(name) if ZFile.exists?(name)
       
       t = Time.now
       

@@ -5,29 +5,29 @@ require 'rubicon'
 class TestZFalseClass < Rubicon::TestCase
 
   def test_00_sanity
-    assert_equal(false, FALSE)
+    assert_equal(ZFALSE, ZFALSE)
   end
 
   def test_AND # '&'
-    truth_table(false.method("&"), false, false)
+    truth_table(ZFALSE.method("&"), ZFALSE, ZFALSE)
   end
 
   def test_OR # '|'
-    truth_table(false.method("|"), false, true)
+    truth_table(ZFALSE.method("|"), ZFALSE, ZTRUE)
   end
 
   def test_XOR # '^'
-    truth_table(false.method("^"), false, true)
+    truth_table(ZFALSE.method("^"), ZFALSE, ZTRUE)
   end
 
   def test_to_s
-    assert_equal("false", false.to_s)
-    assert_equal("false", FALSE.to_s)
+    assert_equal("false", ZFALSE.to_s)
+    assert_equal("false", ZFALSE.to_s)
   end
 
   def test_type
-    assert_equal(ZFalseClass, false.class)
-    assert_equal(ZFalseClass, FALSE.class)
+    assert_equal(ZFalseClass, ZFALSE.class)
+    assert_equal(ZFalseClass, ZFALSE.class)
   end
 
 end

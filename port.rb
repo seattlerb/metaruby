@@ -306,9 +306,9 @@ $rb_cObject = ZZKlass.new("ZObject", nil)
 $rb_cClass  = ZZKlass.new("ZClass", $rb_cObject)
 $rb_cModule = ZZKlass.new("ZModule", $rb_cObject)
 
-$zz_qnil   = :NIL
-$zz_qtrue  = :TRUE
-$zz_qfalse = :FALSE
+zz_define_global_const("ZTRUE",  '::ZTRUE'.intern)  ; ZTRUE  = ':ZTRUE'.intern
+zz_define_global_const("ZFALSE", '::ZFALSE'.intern) ; ZFALSE = ':ZFALSE'.intern
+zz_define_global_const("ZNIL",   '::ZNIL'.intern)   ; ZNIL   = ':ZNIL'.intern
 
 at_exit do
 

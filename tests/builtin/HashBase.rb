@@ -183,11 +183,11 @@ class HashBase < Rubicon::TestCase
     assert_equal(@cls[], h.delete_if { true })
 
     h = base.dup
-    assert_equal(h1, h.delete_if {|k,v| k.instance_of?(String) })
+    assert_equal(h1, h.delete_if {|k,v| k.instance_of?(ZString) })
     assert_equal(h1, h)
 
     h = base.dup
-    assert_equal(h2, h.delete_if {|k,v| v.instance_of?(String) })
+    assert_equal(h2, h.delete_if {|k,v| v.instance_of?(ZString) })
     assert_equal(h2, h)
 
     h = base.dup
@@ -415,9 +415,9 @@ class HashBase < Rubicon::TestCase
     assert_equal(@cls[], h.reject { true })
 
     h = base.dup
-    assert_equal(h1, h.reject {|k,v| k.instance_of?(String) })
+    assert_equal(h1, h.reject {|k,v| k.instance_of?(ZString) })
 
-    assert_equal(h2, h.reject {|k,v| v.instance_of?(String) })
+    assert_equal(h2, h.reject {|k,v| v.instance_of?(ZString) })
 
     assert_equal(h3, h.reject {|k,v| v })
     assert_equal(base, h)
@@ -434,11 +434,11 @@ class HashBase < Rubicon::TestCase
     assert_equal(@cls[],  h.reject! { true })
 
     h = base.dup
-    assert_equal(h1, h.reject! {|k,v| k.instance_of?(String) })
+    assert_equal(h1, h.reject! {|k,v| k.instance_of?(ZString) })
     assert_equal(h1, h)
 
     h = base.dup
-    assert_equal(h2, h.reject! {|k,v| v.instance_of?(String) })
+    assert_equal(h2, h.reject! {|k,v| v.instance_of?(ZString) })
     assert_equal(h2, h)
 
     h = base.dup

@@ -1,6 +1,7 @@
 $: << File.dirname($0) << File.join(File.dirname($0), "..")
 require 'rubicon'
 
+# TODO: add ZRange.to_z
 
 class TestZRange < Rubicon::TestCase
 

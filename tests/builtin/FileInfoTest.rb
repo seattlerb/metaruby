@@ -9,7 +9,7 @@ class FileInfoTest < Rubicon::TestCase
     @file2 = "_test/_touched2"
 
     [ @file1, @file2 ].each { |file|
-      File.delete file if File.exist?(file)
+      ZFile.delete file if ZFile.exist?(file)
     }
 
     touch("-a -t 122512341999 #@file1")
@@ -18,9 +18,9 @@ class FileInfoTest < Rubicon::TestCase
     touch("-m -t 010112341997 #@file1")
     @mTime1 = Time.local(1997,  1,  1, 12, 34, 00)
 
-    File.chown(Process.euid, Process.egid, @file1)
+    ZFile.chown(Process.euid, Process.egid, @file1)
 
-    # File two is before file 1 in access time, and
+    # ZFile two is before file 1 in access time, and
     # after in modification time
 
     touch("-a -t 010212342000 #@file2")
@@ -32,7 +32,7 @@ class FileInfoTest < Rubicon::TestCase
 
   def teardown
     [ @file1, @file2 ].each { |file|
-      File.delete file if File.exist?(file)
+      ZFile.delete file if ZFile.exist?(file)
     }
     teardownTestDir
   end

@@ -19,28 +19,28 @@ class TestZContinuation < Rubicon::TestCase
   # Tests proper
 
   def test_00_sanity
-    callcc { |cont| assert_equal(ZContinuation, cont.class) }
+    zcallcc { |cont| assert_equal(ZContinuation, cont.class) }
   end
 
   def test_call_no_args
-    result = callcc { |cont| cont.call }
+    result = zcallcc { |cont| cont.call }
     assert_equal(nil, result)
   end
 
   def test_call_one_args
-    result = callcc { |cont| cont.call(99) }
+    result = zcallcc { |cont| cont.call(99) }
     assert_equal(99, result)
   end
 
   def test_call_many_args
     expected = [ 'cat', 13, /a/ ]
 
-    result = callcc { |cont| cont.call(*expected) }
+    result = zcallcc { |cont| cont.call(*expected) }
     assert_equal(expected, result)
   end
 
   def test_remote_call
-    result = callcc { |cont| 
+    result = zcallcc { |cont| 
       helper_method(cont)
       assert_failt("never get here")
     }

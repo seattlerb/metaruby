@@ -52,7 +52,7 @@ class TestProcess < Rubicon::TestCase
   end
 
   def test_s_egid
-    assert_instance_of(Fixnum, Process.egid)
+    assert_instance_of(ZFixnum, Process.egid)
     assert_equal(Process.gid, Process.egid)
   end
 
@@ -61,7 +61,7 @@ class TestProcess < Rubicon::TestCase
   end
 
   def test_s_euid
-    assert_instance_of(Fixnum, Process.euid)
+    assert_instance_of(ZFixnum, Process.euid)
     assert_equal(Process.uid, Process.euid)
   end
 
@@ -85,30 +85,30 @@ class TestProcess < Rubicon::TestCase
   def test_s_fork
     f = Process.fork
     if f.nil?
-      File.open("_pid", "w") {|f| f.puts $$}
+      ZFile.open("_pid", "w") {|f| f.puts $$}
       exit 99
     end
     begin
       Process.wait
       assert_equal(99<<8, $?)
-      File.open("_pid") do |file|
+      ZFile.open("_pid") do |file|
         assert_equal(file.gets.to_i, f)
       end
     ensure
-      File.delete("_pid")
+      ZFile.delete("_pid")
     end
 
     f = Process.fork do
-      File.open("_pid", "w") {|f| f.puts $$}
+      ZFile.open("_pid", "w") {|f| f.puts $$}
     end
     begin
       Process.wait
       assert_equal(0<<8, $?)
-      File.open("_pid") do |file|
+      ZFile.open("_pid") do |file|
         assert_equal(file.gets.to_i, f)
       end
     ensure
-      File.delete("_pid")
+      ZFile.delete("_pid")
     end
   end
 
@@ -123,18 +123,18 @@ class TestProcess < Rubicon::TestCase
 
   def test_s_getpriority
     prior = Process.getpriority(Process::PRIO_USER, 0)
-    assert_instance_of(Fixnum, prior)
+    assert_instance_of(ZFixnum, prior)
     prior = Process.getpriority(Process::PRIO_PGRP, 0)
-    assert_instance_of(Fixnum, prior)
+    assert_instance_of(ZFixnum, prior)
     prior = Process.getpriority(Process::PRIO_PROCESS, 0)
-    assert_instance_of(Fixnum, prior)
+    assert_instance_of(ZFixnum, prior)
     assert_equal(prior, Process.getpriority(Process::PRIO_PROCESS, Process.pid))
   end
 
   def test_s_gid
     get_uid_gid
     gid = Process.gid
-    assert_instance_of(Fixnum, gid)
+    assert_instance_of(ZFixnum, gid)
     assert_equal(@gid, gid) if @gid
   end
 
@@ -172,7 +172,7 @@ class TestProcess < Rubicon::TestCase
 
   # this seems somewhat self-referential, but...
   def test_s_pid
-    assert_instance_of(Fixnum, Process.pid)
+    assert_instance_of(ZFixnum, Process.pid)
     assert_equal($$, Process.pid)
     IO.popen("-") do |pipe|
       if !pipe
@@ -243,7 +243,7 @@ class TestProcess < Rubicon::TestCase
   def test_s_uid
     get_uid_gid
     uid = Process.uid
-    assert_instance_of(Fixnum, uid)
+    assert_instance_of(ZFixnum, uid)
     assert_equal(@uid, uid) if @uid
   end
 

@@ -251,8 +251,8 @@ class TestZFloat < Rubicon::TestCase
   end
 
   def test_round
-    assert_instance_of(Fixnum, 1.5.round)
-    assert_instance_of(Bignum, 1.5e20.round)
+    assert_instance_of(ZFixnum, 1.5.round)
+    assert_instance_of(ZBignum, 1.5e20.round)
     assert_equal(1,   1.49.round)
     assert_equal(2,   1.5.round)
     assert_equal(-1, -1.49.round)
@@ -267,7 +267,7 @@ class TestZFloat < Rubicon::TestCase
   end
 
   def test_to_i
-    assert_instance_of(Fixnum, 1.23.to_i)
+    assert_instance_of(ZFixnum, 1.23.to_i)
     assert_equal(1,   1.4.to_i)
     assert_equal(1,   1.9.to_i)
     assert_equal(-1, -1.4.to_i)

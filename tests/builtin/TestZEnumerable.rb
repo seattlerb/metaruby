@@ -1,6 +1,7 @@
 $: << File.dirname($0) << File.join(File.dirname($0), "..")
 require 'rubicon'
 
+# TODO: this requires a bunch of rework and/or ZArray to be fully done
 
 class TestZEnumerable < Rubicon::TestCase
 

@@ -6,9 +6,9 @@ gsub!(/rb_e/, '$rb_e')
 gsub!(/rb_m/, '$rb_m')
 gsub!(/\bsuper\b/, 'supr')
 gsub!(/\bmodule\b/, 'modl')
-gsub!(/\bQnil\b/, 'NIL')
-gsub!(/\bQtrue\b/, 'TRUE')
-gsub!(/\bQfalse\b/, 'FALSE')
+gsub!(/\bQnil\b/, ':ZNIL')
+gsub!(/\bQtrue\b/, ':ZTRUE')
+gsub!(/\bQfalse\b/, ':ZFALSE')
 
 $_ = "# IGNORE " + $_ if $_ =~ /zz_define_((module|class|method)_id|(readonly|hooked|virtual)_variable)/
 
