@@ -12,5 +12,8 @@ all: everything.rb
 everything.rb: $(FILES) Makefile port.rb
 	ruby -w tie-it-all-together.rb > everything.rb
 
+parser:
+	ruby -wI ../../cocor/dev/build2 ../../cocor/dev/build2/Comp.rb ruby.ATG 
+
 clean:
 	rm -f $(FILES) everything.rb *~

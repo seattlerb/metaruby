@@ -1,0 +1,427 @@
+$0123456789
+COMPILER Ruby
+
+CHARACTERS
+  upper       = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".
+  lower       = "abcdefghijklmnopqrtsuvwxyz".
+  letter      = upper + lower.
+  digit       = "0123456789".
+  eol         = CHR(10).
+  anyButQuote = ANY - '"' - eol.
+  anyButSlash = ANY - "/" - eol.
+  anyButParen = ANY - ")" - eol.
+  dollar      = "$".
+  ampersand   = "&".
+  backtick    = "`".
+  singleQuote = "'".
+  plus	      = "+".
+  at	      = "@".
+  slash	      = "/".
+
+IGNORE eol
+
+TOKENS
+  tINTEGER = digit { ["_"] digit}.
+  tFLOAT = digit { ["_"] digit} ("." digit { ["_"] digit } [ ("E" | "e") ["+" | "-"] digit { ["_"] digit } ] | ("E" | "e") ["+" | "-"] digit { ["_"] digit }).
+  tBACKREF = dollar ( ampersand | backtick | singleQuote | plus ).
+  tCONSTANT = upper {upper}.
+  tCVAR = at at letter { ["_"] (letter | digit) }. /* at + at + id */
+  tIVAR = at    letter { ["_"] (letter | digit) }. /* at + id */
+  tSYMBEG = at.
+  tREGEXP  = slash {anyButSlash} slash. /* HACK */
+  tSTRING   = '"' {anyButQuote} '"'. /* HACK ? */
+  tXSTRING  = '`' {anyButQuote} '`'. /* HACK ? */
+  tIDENTIFIER = letter { ["_"] (letter | digit) }.
+  tFID = letter { ["_"] (letter | digit) } ("?" | "!"). /* id + ("?" | "!") */
+  tGVAR = dollar letter { ["_"] (letter | digit) } ("?" | "!"). /* "$" + id */
+  tNTHREF = dollar digit {digit}.
+  tQWORDS = "%w(" {anyButParen} ")". /* HACK */
+
+COMMENTS FROM "#" TO eol NESTED
+
+PRODUCTIONS
+
+Ruby = compstmt .
+
+compstmt	= [ stmt { term { term } stmt } ] { term }
+		.
+
+stmt		= ( "alias" ( fitem fitem | tGVAR ( tGVAR | tBACKREF | tNTHREF ) )
+		  | "undef" fitems
+		  | "BEGIN" "{" compstmt "}"
+		  | "END"   "{" compstmt "}"
+		  | mlhs "=" commandcall
+		  | lhs  "=" ( commandcall | mrhsbasic )
+		  | expr
+		  ) { ( "if" | "unless" | "while" | "until" ) expr
+		    | stmt "rescue" stmt }
+		.
+
+expr		= ( mlhs "=" mrhs
+		  | "return" retargs
+		  | commandcall
+		  | "not" expr
+		  | "!" commandcall
+		  | arg
+		  ) { ( "and" | "or" ) expr }
+		.
+
+commandcall	= command
+		| blockcommand
+		.
+
+blockcommand	= blockcall [ ( "." | "::" ) operation2 commandargs ]
+		.
+
+command		= operation commandargs
+		| "super"    commandargs
+		| primary ( "." | "::" ) operation2 commandargs
+		| "yield" retargs
+		.
+
+/* TODO: LHS abiguity */
+mlhs		= mlhsitem "," { mlhsitem "," } [ ( mlhsitem | "*" [ lhs ] ) ]
+		|                                    "*" [ lhs ]
+		| "(" mlhs ")"
+ 		.
+
+/*
+#  a, b  = 1, 2
+#  a, *  = 1, 2
+#  a,    = 1, 2
+#  *     = 1, 2
+#  *a    = 1, 2
+# (a, *) = 1, 2
+# ...
+*/
+
+/*
+mlhs		= mlhsitem { "," mlhsitem } [","] [ "*" [ lhs ] ]
+		| "*" [ lhs ]
+		| "(" mlhs ")"
+		.
+*/
+
+mlhsitem	=     lhs
+		| "(" lhs ")"
+		.
+		
+lhs		= variable
+		| primary ( "[" [ arefargs ] "]" | "::" tIDENTIFIER | primary "." ( tIDENTIFIER |  tCONSTANT ) )
+		| backref
+		.
+
+cname		= tIDENTIFIER
+		| tCONSTANT
+		.
+
+fname		= tIDENTIFIER
+		| tCONSTANT
+		| tFID
+		| op
+		| reswords
+		.
+
+/* RENAMED to fitems from undeflist */
+fitems		= fitem { "," fitem }
+		.
+
+fitem		= fname
+		| symbol
+		.
+
+op		= "|" | "^" | "&" | "<=>" | "==" | "===" | "=~" | ">" | ">=" | "<" | "<=" | "<<"  | ">>"
+		| "+" | "-" | "*" | "*"   | "/"  | "%"   | "**" | "~" | "+"  | "-" | "[]" | "[]=" | "`"
+		.
+
+reswords	= "__LINE__" | "__FILE__" | "BEGIN" | "END"
+		| "alias" | "and" | "begin" | "break" | "case" | "class" | "def"
+		| "defined?" | "do" | "else" | "elsif" | "end" | "ensure" | "false"
+		| "for" | "if" | "in" | "module" | "next" | "nil" | "not"
+		| "or" | "redo" | "rescue" | "retry" | "return" | "self" | "super"
+		| "then" | "true" | "undef" | "unless" | "until" | "when"
+		| "while" | "yield" | "rescue"
+		.
+
+arg		= ( lhs "=" arg
+		  | variable assignmentop arg
+		  | primary "[" [ arefargs ] "]"                assignmentop arg /* TODO: cleanup? */
+		  | primary "."  ( tCONSTANT | tIDENTIFIER ) assignmentop arg
+		  | primary "::" tIDENTIFIER                 assignmentop arg
+		  | primary
+		  | backref assignmentop arg
+		  | ( "+" | "-" | "!" | "~" ) arg
+		  | "defined?" [ nl ] arg
+		  ) { ( "!=" | "!~" | "%" | "&&" | "&" | "*" | "**" | "+" | "-" | ".." | "..." | "/" | "<"
+		      | "<<" | "<=" | "<=>" | "==" | "===" | "=~" | ">" | ">=" | ">>" | "^" | "|" | "||" ) arg
+		      | arg "?" arg ":" arg }
+		.
+
+parenargs	= "("                             ")"
+		| "(" callargs            [ nl ] ")"
+		| "("           blockcall [ nl ] ")"
+		| "(" args  "," blockcall [ nl ] ")"
+		.
+
+callargs	= command
+		| args "," command
+		| args                          [ "," blockarg ]
+		| args "," "*" arg            [ "," blockarg ]
+		| args "," assocs               [ "," blockarg ]
+		| args "," assocs "," "*" arg [ "," blockarg ]
+		|          assocs               [ "," blockarg ]
+		|          assocs "," "*" arg [ "," blockarg ]
+		|                     "*" arg [ "," blockarg ]
+		|                                     blockarg
+		.
+
+commandargs	= callargs
+		.
+
+blockarg	= "&" arg
+		.
+
+args 		= arg { "," arg }
+		.
+
+mrhs		= arg
+		| mrhsbasic
+		.
+
+mrhsbasic	= args "," arg
+		| args "," "*" arg
+		| "*" arg
+		.
+
+retargs	= callargs .
+
+primary		= ( literal
+		  | string
+		  | tXSTRING
+		  | tQWORDS
+		  | tXSTRING
+		  | tREGEXP
+		  | varref
+		  | backref
+		  | tFID
+		  | "begin" compstmt [ rescue ] [ optelse ] [ ensure ] "end"
+		  | "(" compstmt ")"
+		  | "::" cname
+		  | "[" [ arefargs ] "]"
+		  | "{" [ assoclist ] "}"
+		  | "return" [ "(" [ retargs ] ")" ]
+		  | "yield"  [ "(" [ retargs ] ")" ]
+		  | "defined?" [ nl ] "(" expr ")"
+		  | operation braceblock
+		  | methodcall [ braceblock ]
+		  | "if"     expr then compstmt iftail  "end"
+		  | "unless" expr then compstmt [ optelse ] "end"
+		  | "while"  expr do compstmt "end"
+		  | "until"  expr do compstmt "end"
+		  | "case" [ expr ] { term } casebody "end"
+		  | "for" blockvar "in" expr do compstmt "end"
+		  | "class" ( cname superclass | "<<" expr term ) compstmt "end"
+		  | "module" cname compstmt "end"
+		  | "def" [ singleton dotorcolon ] fname farglist compstmt [ rescue ] [ optelse ] [ ensure ] "end"
+		  | "break"
+		  | "next"
+		  | "redo"
+		  | "retry"
+		  ) {"::" tCONSTANT | "[" [ arefargs ] "]" }
+		.
+
+arefargs	= commandcall          [ nl ]
+		| args "," commandcall [ nl ]
+		| args [ trailer ]
+		| args "," "*" arg      [ nl ]
+		| assocs [ trailer ]
+		| "*" arg               [ nl ]
+		.
+
+then		= [ term ] [ "then" ]
+		.
+
+do		= term
+		| "do"
+		.
+
+iftail		= "elsif" expr then compstmt {"elsif" expr then compstmt} [ optelse ]
+		.
+
+optelse		= "else" compstmt
+		.
+
+/* RENAME: terrible! */
+blockvar	= lhs
+		| mlhs
+		.
+
+/* RENAME: terrible! */
+optblockvar	= "||" | "|" [ blockvar ] "|"
+		.
+
+doblock		= "do" [ optblockvar ] compstmt "end"
+		.
+
+blockcall	= command doblock { ( "." | "::" ) operation2 [ parenargs ] }
+		.
+
+methodcall	= operation parenargs
+		| primary "."  operation2 [ parenargs ]
+		| primary "::" operation2 parenargs
+		| primary "::" operation3
+		| "super" parenargs
+		| "super"
+		.
+
+braceblock	= "{" [ optblockvar ] compstmt "}"
+		| "do" [ optblockvar ] compstmt "end"
+		.
+
+casebody	= "when" whenargs then compstmt {whenargs then compstmt} [ optelse ]
+		.
+
+whenargs	= args [ "," "*" arg ]
+		| "*" arg
+		.
+
+rescue		= "rescue" [ args ] [ "=>" lhs ] then compstmt rescue
+		.
+
+ensure		= "ensure" compstmt
+		.
+
+literal		= numeric
+		| symbol
+		| tREGEXP
+		.
+
+string		= tSTRING {tSTRING}
+		.
+
+symbol		= tSYMBEG sym
+		.
+
+sym		= fname
+		| tIVAR
+		| tGVAR
+		| tCVAR
+		.
+
+numeric		= tINTEGER
+		| tFLOAT
+		.
+
+variable	= tIDENTIFIER
+		| tIVAR
+		| tGVAR
+		| tCONSTANT
+		| tCVAR
+		| "nil"
+		| "self"
+		| "true"
+		| "false"
+		| "__FILE__"
+		| "__LINE__"
+		.
+
+varref		= variable
+		.
+
+backref		= tNTHREF  /* /\$\d+/ */
+		| tBACKREF /* /\$[\&\`\\\+] */
+		.
+
+superclass	=          term
+		| "<" expr term
+		.
+
+farglist	= "(" [ fargs ] [ nl ] ")"
+		|     [ fargs ] term
+		.
+
+/*
+fnormargs "," fopts "," frestarg "," fblockarg
+fnormargs "," fopts "," frestarg
+fnormargs "," fopts              "," fblockarg
+fnormargs           "," frestarg "," fblockarg
+fnormargs "," fopts
+fnormargs           "," frestarg
+fnormargs                        "," fblockarg
+              fopts "," frestarg "," fblockarg
+              fopts "," frestarg
+              fopts              "," fblockarg
+                        frestarg "," fblockarg
+                        frestarg
+                                     fblockarg
+*/
+
+fargs		= fnormargs [ "," fopts ] [ "," frestarg ] [ "," fblockarg ]
+		|                 fopts   [ "," frestarg ] [ "," fblockarg ]
+		|                               frestarg   [ "," fblockarg ]
+		|                                                fblockarg
+		.
+
+fnormargs	= fnormarg { "," fnormarg }
+		.
+
+fnormarg	= tCONSTANT
+		| tIVAR
+		| tGVAR
+		| tCVAR
+		| tIDENTIFIER
+		.
+
+/* RENAMED: to fopts from foptargs */
+fopts		= fopt { "," fopt }
+		.
+
+fopt		= tIDENTIFIER "=" arg
+		.
+
+frestarg	= "*" [ tIDENTIFIER ]
+		.
+
+fblockarg	= "&" tIDENTIFIER
+		.
+
+singleton	= varref
+		| "(" expr [ nl ] ")"
+		.
+
+assoclist	= ( assocs | args ) [ trailer ]
+		.
+
+assocs		= assoc { "," assoc }
+		.
+
+assoc		= arg "=>" arg
+		.
+
+operation	= tIDENTIFIER
+		| tCONSTANT
+		| tFID
+		.
+
+operation2	= tIDENTIFIER
+		| tCONSTANT
+		| tFID
+		| op
+		.
+
+operation3	= tIDENTIFIER
+		| tFID
+		| op
+		.
+
+assignmentop	= "*=" | "**=" | "<<=" | ">>=" | "&&=" | "&=" | "||=" | "|=" | "+=" | "-=" | "/=" | "^=" | "%=" .
+
+dotorcolon	= "." | "::" .
+
+nl		= "\n" .
+
+trailer		= nl | "," .
+
+term		= ";" | nl .
+
+END Ruby.
