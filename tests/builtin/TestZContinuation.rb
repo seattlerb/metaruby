@@ -48,4 +48,4 @@ class TestZContinuation < Rubicon::TestCase
   end
 end
 
-Rubicon::handleTests(TestContinuation) if $0 == __FILE__
+Rubicon::handleTests(TestZContinuation) if $0 == __FILE__

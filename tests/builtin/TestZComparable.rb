@@ -71,4 +71,4 @@ class TestZComparable < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestComparable) if $0 == __FILE__
+Rubicon::handleTests(TestZComparable) if $0 == __FILE__

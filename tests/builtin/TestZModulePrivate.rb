@@ -294,4 +294,4 @@ class TestZModulePrivate < Rubicon::TestCase
 end
 
 
-Rubicon::handleTests(TestModulePrivate) if $0 == __FILE__
+Rubicon::handleTests(TestZModulePrivate) if $0 == __FILE__

@@ -321,4 +321,4 @@ class TestZFile__Stat < FileInfoTest
 
 end
 
-Rubicon::handleTests(TestFile__Stat) if $0 == __FILE__
+Rubicon::handleTests(TestZFile__Stat) if $0 == __FILE__

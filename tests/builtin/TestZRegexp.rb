@@ -117,4 +117,4 @@ class TestZRegexp < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestRegexp) if $0 == __FILE__
+Rubicon::handleTests(TestZRegexp) if $0 == __FILE__

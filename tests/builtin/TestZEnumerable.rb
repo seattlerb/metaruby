@@ -73,7 +73,7 @@ class TestZEnumerable < Rubicon::TestCase
     assert_equal([],     [].grep(1))
     assert_equal([4,6],  @a.grep(3..7))
     assert_equal([5,7],  @a.grep(3..7) {|a| a+1})
-    assert_equal([self], [self, 1].grep(TestEnumerable))
+    assert_equal([self], [self, 1].grep(TestZEnumerable))
   end
 
   def test_include?
@@ -149,4 +149,4 @@ class TestZEnumerable < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestEnumerable) if $0 == __FILE__
+Rubicon::handleTests(TestZEnumerable) if $0 == __FILE__

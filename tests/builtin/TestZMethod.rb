@@ -37,4 +37,4 @@ class TestZMethod < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestMethod) if $0 == __FILE__
+Rubicon::handleTests(TestZMethod) if $0 == __FILE__

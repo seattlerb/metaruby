@@ -118,4 +118,4 @@ class TestZInteger < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestInteger) if $0 == __FILE__
+Rubicon::handleTests(TestZInteger) if $0 == __FILE__

@@ -7,4 +7,4 @@ class TestZBinding < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestBinding) if $0 == __FILE__
+Rubicon::handleTests(TestZBinding) if $0 == __FILE__

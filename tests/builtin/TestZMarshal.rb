@@ -114,4 +114,4 @@ class TestZMarshal < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestMarshal) if $0 == __FILE__
+Rubicon::handleTests(TestZMarshal) if $0 == __FILE__

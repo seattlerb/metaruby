@@ -121,4 +121,4 @@ class TestZMath < Rubicon::TestCase
   end
 end
 
-Rubicon::handleTests(TestMath) if $0 == __FILE__
+Rubicon::handleTests(TestZMath) if $0 == __FILE__

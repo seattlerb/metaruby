@@ -43,4 +43,4 @@ class TestZNilClass < Rubicon::TestCase
   end
 end
 
-Rubicon::handleTests(TestNilClass) if $0 == __FILE__
+Rubicon::handleTests(TestZNilClass) if $0 == __FILE__

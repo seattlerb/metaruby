@@ -285,4 +285,4 @@ class TestZModule < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestModule) if $0 == __FILE__
+Rubicon::handleTests(TestZModule) if $0 == __FILE__

@@ -53,4 +53,4 @@ class TestZProc < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestProc) if $0 == __FILE__
+Rubicon::handleTests(TestZProc) if $0 == __FILE__

@@ -10,7 +10,7 @@ gsub!(/\bQnil\b/, 'NIL')
 gsub!(/\bQtrue\b/, 'TRUE')
 gsub!(/\bQfalse\b/, 'FALSE')
 
-$_ = "# IGNORE " + $_ if /zz_define_((module|class|method)_id|(readonly|hooked|virtual)_variable)/
+$_ = "# IGNORE " + $_ if $_ =~ /zz_define_((module|class|method)_id|(readonly|hooked|virtual)_variable)/
 
 # finally, strip all c function pointers out
 gsub!(/(zz_define_(?:private_method|method|global_function|singleton_method|module_function)\s*\(.*?,\s*)\S+,\s*([\d-]+\))/) do

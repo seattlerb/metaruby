@@ -59,9 +59,9 @@ class TestZKernel < Rubicon::TestCase
   def test_class
     assert_instance_of(Class, 1.class)
     assert_equal(Fixnum, 1.class)
-    assert_equal(Class, TestKernel.class)
-    assert_equal(Class, TestKernel.class.class)
-    assert_equal(Module, Enumerable.class)
+    assert_equal(Class, TestZKernel.class)
+    assert_equal(Class, TestZKernel.class.class)
+    assert_equal(Module, ZEnumerable.class)
   end
 
   class CloneTest
@@ -250,7 +250,7 @@ class TestZKernel < Rubicon::TestCase
     assert(s.instance_of?(String))
     assert(!s.instance_of?(Object))
     assert(!s.instance_of?(Class))
-    assert(self.instance_of?(TestKernel))
+    assert(self.instance_of?(TestZKernel))
   end
 
   class IVTest1
@@ -274,10 +274,10 @@ class TestZKernel < Rubicon::TestCase
     assert(s.is_a?(String))
     assert(s.is_a?(Object))
     assert(!s.is_a?(Class))
-    assert(self.is_a?(TestKernel))
-    assert(TestKernel.is_a?(Class))
-    assert(TestKernel.is_a?(Module))
-    assert(TestKernel.is_a?(Object))
+    assert(self.is_a?(ZTestKernel))
+    assert(ZTestKernel.is_a?(Class))
+    assert(ZTestKernel.is_a?(Module))
+    assert(ZTestKernel.is_a?(Object))
 
     a = []
     assert(a.is_a?(Array))
@@ -289,10 +289,10 @@ class TestZKernel < Rubicon::TestCase
     assert(s.kind_of?(String))
     assert(s.kind_of?(Object))
     assert(!s.kind_of?(Class))
-    assert(self.kind_of?(TestKernel))
-    assert(TestKernel.kind_of?(Class))
-    assert(TestKernel.kind_of?(Module))
-    assert(TestKernel.kind_of?(Object))
+    assert(self.kind_of?(ZTestKernel))
+    assert(ZTestKernel.kind_of?(Class))
+    assert(ZTestKernel.kind_of?(Module))
+    assert(ZTestKernel.kind_of?(Object))
 
     a = []
     assert(a.kind_of?(Array))
@@ -351,7 +351,7 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_methods
-    assert_set_equal(TestKernel.instance_methods(true), self.methods)
+    assert_set_equal(ZTestKernel.instance_methods(true), self.methods)
     assert_set_equal(%w(one three four)  + Object.instance_methods(true), 
         MethodsTest.new.methods)
   end
@@ -385,7 +385,7 @@ class TestZKernel < Rubicon::TestCase
   end
 
   def test_public_methods
-    assert_set_equal(TestKernel.instance_methods(true), self.public_methods)
+    assert_set_equal(ZTestKernel.instance_methods(true), self.public_methods)
     assert_set_equal(%w(one four)  + Object.instance_methods(true), 
         MethodsTest.new.public_methods)
   end
@@ -459,7 +459,7 @@ class TestZKernel < Rubicon::TestCase
 
   def test_type
     assert_instance_of(Class, self.class)
-    assert_equal(TestKernel, self.class)
+    assert_equal(ZTestKernel, self.class)
     assert_equal(String, "hello".class)
     assert_equal(Bignum, (10**40).class)
   end
@@ -664,7 +664,7 @@ class TestZKernel < Rubicon::TestCase
 
   def test_s_caller
     c = caller_test
-    assert_match(c[0], %r{TestKernel.rb:#{__LINE__-1}:in `test_s_caller'})
+    assert_match(c[0], %r{ZTestKernel.rb:#{__LINE__-1}:in `test_s_caller'})
   end #`
 
   def catch_test
@@ -1823,7 +1823,7 @@ class TestZKernel < Rubicon::TestCase
     set_trace_func(proc {|*a| trace_func(*a) })
     innerLine = trace_func_test(__FILE__, __LINE__)
     set_trace_func(nil)
-    assert_equal(["line", __FILE__, line+2, :test_s_set_trace_func, TestKernel],
+    assert_equal(["line", __FILE__, line+2, :test_s_set_trace_func, ZTestKernel],
                  @res.shift)
     Version.less_than("1.8.0") do
       if defined? Object.allocate
@@ -1833,9 +1833,9 @@ class TestZKernel < Rubicon::TestCase
 		     @res.shift)
       end
     end
-    assert_equal(["call", __FILE__, innerLine-1, :trace_func_test, TestKernel],
+    assert_equal(["call", __FILE__, innerLine-1, :trace_func_test, ZTestKernel],
                  @res.shift)
-    assert_equal(["line", __FILE__, innerLine, :trace_func_test, TestKernel],
+    assert_equal(["line", __FILE__, innerLine, :trace_func_test, ZTestKernel],
                  @res.shift)
     assert_equal("return", @res.shift[0])
   end
@@ -2050,7 +2050,7 @@ class TestZKernel < Rubicon::TestCase
   end
 
 #  def test_s_test
-#    # in TestKernelTest
+#    # in ZTestKernelTest
 #  end
 
   def test_s_throw
@@ -2153,4 +2153,4 @@ class TestZKernel < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestKernel) if $0 == __FILE__
+Rubicon::handleTests(TestZKernel) if $0 == __FILE__

@@ -32,4 +32,4 @@ class TestZTrueClass < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestTrueClass) if $0 == __FILE__
+Rubicon::handleTests(TestZTrueClass) if $0 == __FILE__

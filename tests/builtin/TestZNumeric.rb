@@ -61,4 +61,4 @@ class TestZNumeric < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestNumeric) if $0 == __FILE__
+Rubicon::handleTests(TestZNumeric) if $0 == __FILE__

@@ -6,4 +6,4 @@ class TestZObject < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestObject) if $0 == __FILE__
+Rubicon::handleTests(TestZObject) if $0 == __FILE__

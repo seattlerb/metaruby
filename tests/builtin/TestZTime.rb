@@ -109,17 +109,17 @@ class TestZTime < Rubicon::TestCase
   def test_CMP # '<=>'
     @@dates.each do |x|
       if (x.amt != 0)
-        assert_equal(1, ZTime.local(*x.result) <=> Time.local(*x.orig),
+        assert_equal(1, ZTime.local(*x.result) <=> ZTime.local(*x.orig),
                      "#{x.result} should be > #{x.orig}")
 
-        assert_equal(-1, ZTime.local(*x.orig) <=> Time.local(*x.result))
-        assert_equal(0, ZTime.local(*x.orig) <=> Time.local(*x.orig))
-        assert_equal(0, ZTime.local(*x.result) <=> Time.local(*x.result))
+        assert_equal(-1, ZTime.local(*x.orig) <=> ZTime.local(*x.result))
+        assert_equal(0, ZTime.local(*x.orig) <=> ZTime.local(*x.orig))
+        assert_equal(0, ZTime.local(*x.result) <=> ZTime.local(*x.result))
         
-        assert_equal(1,ZTime.gm(*x.result) <=> Time.gm(*x.orig))
-        assert_equal(-1,ZTime.gm(*x.orig) <=> Time.gm(*x.result))
-        assert_equal(0,ZTime.gm(*x.orig) <=> Time.gm(*x.orig))
-        assert_equal(0,ZTime.gm(*x.result) <=> Time.gm(*x.result))
+        assert_equal(1,ZTime.gm(*x.result) <=> ZTime.gm(*x.orig))
+        assert_equal(-1,ZTime.gm(*x.orig) <=> ZTime.gm(*x.result))
+        assert_equal(0,ZTime.gm(*x.orig) <=> ZTime.gm(*x.orig))
+        assert_equal(0,ZTime.gm(*x.result) <=> ZTime.gm(*x.result))
       end
     end
   end
@@ -127,18 +127,18 @@ class TestZTime < Rubicon::TestCase
   def test_MINUS # '-'
     @@dates.each do |x|
       # Check subtracting an amount in seconds
-      assert_equals(ZTime.local(*x.result) - x.amt, Time.local(*x.orig))
-      assert_equals(ZTime.gm(*x.result) - x.amt, Time.gm(*x.orig))
+      assert_equals(ZTime.local(*x.result) - x.amt, ZTime.local(*x.orig))
+      assert_equals(ZTime.gm(*x.result) - x.amt, ZTime.gm(*x.orig))
       # Check subtracting two times
-      assert_equals(ZTime.local(*x.result) - Time.local(*x.orig), x.amt)
-      assert_equals(ZTime.gm(*x.result) - Time.gm(*x.orig), x.amt)
+      assert_equals(ZTime.local(*x.result) - ZTime.local(*x.orig), x.amt)
+      assert_equals(ZTime.gm(*x.result) - ZTime.gm(*x.orig), x.amt)
     end
   end
 
   def test_PLUS # '+'
     @@dates.each do |x|
-      assert_equals(ZTime.local(*x.orig) + x.amt, Time.local(*x.result))
-      assert_equals(ZTime.gm(*x.orig) + x.amt, Time.gm(*x.result))
+      assert_equals(ZTime.local(*x.orig) + x.amt, ZTime.local(*x.result))
+      assert_equals(ZTime.gm(*x.orig) + x.amt, ZTime.gm(*x.result))
     end
   end
 
@@ -409,22 +409,22 @@ class TestZTime < Rubicon::TestCase
     sec = t.to_i
     assert_equal(0, ZTime.at(0))
     assert_equal(t, ZTime.at(t))
-    assert((ZTime.at(sec,1000000).to_f - Time.at(sec).to_f) == 1.0)
+    assert((ZTime.at(sec,1000000).to_f - ZTime.at(sec).to_f) == 1.0)
   end
 
   def test_s_gm
     assert_exception(ArgumentError) { ZTime.gm }
-    assert(ZTime.gm(2000) != Time.local(2000))
-    assert_equal(ZTime.gm(2000), Time.gm(2000,1,1,0,0,0))
-    assert_equal(ZTime.gm(2000,nil,nil,nil,nil,nil), Time.gm(2000,1,1,0,0,0))
+    assert(ZTime.gm(2000) != ZTime.local(2000))
+    assert_equal(ZTime.gm(2000), ZTime.gm(2000,1,1,0,0,0))
+    assert_equal(ZTime.gm(2000,nil,nil,nil,nil,nil), ZTime.gm(2000,1,1,0,0,0))
     assert_exception(ArgumentError) { ZTime.gm(2000,0) }
     assert_exception(ArgumentError) { ZTime.gm(2000,13) }
     assert_exception(ArgumentError) { ZTime.gm(2000,1,1,24) }
     ZTime.gm(2000,1,1,23)
     @@months.each do |month, num| 
-      assert_equal(ZTime.gm(2000,month), Time.gm(2000,num,1,0,0,0))
-      assert_equal(ZTime.gm(1970,month), Time.gm(1970,num,1,0,0,0))
-      assert_equal(ZTime.gm(2037,month), Time.gm(2037,num,1,0,0,0))
+      assert_equal(ZTime.gm(2000,month), ZTime.gm(2000,num,1,0,0,0))
+      assert_equal(ZTime.gm(1970,month), ZTime.gm(1970,num,1,0,0,0))
+      assert_equal(ZTime.gm(2037,month), ZTime.gm(2037,num,1,0,0,0))
     end
     t = ZTime.gm(2000,1,1)
     a = t.to_a
@@ -433,17 +433,17 @@ class TestZTime < Rubicon::TestCase
 
   def test_s_local
     assert_exception(ArgumentError) { ZTime.local }
-    assert(ZTime.gm(2000) != Time.local(2000))
-    assert_equal(ZTime.local(2000), Time.local(2000,1,1,0,0,0))
-    assert_equal(ZTime.local(2000,nil,nil,nil,nil,nil), Time.local(2000,1,1,0,0,0))
+    assert(ZTime.gm(2000) != ZTime.local(2000))
+    assert_equal(ZTime.local(2000), ZTime.local(2000,1,1,0,0,0))
+    assert_equal(ZTime.local(2000,nil,nil,nil,nil,nil), ZTime.local(2000,1,1,0,0,0))
     assert_exception(ArgumentError) { ZTime.local(2000,0) }
     assert_exception(ArgumentError) { ZTime.local(2000,13) }
     assert_exception(ArgumentError) { ZTime.local(2000,1,1,24) }
     ZTime.local(2000,1,1,23)
     @@months.each do |month, num| 
-      assert_equal(ZTime.local(2000,month), Time.local(2000,num,1,0,0,0))
-      assert_equal(ZTime.local(1971,month), Time.local(1971,num,1,0,0,0))
-      assert_equal(ZTime.local(2037,month), Time.local(2037,num,1,0,0,0))
+      assert_equal(ZTime.local(2000,month), ZTime.local(2000,num,1,0,0,0))
+      assert_equal(ZTime.local(1971,month), ZTime.local(1971,num,1,0,0,0))
+      assert_equal(ZTime.local(2037,month), ZTime.local(2037,num,1,0,0,0))
     end
     t = ZTime.local(2000,1,1)
     a = t.to_a
@@ -455,9 +455,9 @@ class TestZTime < Rubicon::TestCase
     # Test insufficient arguments
     #
     assert_exception(ArgumentError) { ZTime.mktime }
-    assert(ZTime.gm(2000) != Time.mktime(2000))
-    assert_equal(ZTime.mktime(2000), Time.mktime(2000,1,1,0,0,0))
-    assert_equal(ZTime.mktime(2000,nil,nil,nil,nil,nil), Time.mktime(2000,1,1,0,0,0))
+    assert(ZTime.gm(2000) != ZTime.mktime(2000))
+    assert_equal(ZTime.mktime(2000), ZTime.mktime(2000,1,1,0,0,0))
+    assert_equal(ZTime.mktime(2000,nil,nil,nil,nil,nil), ZTime.mktime(2000,1,1,0,0,0))
     assert_exception(ArgumentError) { ZTime.mktime(2000,0) }
     assert_exception(ArgumentError) { ZTime.mktime(2000,13) }
     assert_exception(ArgumentError) { ZTime.mktime(2000,1,1,24) }
@@ -467,9 +467,9 @@ class TestZTime < Rubicon::TestCase
     # Make sure spelled-out month names work
     #
     @@months.each do |month, num| 
-      assert_equal(ZTime.mktime(2000,month), Time.mktime(2000,num,1,0,0,0))
-      assert_equal(ZTime.mktime(1971,month), Time.mktime(1971,num,1,0,0,0))
-      assert_equal(ZTime.mktime(2037,month), Time.mktime(2037,num,1,0,0,0))
+      assert_equal(ZTime.mktime(2000,month), ZTime.mktime(2000,num,1,0,0,0))
+      assert_equal(ZTime.mktime(1971,month), ZTime.mktime(1971,num,1,0,0,0))
+      assert_equal(ZTime.mktime(2037,month), ZTime.mktime(2037,num,1,0,0,0))
     end
     t = ZTime.mktime(2000,1,1)
     a = t.to_a
@@ -503,4 +503,4 @@ class TestZTime < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestTime) if $0 == __FILE__
+Rubicon::handleTests(TestZTime) if $0 == __FILE__

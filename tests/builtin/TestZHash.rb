@@ -11,4 +11,4 @@ class TestZHash < HashBase
 
 end
 
-Rubicon::handleTests(TestHash) if $0 == __FILE__
+Rubicon::handleTests(TestZHash) if $0 == __FILE__

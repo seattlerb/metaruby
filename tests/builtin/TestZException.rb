@@ -52,4 +52,4 @@ class TestZException < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestException) if $0 == __FILE__
+Rubicon::handleTests(TestZException) if $0 == __FILE__

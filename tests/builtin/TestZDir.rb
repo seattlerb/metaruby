@@ -253,4 +253,4 @@ class TestZDir < Rubicon::TestCase
   
 end
 
-Rubicon::handleTests(TestDir) if $0 == __FILE__
+Rubicon::handleTests(TestZDir) if $0 == __FILE__

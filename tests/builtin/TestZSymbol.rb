@@ -66,4 +66,4 @@ class TestZSymbol < Rubicon::TestCase
   end
 end
 
-Rubicon::handleTests(TestSymbol) if $0 == __FILE__
+Rubicon::handleTests(TestZSymbol) if $0 == __FILE__

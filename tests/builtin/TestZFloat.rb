@@ -303,4 +303,4 @@ class TestZFloat < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestFloat) if $0 == __FILE__
+Rubicon::handleTests(TestZFloat) if $0 == __FILE__

@@ -47,4 +47,4 @@ class TestZStruct__Tms < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestStruct__Tms) if $0 == __FILE__
+Rubicon::handleTests(TestZStruct__Tms) if $0 == __FILE__

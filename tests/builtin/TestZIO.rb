@@ -210,7 +210,7 @@ class TestZIO < Rubicon::TestCase
 	  pipe.close
 	end
       else
-	buff = $stdin.gets
+# HACK	buff = $stdin.gets
 	exit buff.to_i
       end
       
@@ -1002,4 +1002,4 @@ class TestZIO < Rubicon::TestCase
   end
 end
 
-Rubicon::handleTests(TestIO) if $0 == __FILE__
+Rubicon::handleTests(TestZIO) if $0 == __FILE__

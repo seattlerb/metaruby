@@ -103,4 +103,4 @@ class TestZKanjiIndex < RUNIT::TestCase
   end
 end
 
-Rubicon::handleTests(TestKanjiIndex) if $0 == __FILE__
+Rubicon::handleTests(TestZKanjiIndex) if $0 == __FILE__

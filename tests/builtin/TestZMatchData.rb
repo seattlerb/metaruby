@@ -61,4 +61,4 @@ class TestZMatchData < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestMatchData) if $0 == __FILE__
+Rubicon::handleTests(TestZMatchData) if $0 == __FILE__

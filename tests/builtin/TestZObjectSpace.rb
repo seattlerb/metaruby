@@ -41,7 +41,7 @@ class TestZObjectSpace < Rubicon::TestCase
     d = D.new
 
     res = []
-    ZObjectSpace.each_object(TestObjectSpace::A) { |o| res << o }
+    ZObjectSpace.each_object(TestZObjectSpace::A) { |o| res << o }
     assert_set_equal([a, b, c, d], res)
 
     res = []
@@ -69,4 +69,4 @@ class TestZObjectSpace < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestObjectSpace) if $0 == __FILE__
+Rubicon::handleTests(TestZObjectSpace) if $0 == __FILE__

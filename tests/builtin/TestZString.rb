@@ -13,4 +13,4 @@ class TestZString < StringBase
 
 end
 
-Rubicon::handleTests(TestString) if $0 == __FILE__
+Rubicon::handleTests(TestZString) if $0 == __FILE__

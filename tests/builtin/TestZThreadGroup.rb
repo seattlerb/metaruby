@@ -37,4 +37,4 @@ class TestZThreadGroup < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestThreadGroup) if $0 == __FILE__
+Rubicon::handleTests(TestZThreadGroup) if $0 == __FILE__

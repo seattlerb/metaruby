@@ -31,4 +31,4 @@ class TestZGC < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestGC) if $0 == __FILE__
+Rubicon::handleTests(TestZGC) if $0 == __FILE__

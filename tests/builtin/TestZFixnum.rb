@@ -408,4 +408,4 @@ class TestZFixnum < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestFixnum) if $0 == __FILE__
+Rubicon::handleTests(TestZFixnum) if $0 == __FILE__

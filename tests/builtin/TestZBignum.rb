@@ -342,4 +342,4 @@ class TestZBignum < Rubicon::TestCase
 end
 
 
-Rubicon::handleTests(TestBignum) if $0 == __FILE__
+Rubicon::handleTests(TestZBignum) if $0 == __FILE__

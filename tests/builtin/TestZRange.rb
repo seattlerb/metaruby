@@ -115,4 +115,4 @@ class TestZRange < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestRange) if $0 == __FILE__
+Rubicon::handleTests(TestZRange) if $0 == __FILE__

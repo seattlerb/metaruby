@@ -265,4 +265,4 @@ class TestProcess < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestProcess) if $0 == __FILE__
+Rubicon::handleTests(TestZProcess) if $0 == __FILE__

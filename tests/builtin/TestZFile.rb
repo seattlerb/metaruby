@@ -1,4 +1,4 @@
-$: << ZFile.dirname($0) << File.join(File.dirname($0), "..")
+$: << File.dirname($0) << File.join(File.dirname($0), "..")
 require 'rubicon'
 require 'stat'
 
@@ -617,4 +617,4 @@ class TestZFile < Rubicon::TestCase
 
 end
 
-Rubicon::handleTests(TestFile) if $0 == __FILE__
+Rubicon::handleTests(TestZFile) if $0 == __FILE__
