@@ -7,6 +7,37 @@ require 'io'
 # IGNORE    rb_define_module_function(rb_mFileTest, name, func, argc);
 # IGNORE    rb_define_singleton_method(rb_cFile, name, func, argc);
     rb_cFile = rb_define_class("File", rb_cIO);
+
+# TODO: nuke rb_define_singleton_method for rb_cFile and just include the module
+def define_filetest_function(name, func, argc)
+    rb_define_module_function(rb_mFileTest, name, argc);
+    rb_define_singleton_method(rb_cFile, name, argc);
+end
+
+    define_filetest_function("directory?", :test_d, 1);
+    define_filetest_function("exist?", :test_e, 1);
+    define_filetest_function("exists?", :test_e, 1); # temporary
+    define_filetest_function("readable?", :test_r, 1);
+    define_filetest_function("readable_real?", :test_R, 1);
+    define_filetest_function("writable?", :test_w, 1);
+    define_filetest_function("writable_real?", :test_W, 1);
+    define_filetest_function("executable?", :test_x, 1);
+    define_filetest_function("executable_real?", :test_X, 1);
+    define_filetest_function("file?", :test_f, 1);
+    define_filetest_function("zero?", :test_z, 1);
+    define_filetest_function("size?", :test_s, 1);
+    define_filetest_function("size", :rb_file_s_size, 1);
+    define_filetest_function("owned?", :test_owned, 1);
+    define_filetest_function("grpowned?", :test_grpowned, 1);
+    define_filetest_function("pipe?", :test_p, 1);
+    define_filetest_function("symlink?", :test_l, 1);
+    define_filetest_function("socket?", :test_S, 1);
+    define_filetest_function("blockdev?", :test_b, 1);
+    define_filetest_function("chardev?", :test_c, 1);
+    define_filetest_function("setuid?", :test_suid, 1);
+    define_filetest_function("setgid?", :test_sgid, 1);
+    define_filetest_function("sticky?", :test_sticky, 1);
+
     rb_define_singleton_method(rb_cFile, "stat",  rb_file_s_stat, 1);
     rb_define_singleton_method(rb_cFile, "lstat", rb_file_s_lstat, 1);
     rb_define_singleton_method(rb_cFile, "ftype", rb_file_s_ftype, 1);

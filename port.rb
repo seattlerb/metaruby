@@ -165,7 +165,7 @@ end
 class ZZMethod
   def initialize(name, arity)
     @name = name
-    @arity = arity
+    @arity = arity.to_i
   end
 
   def inspect
@@ -175,8 +175,13 @@ class ZZMethod
       args = "obj"
     elsif @arity == -1 then
       args = "*args"
+    elsif @arity < -1 then
+      max = @arity.abs - 1
+      arglist = (1..max).to_a.map do |n| "obj" + n.to_s; end
+      arglist << "*args"
+      args = arglist.join(", ")
     else
-      arglist = (1..@arity.to_i).to_a.map do |n| "obj" + n.to_s; end
+      arglist = (1..@arity).to_a.map do |n| "obj" + n.to_s; end
       args = arglist.join(", ")
     end
     args = "(" + args + ")" if args.size > 0
@@ -305,10 +310,6 @@ end
 $rb_cObject = ZZKlass.new("ZObject", nil)
 $rb_cClass  = ZZKlass.new("ZClass", $rb_cObject)
 $rb_cModule = ZZKlass.new("ZModule", $rb_cObject)
-
-zz_define_global_const("ZTRUE",  '::ZTRUE'.intern)  ; ZTRUE  = ':ZTRUE'.intern
-zz_define_global_const("ZFALSE", '::ZFALSE'.intern) ; ZFALSE = ':ZFALSE'.intern
-zz_define_global_const("ZNIL",   '::ZNIL'.intern)   ; ZNIL   = ':ZNIL'.intern
 
 at_exit do
 
