@@ -1,4 +1,6 @@
 ###############################################################################
 2003-06-09 1.0.0				   01 major / 00 minor / 00 bug
  
- 	! Birthday!
+ 	! Birthday! First checked into perforce. This project started
+ 	2003-06-06 on a lark.
+

@@ -1,97 +1,66 @@
 program		: compstmt
 		;
 
-compstmt	: stmts opt_terms
+compstmt	: { stmt ( ( term )+ stmt )* } ( term )*
 		;
 
-stmts		: none
-		| stmt
-		| stmts terms stmt
-		| error stmt
+stmt		: ( kALIAS ( fitem fitem | tGVAR ( tGVAR | tBACK_REF | tNTH_REF )
+		  | kUNDEF fitems
+		  | klBEGIN '{' compstmt '}'
+		  | klEND   '{' compstmt '}'
+		  | mlhs '=' command_call
+		  | lhs  '=' ( command_call | mrhs_basic )
+		  | expr
+		  ) ( ( kIF_MOD | kUNLESS_MOD | kWHILE_MOD | kUNTIL_MOD ) expr
+		    | stmt kRESCUE_MOD stmt )*
 		;
 
-stmt		: kALIAS fitem fitem
-		| kALIAS tGVAR tGVAR
-		| kALIAS tGVAR tBACK_REF
-		| kALIAS tGVAR tNTH_REF
-		| kUNDEF undef_list
-		| stmt kIF_MOD expr
-		| stmt kUNLESS_MOD expr
-		| stmt kWHILE_MOD expr
-		| stmt kUNTIL_MOD expr
-		| stmt kRESCUE_MOD stmt
-		| klBEGIN
-		  '{' compstmt '}'
-		| klEND '{' compstmt '}'
-		| lhs '=' command_call
-		| mlhs '=' command_call
-		| lhs '=' mrhs_basic
-		| expr
-		;
-
-expr		: mlhs '=' mrhs
-		| kRETURN ret_args
-		| command_call
-		| expr kAND expr
-		| expr kOR expr
-		| kNOT expr
-		| '!' command_call
-		| arg
+expr		: ( mlhs '=' mrhs
+		  | kRETURN ret_args
+		  | command_call
+		  | kNOT expr
+		  | '!' command_call
+		  | arg
+		  ) ( ( kAND | kOR ) expr )*
 		;
 
 command_call	: command
 		| block_command
 		;
 
-block_command	: block_call
-		| block_call '.' operation2 command_args
-		| block_call tCOLON2 operation2 command_args
+block_command	: block_call { ( '.' | '::' ) operation2 command_args }
 		;
 
-command		:  operation command_args
-		| primary '.' operation2 command_args
-		| primary tCOLON2 operation2 command_args
-		| kSUPER command_args
+command		: operation command_args
+		| kSUPER    command_args
+		| primary ( '.' | '::' ) operation2 command_args
 		| kYIELD ret_args
 		;
 
-mlhs		: mlhs_basic
-		| tLPAREN mlhs_entry ')'
+# TODO: LHS abiguity
+mlhs		: ( mlhs_item ',' )+ { ( mlhs_item | '*' { lhs } ) }
+		|                                    '*' { lhs }
+		| '(' mlhs ')'
+ 		;
+
+#  a, b  = 1, 2
+#  a, *  = 1, 2
+#  a,    = 1, 2
+#  *     = 1, 2
+#  *a    = 1, 2
+# (a, *) = 1, 2
+# ...
+
+mlhs		: mlhs_item ( ',' mlhs_item )* {','} { '*' { lhs } }
+		| '*' { lhs }
+		| '(' mlhs ')'
 		;
 
-mlhs_entry	: mlhs_basic
-		| tLPAREN mlhs_entry ')'
-		;
-
-mlhs_basic	: mlhs_head
-		| mlhs_head mlhs_item
-		| mlhs_head tSTAR mlhs_node
-		| mlhs_head tSTAR
-		| tSTAR mlhs_node
-		| tSTAR
-		;
-
-mlhs_item	: mlhs_node
-		| tLPAREN mlhs_entry ')'
-		;
-
-mlhs_head	: mlhs_item ','
-		| mlhs_head mlhs_item ','
-		;
-
-mlhs_node	: variable
-		| primary '[' aref_args ']'
-		| primary '.' tIDENTIFIER
-		| primary tCOLON2 tIDENTIFIER
-		| primary '.' tCONSTANT
-		| backref
-		;
+mlhs_item	:     lhs
+		| '(' lhs ')'
 
 lhs		: variable
-		| primary '[' aref_args ']'
-		| primary '.' tIDENTIFIER
-		| primary tCOLON2 tIDENTIFIER
-		| primary '.' tCONSTANT
+		| primary ( '[' { aref_args } ']' | '::' tIDENTIFIER | primary '.' ( tIDENTIFIER |  tCONSTANT ) )
 		| backref
 		;
 
@@ -106,44 +75,19 @@ fname		: tIDENTIFIER
 		| reswords
 		;
 
+# RENAMED to fitems from undef_list
+fitems		: fitem ( ',' fitem )*
+		;
+
 fitem		: fname
 		| symbol
 		;
 
-undef_list	: fitem
-
-		| undef_list ',' fitem
+op		: '|' | '^' | '&' | '<=>' | '==' | '===' | '=~' | '>' | '>=' | '<' | '<=' | '<<'  | '>>'
+		| '+' | '-' | '*' | '*'   | '/'  | '%'   | '**' | '~' | '+'  | '-' | '[]' | '[]=' | '`'
 		;
 
-op		: '|' 
-		| '^' 
-		| '&' 
-		| tCMP 
-		| tEQ 
-		| tEQQ 
-		| tMATCH 
-		| '>' 
-		| tGEQ 
-		| '<' 
-		| tLEQ 
-		| tLSHFT 
-		| tRSHFT 
-		| '+' 
-		| '-' 
-		| '*' 
-		| tSTAR 
-		| '/' 
-		| '%' 
-		| tPOW 
-		| '~' 
-		| tUPLUS 
-		| tUMINUS 
-		| tAREF 
-		| tASET 
-		| '`' 
-		;
-
-reswords	: k__LINE__ | k__FILE__  | klBEGIN | klEND
+reswords	: k__LINE__ | k__FILE__ | klBEGIN | klEND
 		| kALIAS | kAND | kBEGIN | kBREAK | kCASE | kCLASS | kDEF
 		| kDEFINED | kDO | kELSE | kELSIF | kEND | kENSURE | kFALSE
 		| kFOR | kIF_MOD | kIN | kMODULE | kNEXT | kNIL | kNOT
@@ -152,90 +96,45 @@ reswords	: k__LINE__ | k__FILE__  | klBEGIN | klEND
 		| kWHILE_MOD | kYIELD | kRESCUE_MOD
 		;
 
-arg		: lhs '=' arg
-		| variable tOP_ASGN arg
-		| primary '[' aref_args ']' tOP_ASGN arg
-		| primary '.' tIDENTIFIER tOP_ASGN arg
-		| primary '.' tCONSTANT tOP_ASGN arg
-		| primary tCOLON2 tIDENTIFIER tOP_ASGN arg
-		| backref tOP_ASGN arg
-		| arg tDOT2 arg
-		| arg tDOT3 arg
-		| arg '+' arg
-		| arg '-' arg
-		| arg '*' arg
-		| arg '/' arg
-		| arg '%' arg
-		| arg tPOW arg
-		| tUPLUS arg
-		| tUMINUS arg
-		| arg '|' arg
-		| arg '^' arg
-		| arg '&' arg
-		| arg tCMP arg
-		| arg '>' arg
-		| arg tGEQ arg
-		| arg '<' arg
-		| arg tLEQ arg
-		| arg tEQ arg
-		| arg tEQQ arg
-		| arg tNEQ arg
-		| arg tMATCH arg
-		| arg tNMATCH arg
-		| '!' arg
-		| '~' arg
-		| arg tLSHFT arg
-		| arg tRSHFT arg
-		| arg tANDOP arg
-		| arg tOROP arg
-		| kDEFINED opt_nl arg
-		| arg '?' arg ':' arg
-		| primary
+arg		: ( lhs '=' arg
+		  | variable assignment_op arg
+		  | primary '[' { aref_args } ']'                assignment_op arg		# TODO: cleanup?
+		  | primary '.'  ( tCONSTANT | tIDENTIFIER ) assignment_op arg
+		  | primary '::' tIDENTIFIER                 assignment_op arg
+		  | primary
+		  | backref assignment_op arg
+		  | ( '+' | '-' | '!' | '~' ) arg
+		  | kDEFINED { nl } arg
+		  ) ( ( '!=' | '!~' | '%' | '&&' | '&' | '*' | '**' | '+' | '-' | '..' | '...' | '/' | '<'
+		      | '<<' | '<=' | '<=>' | '==' | '===' | '=~' | '>' | '>=' | '>>' | '^' | '|' | '||' ) arg
+		    | arg '?' arg ':' arg )*
 		;
 
-aref_args	: none
-		| command_call opt_nl
-		| args ',' command_call opt_nl
-		| args trailer
-		| args ',' tSTAR arg opt_nl
-		| assocs trailer
-		| tSTAR arg opt_nl
-		;
-
-paren_args	: '(' none ')'
-		| '(' call_args opt_nl ')'
-		| '(' block_call opt_nl ')'
-		| '(' args ',' block_call opt_nl ')'
-		;
-
-opt_paren_args	: none
-		| paren_args
+paren_args	: '('                             ')'
+		| '(' call_args            { nl } ')'
+		| '('           block_call { nl } ')'
+		| '(' args  ',' block_call { nl } ')'
 		;
 
 call_args	: command
 		| args ',' command
-		| args opt_block_arg
-		| args ',' tSTAR arg opt_block_arg
-		| assocs opt_block_arg
-		| assocs ',' tSTAR arg opt_block_arg
-		| args ',' assocs opt_block_arg
-		| args ',' assocs ',' tSTAR arg opt_block_arg
-		| tSTAR arg opt_block_arg
-		| block_arg
+		| args                          { ',' block_arg }
+		| args ',' '*' arg            { ',' block_arg }
+		| args ',' assocs               { ',' block_arg }
+		| args ',' assocs ',' '*' arg { ',' block_arg }
+		|          assocs               { ',' block_arg }
+		|          assocs ',' '*' arg { ',' block_arg }
+		|                     '*' arg { ',' block_arg }
+		|                                     block_arg
 		;
 
 command_args	: call_args
 		;
 
-block_arg	: tAMPER arg
+block_arg	: '&' arg
 		;
 
-opt_block_arg	: ',' block_arg
-		| none
-		;
-
-args 		: arg
-		| args ',' arg
+args 		: arg ( ',' arg )*
 		;
 
 mrhs		: arg
@@ -243,98 +142,57 @@ mrhs		: arg
 		;
 
 mrhs_basic	: args ',' arg
-		| args ',' tSTAR arg
-		| tSTAR arg
+		| args ',' '*' arg
+		| '*' arg
 		;
 
 ret_args	: call_args
 		;
 
-primary		: literal
-		| string
-		| tXSTRING
-		| tQWORDS
-		| tDXSTRING
-		| tDREGEXP
-		| var_ref
-		| backref
-		| tFID
-		| kBEGIN
-		  compstmt
-		  rescue
-		  opt_else
-		  ensure
-		  kEND
-		| tLPAREN compstmt ')'
-		| primary tCOLON2 tCONSTANT
-		| tCOLON3 cname
-		| primary '[' aref_args ']'
-		| tLBRACK aref_args ']'
-		| tLBRACE assoc_list '}'
-		| kRETURN '(' ret_args ')'
-		| kRETURN '(' ')'
-		| kRETURN
-		| kYIELD '(' ret_args ')'
-		| kYIELD '(' ')'
-		| kYIELD
-		| kDEFINED opt_nl '(' expr ')'
-		| operation brace_block
-		| method_call
-		| method_call brace_block
-		| kIF expr then
-		  compstmt
-		  if_tail
-		  kEND
-		| kUNLESS expr then
-		  compstmt
-		  opt_else
-		  kEND
-		| kWHILE expr do 
-		  compstmt
-		  kEND
-		| kUNTIL expr do 
-		  compstmt
-		  kEND
-		| kCASE expr opt_terms
-		  case_body
-		  kEND
-		| kCASE opt_terms case_body kEND
-		| kFOR block_var kIN expr do 
-		  compstmt
-		  kEND
-		| kCLASS cname superclass
-		  compstmt
-		  kEND
-		| kCLASS tLSHFT expr
-		  term
-		  compstmt
-		  kEND
-		| kMODULE cname
-		  compstmt
-		  kEND
-		| kDEF fname
-		  f_arglist
-		  compstmt
-		  rescue
-		  opt_else
-		  ensure
-		  kEND
-		| kDEF singleton dot_or_colon fname
-		  f_arglist
-		  compstmt
-		  rescue
-		  opt_else
-		  ensure
-		  kEND
-		| kBREAK
-		| kNEXT
-		| kREDO
-		| kRETRY
+primary		: ( literal
+		  | string
+		  | tXSTRING
+		  | tQWORDS
+		  | tDXSTRING
+		  | tDREGEXP
+		  | var_ref
+		  | backref
+		  | tFID
+		  | kBEGIN compstmt rescue opt_else ensure kEND
+		  | '(' compstmt ')'
+		  | '::' cname
+		  | '[' { aref_args } ']'
+		  | '{' assoc_list '}'
+		  | kRETURN { '(' { ret_args } ')' }
+		  | kYIELD  { '(' { ret_args } ')' }
+		  | kDEFINED { nl } '(' expr ')'
+		  | operation brace_block
+		  | method_call { brace_block }
+		  | kIF     expr then compstmt if_tail  kEND
+		  | kUNLESS expr then compstmt opt_else kEND
+		  | kWHILE  expr do compstmt kEND
+		  | kUNTIL  expr do compstmt kEND
+		  | kCASE { expr } ( term )* case_body kEND
+		  | kFOR block_var kIN expr do compstmt kEND
+		  | kCLASS ( cname superclass | '<<' expr term ) compstmt kEND
+		  | kMODULE cname compstmt kEND
+		  | kDEF { singleton dot_or_colon } fname f_arglist compstmt rescue opt_else ensure kEND
+		  | kBREAK
+		  | kNEXT
+		  | kREDO
+		  | kRETRY
+		  ) ('::' tCONSTANT | '[' { aref_args } ']' )*
 		;
 
-then		: term
-		| kTHEN
-		| term kTHEN
+aref_args	: command_call          { nl }
+		| args ',' command_call { nl }
+		| args trailer
+		| args ',' '*' arg      { nl }
+		| assocs trailer
+		| '*' arg               { nl }
+		;
+
+then		: { term } { kTHEN }
 		;
 
 do		: term
@@ -342,83 +200,54 @@ do		: term
 		;
 
 if_tail		: opt_else
-		| kELSIF expr then
-		  compstmt
-		  if_tail
+		| kELSIF expr then compstmt if_tail
 		;
 
-opt_else	: none
-		| kELSE compstmt
+opt_else	: { kELSE compstmt }
 		;
 
+# RENAME: terrible!
 block_var	: lhs
 		| mlhs
 		;
 
-opt_block_var	: none
-		| '|' /* none */ '|'
-		| tOROP
-		| '|' block_var '|'
+# RENAME: terrible!
+opt_block_var	: { '||' | '|' { block_var } '|' }
 		;
 
-
-do_block	: kDO_BLOCK
-		  opt_block_var
-		  compstmt
-		  kEND
+do_block	: kDO_BLOCK opt_block_var compstmt kEND
 		;
 
-block_call	: command do_block
-		| block_call '.' operation2 opt_paren_args
-		| block_call tCOLON2 operation2 opt_paren_args
+block_call	: command do_block ( ( '.' | '::' ) operation2 { paren_args } )*
 		;
 
 method_call	: operation paren_args
-		| primary '.' operation2 opt_paren_args
-		| primary tCOLON2 operation2 paren_args
-		| primary tCOLON2 operation3
+		| primary '.'     operation2 opt_paren_args
+		| primary '::' operation2 paren_args
+		| primary '::' operation3
 		| kSUPER paren_args
 		| kSUPER
 		;
 
-brace_block	: '{'
-		  opt_block_var
-		  compstmt '}'
-		| kDO
-		  opt_block_var
-		  compstmt kEND
+brace_block	: '{' opt_block_var compstmt '}'
+		| kDO opt_block_var compstmt kEND
 		;
 
-case_body	: kWHEN when_args then
-		  compstmt
-		  cases
+case_body	: kWHEN when_args then compstmt cases
 		;
 
-when_args	: args
-		| args ',' tSTAR arg
-		| tSTAR arg
+when_args	: args { ',' '*' arg }
+		| '*' arg
 		;
 
 cases		: opt_else
 		| case_body
 		;
 
-exc_list	: none
-		| args
+rescue		: { kRESCUE { args } { '=>' lhs } then compstmt rescue }
 		;
 
-exc_var		: tASSOC lhs
-		| none
-		;
-
-rescue		: kRESCUE exc_list exc_var then
-		  compstmt
-		  rescue
-		| none
-		;
-
-ensure		: none
-		| kENSURE compstmt
+ensure		: { kENSURE compstmt }
 		;
 
 literal		: numeric
@@ -426,10 +255,7 @@ literal		: numeric
 		| tREGEXP
 		;
 
-string		: tSTRING
-		| tDSTRING
-		| string tSTRING
-		| string tDSTRING
+string		: ( tSTRING | tDSTRING )+
 		;
 
 symbol		: tSYMBEG sym
@@ -450,85 +276,69 @@ variable	: tIDENTIFIER
 		| tGVAR
 		| tCONSTANT
 		| tCVAR
-		| kNIL 
-		| kSELF 
-		| kTRUE 
-		| kFALSE 
-		| k__FILE__ 
-		| k__LINE__ 
+		| kNIL
+		| kSELF
+		| kTRUE
+		| kFALSE
+		| k__FILE__
+		| k__LINE__
 		;
 
 var_ref		: variable
 		;
 
-backref		: tNTH_REF
-		| tBACK_REF
+backref		: tNTH_REF  # /\$\d+/
+		| tBACK_REF # /\$[\&\`\\\+]
 		;
 
-superclass	: term
-		| '<'
-		  expr term
-		| error term 
+superclass	:          term
+		| '<' expr term
 		;
 
-f_arglist	: '(' f_args opt_nl ')'
-		| f_args term
+f_arglist	: '(' { f_args } { nl } ')'
+		|     { f_args } term
 		;
 
-f_args		: f_arg ',' f_optarg ',' f_rest_arg opt_f_block_arg
-		| f_arg ',' f_optarg opt_f_block_arg
-		| f_arg ',' f_rest_arg opt_f_block_arg
-		| f_arg opt_f_block_arg
-		| f_optarg ',' f_rest_arg opt_f_block_arg
-		| f_optarg opt_f_block_arg
-		| f_rest_arg opt_f_block_arg
-		| f_block_arg
-		| /* none */
+f_args		: f_norm_args { ',' f_opts } { ',' f_rest_arg } { ',' f_block_arg }
+		|                   f_opts   { ',' f_rest_arg } { ',' f_block_arg }
+		|                                  f_rest_arg   { ',' f_block_arg }
+		|                                                     f_block_arg
+		;
+
+f_norm_args	: f_norm_arg ( ',' f_norm_arg )*
 		;
 
 f_norm_arg	: tCONSTANT
-                | tIVAR
-                | tGVAR
-                | tCVAR
+		| tIVAR
+		| tGVAR
+		| tCVAR
 		| tIDENTIFIER
 		;
 
-f_arg		: f_norm_arg
-		| f_arg ',' f_norm_arg
+# RENAMED: to f_opts from f_opt_args
+f_opts		: f_opt ( ',' f_opt )*
 		;
 
 f_opt		: tIDENTIFIER '=' arg
 		;
 
-f_optarg	: f_opt
-		| f_optarg ',' f_opt
+f_rest_arg	: '*' { tIDENTIFIER }
 		;
 
-f_rest_arg	: tSTAR tIDENTIFIER
-		| tSTAR
-		;
-
-f_block_arg	: tAMPER tIDENTIFIER
-		;
-
-opt_f_block_arg	: ',' f_block_arg
-		| none
+f_block_arg	: '&' tIDENTIFIER
 		;
 
 singleton	: var_ref
-		| '(' expr opt_nl ')'
+		| '(' expr { nl } ')'
 		;
 
-assoc_list	: none
-		| assocs trailer
-		| args trailer
+assoc_list	: { ( assocs | args ) trailer }
 		;
 
-assocs		: assoc
-		| assocs ',' assoc
+assocs		: assoc ( ',' assoc )*
 		;
 
-assoc		: arg tASSOC arg
+assoc		: arg '=>' arg
 		;
 
 operation	: tIDENTIFIER
@@ -547,30 +357,8 @@ operation3	: tIDENTIFIER
 		| op
 		;
 
-dot_or_colon	: '.'
-		| tCOLON2
-		;
-
-opt_terms	:
-		| terms
-		;
-
-opt_nl		:
-		| '\n'
-		;
-
-trailer		:
-		| '\n'
-		| ','
-		;
-
-term		: ';' 
-		| '\n'
-		;
-
-terms		: term
-		| terms ';' 
-		;
-
-none		: /* none */
-		;
+assignment_op	: '*=' | '**=' | '<<=' | '>>=' | '&&=' | '&=' | '||=' | '|=' | '+=' | '-=' | '/=' | '^=' | '%=' ;
+dot_or_colon	: '.' | '::' ;
+nl		: '\n'
+trailer		: { ( nl | ',' ) } ;
+term		: ';' | nl ;
