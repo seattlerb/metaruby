@@ -1,5 +1,9 @@
 class Array
-  # def self.[](*args); end
+
+  def self.[](*args)
+    Array.new args
+  end
+
   # def initialize(*args); end
 
   def &(other)
@@ -252,11 +256,13 @@ class Array
 
   alias_method :reject!, :delete_if
 
-  #alias_method :old_each, :each
+  def each(&block)
+    0.upto(self.length - 1) do |i|
+      yield self.at(i)
+    end
 
-  #def each(&block)
-  #  return old_each(&block)
-  #end
+    return self
+  end
 
   def each_index
     0.upto(self.length - 1) do |i|
@@ -352,7 +358,6 @@ class Array
 
     while i < self.length do
       sub_array = self.at i
-      p sub_array
       if sub_array.respond_to? :to_ary then
         sub_array = sub_array.to_ary
         memo = Array.new if memo.nil?
@@ -360,7 +365,6 @@ class Array
         modified = true
       end
       i += 1
-      p i
     end
 
     return nil unless modified
@@ -467,9 +471,164 @@ class Array
     return count
   end
 
-  def pack(arg1); end
+  def pack(format)
+    spc10 = " " * 10
+    nul10 = "\0" * 10
+    items = self.length
+    res = ''
+    len = 0
+    idx = 0
+    skip = 0
 
-  #def pop; end # CORE
+    format.split('').each_with_index do |type, i|
+      puts "#{i}: #{type}"
+      if skip > 0 then
+        skip -= 1
+        next
+      end
+      next if type == ' '
+
+      if format[i + skip + 1] == ?* then # set data length
+        len = type =~ /[@Xxu]/ ? 0 : items
+        skip += 1
+      elsif format[i + skip + 1].chr =~ /\d/ then
+        format[i + skip + 1..-1] =~ /^(\d+)/
+        skip += $1.length
+        len = $1.to_i
+      else
+        len = 1
+      end
+
+      case type
+      when 'A', 'a', 'Z', 'B', 'b', 'H', 'h' then
+        raise ArgumentError if idx >= self.length
+        from = self.at idx
+        idx += 1
+        if from.nil? then
+          ptr = ""
+        else
+          ptr = from = from.to_str
+        end
+
+        plen = ptr.length
+
+        len = plen if format[i + skip] == ?*
+
+        case type
+        when 'a', 'A', 'Z' then
+          if plen >= len then
+            res << ptr[0...len]
+            if format[i + skip] == ?* and type == 'Z' then
+              res << "\0"
+            end
+          else
+            res << ptr[0...plen]
+            len -= plen
+            while len >= 10 do
+              res << (type == 'A' ? spc10 : nul10)
+              len -= 10
+            end
+            res << (type == 'A' ? spc10 : nul10)[0...len]
+          end
+
+        when 'b' then # bit string ascending
+          i = j = byte = 0
+
+          if len > plen then
+            j = (len - plen + 1) / 2
+            len = plen
+          end
+
+          0.upto(len - 1) do |i|
+            if ptr[i] & 1 != 0 then
+              byte |= 128
+            end
+
+            if i + 1 & 7 != 0 then
+              byte = byte >> 1
+            else
+              res << byte.chr
+              puts "adding #{byte.chr.inspect}"
+              byte = 0
+            end
+          end
+
+          if len & 7 != 0 then
+            byte = byte >> 7 - (len & 7)
+            res << byte.chr
+            len = j
+
+            while len >= 10 do # shrink
+              res << nul10
+              len -= 10
+            end
+            res << nul10[0...len]
+          end
+
+        when 'B' then
+          i = j = byte = 0
+
+          if len > plen then
+            j = (len - plen + 1) / 2
+            len = plen
+          end
+
+          0.upto(len - 1) do |i|
+            byte |= ptr[i] & 1
+            p "#{i}: #{byte.inspect}, #{i & 7}"
+            if i + 1 & 7 != 0 then
+              byte = byte << 1
+            else
+              res << byte.chr
+              puts "adding #{byte.chr.inspect}"
+              byte = 0
+            end
+          end
+
+          if len & 7 != 0 then
+            byte = byte << 7 - (len & 7)
+            res << byte.chr
+            len = j
+
+            while len >= 10 do # shrink
+              res << nul10
+              len -= 10
+            end
+            res << nul10[0...len]
+          end
+        end
+
+      when '@' then
+        len -= res.length
+
+        if len > 0 then
+          while len >= 10 do # grow
+            res << nul10
+            len -= 10
+          end
+          res << nul10[0...len]
+        end
+
+        len = -len
+
+        if len > 0 then
+          plen = res.length # shrink
+          raise ArgumentError, "X outside of string" if plen < len
+          res.slice!(plen - len..-1)
+        end
+
+      end
+
+      p res
+    end
+
+    return res
+  end
+
+  def pop
+    return nil if self.empty?
+    return self.slice! -1
+  end
 
   def push(*args)
     args.each do |arg|
@@ -583,15 +742,38 @@ class Array
     return selected
   end
 
-  #def shift; end # CORE
+  def shift
+    return nil if self.empty?
+    return self.slice! 0
+  end
+
   #def size; end # CORE
 
   alias_method :[], :slice
 
   #def slice!(pos, len = nil); end
 
-  #def sort; end
-  def sort!; end
+  def sort(&block)
+    sorted = self.dup
+    return sorted.sort!(&block)
+  end
+
+  def sort!(&block)
+    return self if self.empty?
+    pivot = self.first
+    left = nil
+    right = nil
+
+    unless block.nil? then
+      left, right = self[1..-1].partition { |e| 0 >= block.call(e, pivot) }
+    else
+      left, right = self[1..-1].partition { |e| 0 >= (e <=> pivot) }
+    end
+
+    self.replace left.sort!(&block) + [ self.first ] + right.sort!(&block)
+
+    return self
+  end
 
   # HACK missing tests for non-Array subclasses
 
@@ -608,7 +790,33 @@ class Array
     return self.join($\)
   end
 
-  #def transpose; end # HACK
+  def transpose
+    return self.dup if self.empty?
+    elen = -1
+    alen = self.length
+    result = nil
+
+    self.each_with_index do |item, i|
+      tmp = convert(item)
+
+      if elen < 0 then # first element
+        elen = tmp.length
+        result = Array.new elen
+
+        0.upto(result.length - 1) do |j|
+          result[j] = Array.new alen
+        end
+      elsif elen != tmp.length then
+        raise IndexError, "element size differs (" + tmp.length.to_s + " should be " + elen.to_s + ")"
+      end
+
+      0.upto(elen - 1) do |j|
+        result[j][i] = tmp[j]
+      end
+    end
+
+    return result
+  end
 
   def uniq
     array = self.dup
@@ -635,12 +843,68 @@ class Array
     return self
   end
 
-  #def unshift(*args); end # CORE
+  def unshift(*args)
+    return self if args.empty?
+    count = args.length
 
-  def values_at(*args); end
+    unless self.empty? then
+      (self.length - 1).downto 0 do |i|
+        self[i + count] = self[i]
+      end
+    end
 
-  # HACK no tests for #zip
-  #def zip(*args); end
+    args.each_with_index do |item, i|
+      self[i] = item
+    end
+
+    return self
+  end
+
+  def values_at(*args)
+    result = Array.new
+
+    args.each do |arg|
+      case arg
+      when Fixnum then
+        result << self.at(arg)
+        next
+      when Numeric then  
+        result << self.at(arg.to_int)
+      when Range then
+        # HACK rb_range_beg_len
+        self.each_with_index do |item, i|
+          result << item if arg.include? i
+        end
+      else
+        raise TypeError, "Cannot convert " + arg.class.name + " into Integer"
+      end
+    end
+
+    return result
+  end
+
+  def zip(*args)
+    raise "I don't do that yet" if block_given?
+
+    args = args.map { |a| convert a }
+    args_len = args.length
+
+    len = self.length
+    result = Array.new len
+
+    0.upto(length - 1) do |i|
+      tmp = Array.new args_len + 1
+      tmp[0] = self.at(i)
+
+      0.upto(args_len - 1) do |j|
+        tmp[j + 1] = args[j][i]
+      end
+      
+      result[i] = tmp
+    end
+
+    return result
+  end
 
   private
 
