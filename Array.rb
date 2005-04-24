@@ -471,6 +471,12 @@ class Array
     return count
   end
 
+  ##
+  #--
+  # C->Ruby Conversion guide:
+  #
+  # NEXTFROM -> self.at idx; idx += 1
+
   def pack(format)
     spc10 = " " * 10
     nul10 = "\0" * 10
@@ -481,8 +487,8 @@ class Array
     skip = 0
 
     format.split('').each_with_index do |type, i|
-      puts "#{i}: #{type}"
-      if skip > 0 then
+#puts "#{i}: #{type}"
+      if skip > 0 then # skip over consumed characters
         skip -= 1
         next
       end
@@ -548,7 +554,7 @@ class Array
               byte = byte >> 1
             else
               res << byte.chr
-              puts "adding #{byte.chr.inspect}"
+#puts "adding #{byte.chr.inspect}"
               byte = 0
             end
           end
@@ -575,12 +581,12 @@ class Array
 
           0.upto(len - 1) do |i|
             byte |= ptr[i] & 1
-            p "#{i}: #{byte.inspect}, #{i & 7}"
+#p "#{i}: #{byte.inspect}, #{i & 7}"
             if i + 1 & 7 != 0 then
               byte = byte << 1
             else
               res << byte.chr
-              puts "adding #{byte.chr.inspect}"
+#puts "adding #{byte.chr.inspect}"
               byte = 0
             end
           end
@@ -596,6 +602,45 @@ class Array
             end
             res << nul10[0...len]
           end
+
+        when 'H' then
+          i = j = byte = 0
+
+          if len > plen then
+            j = (len - plen + 1) / 2
+            len = plen
+          end
+
+          0.upto(len - 1) do |i|
+            if ptr[i] =~ /A-Za-z/ then
+              byte |= ((ptr[i] & 15) + 9) & 15
+            else
+              byte |= ptr[i] & 15
+            end
+
+            if i + 1 & 1 != 0 then # i & 1
+              byte = byte << 4
+            else
+              c = byte & 0xff
+puts "loop, adding #{c}, byte: #{byte}"
+              res << c
+              byte = 0
+            end
+          end
+
+          if len & 1 != 0 then
+            c = byte & 0xff
+puts "done, adding #{c}, byte: #{byte}"
+            res << c
+          end
+
+          len = j
+
+          while len >= 10 do # grow
+            res << nul10
+            len -= 10
+          end
+          res << nul10[0...len]
         end
 
       when '@' then
@@ -617,9 +662,18 @@ class Array
           res.slice!(plen - len..-1)
         end
 
+      when 'c', 'C' then # signed/unsigned char
+        while len > 0 do
+          len -= 1
+          from = self.at idx
+          idx += 1
+          c = num2i32 from
+          c = 0x100 + c if c < 0
+          res << c.chr
+        end
       end
 
-      p res
+p res
     end
 
     return res
@@ -627,7 +681,7 @@ class Array
 
   def pop
     return nil if self.empty?
-    return self.slice! -1
+    return self.slice!(-1)
   end
 
   def push(*args)
@@ -744,7 +798,7 @@ class Array
 
   def shift
     return nil if self.empty?
-    return self.slice! 0
+    return self.slice!(0)
   end
 
   #def size; end # CORE
@@ -1013,6 +1067,14 @@ class Array
 
       mem_copy(self, beg, rpl, 0, rlen) if rlen > 0
     end
+  end
+
+  # For pack
+
+  def num2i32(x) # :nodoc:
+    y = x.to_int
+    return y if y.kind_of? Integer
+    raise TypeError, "can't convert " + x.class + " to `integer'"
   end
 
 end

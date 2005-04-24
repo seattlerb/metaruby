@@ -47,7 +47,7 @@ tools: rubicon
 	(cd rubicon; $(MAKE) tools)
 
 diffs:
-	(cd rubicon; cvs -q diff -du > ../rubicon.patch.new)
+	(cd rubicon; cvs -q diff -N -du > ../rubicon.patch.new)
 
 clean:
 	rm -rf *~ *.c ~/.ruby_inline
