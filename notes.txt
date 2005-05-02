@@ -1,0 +1,9 @@
+
+1) I've found it best to test the tests first. Stub out the classes
+   and make them return crap. Make sure 100% of the tests fail first,
+   then work on the code. I've already found a few errors in the
+   tests.
+
+2) Rudimentary efforts at getting ruby2c translation shows a big
+   problem. Translate.rb automatically skips all standard lib
+   classes. We'll need a "no-really" flag.

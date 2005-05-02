@@ -1,11 +1,10 @@
 #!/usr/local/bin/ruby -w
 
+# TODO:
 # require 'dl/import'
-
 # libc = DL.dlopen('/usr/lib/libc.dylib')
 # localtime = libc['localtime', 'LP']
 # localtime.call(0)
-
 # module LIBC
 #   extend DL::Importable
 #   dlload "libc.dylib"

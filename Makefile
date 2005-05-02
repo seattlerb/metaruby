@@ -1,3 +1,12 @@
+RUBYBIN?=ruby
+RUBY_DEBUG?=
+FILTER?=
+PWD=$(shell pwd)
+RUBY2C?=$(PWD)/../../ruby_to_c/dev
+PARSETREE?=$(PWD)/../../ParseTree/dev/lib
+RUBYINLINE?=$(PWD)/../../RubyInline/dev
+RUBY_FLAGS?=-w -Ilib:bin:$(RUBY2C):$(RUBYINLINE):$(PARSETREE):rubicon
+RUBY=GEM_SKIP=ParseTree:RubyInline $(RUBYBIN) $(RUBY_DEBUG) $(RUBY_FLAGS) 
 
 CLASSES = \
 	TrueClass \
@@ -5,31 +14,34 @@ CLASSES = \
 	NilClass \
 	Time \
 	Array \
+	Range \
 	$(NULL)
 
 FILES = $(patsubst %,%.c,$(CLASSES))
 
-RUBY2C=../../ruby_to_c/dev
-
 %.c: %.rb Makefile
-	(cd rubicon/builtin; ruby -w -I../.. -r$* Test$<)
-	ruby -w -I$(RUBY2C) $(RUBY2C)/translate.rb -c=$* $< > $@
+	(cd rubicon/builtin; $(RUBY) -I../.. -r$* Test$<)
+	$(RUBY) $(RUBY2C)/translate.rb -c=$* $< > $@
 
 all: rubicon tools $(FILES)
 
 test: realclean
 	$(MAKE) -k all
 
+FORCE:
+doc: FORCE
+	rm -rf doc ; rdoc -x rubicon .
+
 audit: rubicon
-	ruby -I rubicon /usr/local/bin/ZenTest TrueClass.rb rubicon/builtin/TestTrueClass.rb
-	ruby -I rubicon /usr/local/bin/ZenTest FalseClass.rb rubicon/builtin/TestFalseClass.rb
-	ruby -I rubicon /usr/local/bin/ZenTest NilClass.rb rubicon/builtin/TestNilClass.rb
-	ruby -I rubicon /usr/local/bin/ZenTest Time.rb rubicon/builtin/TestTime.rb
-	ruby -I rubicon /usr/local/bin/ZenTest Array.rb rubicon/builtin/TestArray.rb
+	$(RUBY) /usr/local/bin/ZenTest TrueClass.rb rubicon/builtin/TestTrueClass.rb
+	$(RUBY) /usr/local/bin/ZenTest FalseClass.rb rubicon/builtin/TestFalseClass.rb
+	$(RUBY) /usr/local/bin/ZenTest NilClass.rb rubicon/builtin/TestNilClass.rb
+	$(RUBY) /usr/local/bin/ZenTest Time.rb rubicon/builtin/TestTime.rb
+	$(RUBY) /usr/local/bin/ZenTest Array.rb rubicon/builtin/TestArray.rb
 
 # so you can type `make Time` to just run Time tests
 $(CLASSES):
-	(cd rubicon/builtin; ruby -w -I../.. -r$@ Test$@.rb)
+	(cd rubicon/builtin; $(RUBY) -I../.. -r$@ Test$@.rb $(FILTER))
 
 # shortcut to login, we can't find any way to default the input. argh.
 cvslogin:
