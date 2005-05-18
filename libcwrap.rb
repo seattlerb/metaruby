@@ -32,7 +32,6 @@ class LIBC
     builder.include("<stdio.h>")
     builder.add_type_converter("time_t", 'NUM2ULONG', 'ULONG2NUM')
     builder.add_type_converter("VALUE", '', '')
-    builder.add_compile_flags "-x c++"
     builder.add_compile_flags "-Wall"
     builder.add_compile_flags "-W"
     builder.add_compile_flags "-Wpointer-arith"
@@ -62,9 +61,9 @@ class LIBC
 
     builder.c %q{
       static VALUE c_localtime(time_t t) {
-        (void)self;
         VALUE result = Qnil;
         struct tm * tv = localtime(&t);
+        (void)self;
 
         if (tv) {
           result = rb_ary_new();
@@ -89,9 +88,9 @@ class LIBC
 
     builder.c %q{
       static VALUE c_gmtime(time_t t) {
-        (void)self;
         VALUE result = Qnil;
         struct tm * tv = gmtime(&t);
+        (void)self;
 
         if (tv) {
           result = rb_ary_new();
@@ -115,10 +114,11 @@ class LIBC
 
     builder.c %q{
       static time_t c_mktime(int year, int month, int day, int hour, int min, int sec) {
+        struct tm tv;
+        time_t result;
+
         (void)self;
         (void)argc;
-
-        struct tm tv;
 
         tv.tm_sec = sec;
         tv.tm_min = min;
@@ -133,7 +133,7 @@ class LIBC
         tv.tm_gmtoff = 0;
         tv.tm_zone = NULL;
 
-        time_t result = mktime(&tv);
+        result = mktime(&tv);
 
         return result;
       }
@@ -141,10 +141,11 @@ class LIBC
 
     builder.c %q{
       static time_t c_timegm(int year, int month, int day, int hour, int min, int sec) {
+        struct tm tv;
+        time_t result;
+
         (void)self;
         (void)argc;
-
-        struct tm tv;
 
         tv.tm_sec = sec;
         tv.tm_min = min;
@@ -159,7 +160,7 @@ class LIBC
         tv.tm_gmtoff = 0;
         tv.tm_zone = NULL;
 
-        time_t result = timegm(&tv);
+        result = timegm(&tv);
 
         return result;
       }
@@ -167,9 +168,13 @@ class LIBC
 
     builder.c %q{
       static char * c_strftime(char * format, VALUE vals) {
+        struct tm tv;
+        char buf[128];
+        int len;
+        VALUE zone;
+
         (void)self;
 
-        struct tm tv;
         tv.tm_sec   = NUM2INT(rb_ary_entry(vals, 0));
         tv.tm_min   = NUM2INT(rb_ary_entry(vals, 1));
         tv.tm_hour  = NUM2INT(rb_ary_entry(vals, 2));
@@ -179,11 +184,9 @@ class LIBC
         tv.tm_wday  = NUM2INT(rb_ary_entry(vals, 6));
         tv.tm_yday  = NUM2INT(rb_ary_entry(vals, 7)) - 1;
         tv.tm_isdst = RTEST(  rb_ary_entry(vals, 8));
-        VALUE zone  = rb_ary_entry(vals, 9);
+        zone  = rb_ary_entry(vals, 9);
         tv.tm_zone = StringValueCStr(zone);
 
-        char buf[128];
-        int len;
         len = strftime(buf, 128, format, &tv);
         return buf;
       }
