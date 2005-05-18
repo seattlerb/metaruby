@@ -17,13 +17,16 @@ CLASSES = \
 	Range \
 	$(NULL)
 
+TESTFILES = $(patsubst %,%.pass,$(CLASSES))
 FILES = $(patsubst %,%.c,$(CLASSES))
 
-%.c: %.rb Makefile
-	(cd rubicon/builtin; $(RUBY) -I../.. -r$* Test$<)
+%.pass: %.rb Makefile
+	(cd rubicon/builtin; $(RUBY) -I../.. -r$* Test$<) && touch $@
+
+%.c: %.rb %.pass Makefile
 	$(RUBY) $(RUBY2C)/translate.rb -c=$* $< > $@
 
-all: rubicon tools $(FILES)
+all: rubicon tools $(TESTFILES)
 
 test: realclean
 	$(MAKE) -k all
@@ -62,7 +65,7 @@ diffs:
 	(cd rubicon; cvs -q diff -N -du > ../rubicon.patch.new)
 
 clean:
-	rm -rf *~ *.c ~/.ruby_inline
+	rm -rf *~ *.c ~/.ruby_inline *.pass
 
 realclean: clean
 	rm -rf rubicon

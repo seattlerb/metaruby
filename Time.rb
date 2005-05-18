@@ -405,9 +405,7 @@ class Time
   # seconds.
 
   def eql?(other)
-    return self.to_i == other.to_i &&
-      self.usec == other.usec &&
-      self.to_a == other.to_a
+    return self.to_i == other.to_i && self.usec == other.usec
   end
 
   ##
