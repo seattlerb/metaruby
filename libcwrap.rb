@@ -32,6 +32,7 @@ class LIBC
     builder.include("<stdio.h>")
     builder.add_type_converter("time_t", 'NUM2ULONG', 'ULONG2NUM')
     builder.add_type_converter("VALUE", '', '')
+    builder.add_compile_flags "-x c++"
     builder.add_compile_flags "-Wall"
     builder.add_compile_flags "-W"
     builder.add_compile_flags "-Wpointer-arith"
