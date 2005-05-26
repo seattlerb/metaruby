@@ -1,4 +1,7 @@
+
 class Range
+
+  include Enumerable
 
   ##
   # call-seq:
@@ -9,7 +12,11 @@ class Range
   # <em>range</em> will include the end object; otherwise, it will be
   # excluded.
 
-  # def initialize(*args); end
+  def initialize(first, last, exclude_end=false)
+    @first = first
+    @last = last
+    @exclude_end = exclude_end
+  end
 
   ##
   # call-seq:
@@ -23,7 +30,10 @@ class Range
   #   (0..2) == Range.new(0,2)    #=> true
   #   (0..2) == (0...2)           #=> false
 
-  # def ==(arg1); end
+  def ==(other)
+    return false unless Range === other 
+    return self.first == other.first && self.last == other.last && self.exclude_end? == other.exclude_end?
+  end
 
   ##
   # call-seq:
@@ -45,16 +55,20 @@ class Range
   #
   #    high
 
-  # def ===(arg1); end
-
-  ##
-  # call-seq:
-  #   rng.first    => obj
-  #   rng.begin    => obj
-  #
-  # Returns the first object in <em>rng</em>.
-
-  # def begin; end
+  def ===(value)
+    if @first <= value then
+      if self.exclude_end? then
+        return true if value < @last
+      else
+        return true if value <= @last
+      end
+    end
+    return false
+  rescue
+    return false
+  end
+  alias_method :member?, :===
+  alias_method :include?, :===
 
   ##
   # call-seq:
@@ -73,19 +87,36 @@ class Range
   #
   #    10 11 12 13 14 15
 
-  # def each; end
+  def each
+    first = self.first # dup?
+    last = self.last
 
-  ##
-  # call-seq:
-  #   rng.end    => obj
-  #   rng.last   => obj
-  #
-  # Returns the object that defines the end of <em>rng</em>.
-  #
-  #    (1..10).end    #=> 10
-  #    (1...10).end   #=> 10
-
-  # def end; end
+    if Fixnum === first && Fixnum === last then
+      last -= 1 if self.exclude_end?
+      first.upto(last) { |i| yield(i) }
+    elsif String === first then
+      first.upto(last) do |s|
+        next if @exclude_end && s == last
+        yield(s)
+      end
+    else
+      current = first
+      if @exclude_end then
+        loop do
+          break if current == last
+          yield(current)
+          current = current.succ
+        end
+      else
+        loop do
+          yield(current)
+          break if current == last
+          current = current.succ
+        end
+      end
+    end
+    return self
+  end
 
   ##
   # call-seq:
@@ -99,7 +130,12 @@ class Range
   #   (0..2) == Range.new(0,2)    #=> true
   #   (0..2) == (0...2)           #=> false
 
-  # def eql?(arg1); end
+  def eql?(other)
+    return false unless Range === other 
+    return self.first.eql?(other.first) &&
+      self.last.eql?(other.last) &&
+      self.exclude_end? == other.exclude_end?
+  end
 
   ##
   # call-seq:
@@ -107,7 +143,9 @@ class Range
   #
   # Returns <tt>true</tt> if <em>rng</em> excludes its end value.
 
-  # def exclude_end?; end
+  def exclude_end?
+    @exclude_end
+  end
 
   ##
   # call-seq:
@@ -116,7 +154,10 @@ class Range
   #
   # Returns the first object in <em>rng</em>.
 
-  # def first; end
+  def first
+    @first
+  end
+  alias_method :begin, :first
 
   ##
   # call-seq:
@@ -126,29 +167,14 @@ class Range
   # end points, and the same value for the "exclude end" flag, generate
   # the same hash value.
 
-  # def hash; end
-
-  ##
-  # call-seq:
-  #   rng === obj       =>  true or false
-  #   rng.member?(val)  =>  true or false
-  #   rng.include?(val) =>  true or false
-  #
-  # Returns <tt>true</tt> if <em>obj</em> is an element of <em>rng</em>,
-  # <tt>false</tt> otherwise. Conveniently, <tt>===</tt> is the
-  # comparison operator used by <tt>case</tt> statements.
-  #
-  #    case 79
-  #    when 1..50   then   print "low\n"
-  #    when 51..75  then   print "medium\n"
-  #    when 76..100 then   print "high\n"
-  #    end
-  #
-  # <em>produces:</em>
-  #
-  #    high
-
-  # def include?(arg1); end
+  def hash
+    excl = @exclude_end ? 1 : 0
+    hash = excl
+    hash ^= @first.hash << 1
+    hash ^= @last.hash << 9
+    hash ^= excl << 24;
+    return hash
+  end
 
   ##
   # call-seq:
@@ -157,7 +183,10 @@ class Range
   # Convert this range object to a printable form (using
   # <tt>inspect</tt> to convert the start and end objects).
 
-  # def inspect; end
+  def inspect
+    joiner = @exclude_end ? "..." : ".."
+    return "#{@first.inspect}#{joiner}#{@last.inspect}"
+  end
 
   ##
   # call-seq:
@@ -169,29 +198,10 @@ class Range
   #    (1..10).end    #=> 10
   #    (1...10).end   #=> 10
 
-  # def last; end
-
-  ##
-  # call-seq:
-  #   rng === obj       =>  true or false
-  #   rng.member?(val)  =>  true or false
-  #   rng.include?(val) =>  true or false
-  #
-  # Returns <tt>true</tt> if <em>obj</em> is an element of <em>rng</em>,
-  # <tt>false</tt> otherwise. Conveniently, <tt>===</tt> is the
-  # comparison operator used by <tt>case</tt> statements.
-  #
-  #    case 79
-  #    when 1..50   then   print "low\n"
-  #    when 51..75  then   print "medium\n"
-  #    when 76..100 then   print "high\n"
-  #    end
-  #
-  # <em>produces:</em>
-  #
-  #    high
-
-  # def member?(arg1); end
+  def last
+    return @last
+  end
+  alias_method :end, :last
 
   ##
   # call-seq:
@@ -219,7 +229,17 @@ class Range
   #     7 xxxxxxx
   #    10 xxxxxxxxxx
 
-  # def step(*args); end
+  def step(n=1)
+    if n == 1 then
+      each { |o| yield(o) }
+    else
+      counter = 0
+      each do |o|
+        yield(o) if counter % n == 0
+        counter += 1
+      end
+    end
+  end
 
   ##
   # call-seq:
@@ -227,7 +247,9 @@ class Range
   #
   # Convert this range object to a printable form.
 
-  # def to_s; end
+  def to_s
+    joiner = @exclude_end ? "..." : ".."
+    return "#{@first}#{joiner}#{@last}"
+  end
 end
 
-puts 'DONE!'

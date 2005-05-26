@@ -18,10 +18,14 @@ CLASSES = \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
+AUDITFILES = $(patsubst %,%.audit.rb,$(CLASSES))
 FILES = $(patsubst %,%.c,$(CLASSES))
 
 %.pass: %.rb Makefile
 	(cd rubicon/builtin; $(RUBY) -I../.. -r$* Test$<) && touch $@
+
+%.audit.rb: %.rb rubicon/builtin/Test%.rb Makefile
+	$(RUBY) /usr/local/bin/ZenTest $*.rb rubicon/builtin/Test$*.rb
 
 %.c: %.rb %.pass Makefile
 	$(RUBY) $(RUBY2C)/translate.rb -c=$* $< > $@
