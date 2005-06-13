@@ -49,6 +49,8 @@ def generate_rdoc(klass, meth, instance_method)
       puts "  #"
       puts c.body.unhtmlify.wrap(76, "  # ")
     end
+  else
+    puts "# File #{rdoc_path} doesn't exist"
   end
 end
 
@@ -60,9 +62,8 @@ end
 
 klasses = klasses.sort_by { |k| k.name }
 
-if defined? $c then
-  $c = eval $c
-end
+$c = nil unless defined? $c
+$c = eval $c if $c
 
 klasses.each do |klass|
 
@@ -143,5 +144,3 @@ klasses.each do |klass|
   puts "end"
   puts
 end
-
-puts "puts 'DONE!'"

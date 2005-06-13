@@ -15,6 +15,7 @@ CLASSES = \
 	Time \
 	Array \
 	Range \
+	Hash \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
@@ -25,7 +26,7 @@ FILES = $(patsubst %,%.c,$(CLASSES))
 	(cd rubicon/builtin; $(RUBY) -I../.. -r$* Test$<) && touch $@
 
 %.audit.rb: %.rb rubicon/builtin/Test%.rb Makefile
-	$(RUBY) /usr/local/bin/ZenTest $*.rb rubicon/builtin/Test$*.rb
+	$(RUBY) ../../ZenTest/dev/ZenTest.rb $*.rb rubicon/builtin/Test$*.rb
 
 %.c: %.rb %.pass Makefile
 	$(RUBY) $(RUBY2C)/translate.rb -c=$* $< > $@
@@ -39,12 +40,7 @@ FORCE:
 doc: FORCE
 	rm -rf doc ; rdoc -x rubicon .
 
-audit: rubicon
-	$(RUBY) /usr/local/bin/ZenTest TrueClass.rb rubicon/builtin/TestTrueClass.rb
-	$(RUBY) /usr/local/bin/ZenTest FalseClass.rb rubicon/builtin/TestFalseClass.rb
-	$(RUBY) /usr/local/bin/ZenTest NilClass.rb rubicon/builtin/TestNilClass.rb
-	$(RUBY) /usr/local/bin/ZenTest Time.rb rubicon/builtin/TestTime.rb
-	$(RUBY) /usr/local/bin/ZenTest Array.rb rubicon/builtin/TestArray.rb
+audit: $(AUDITFILES)
 
 # so you can type `make Time` to just run Time tests
 $(CLASSES):
