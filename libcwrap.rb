@@ -1,29 +1,7 @@
 #!/usr/local/bin/ruby -w
 
-# TODO:
-# require 'dl/import'
-# libc = DL.dlopen('/usr/lib/libc.dylib')
-# localtime = libc['localtime', 'LP']
-# localtime.call(0)
-# module LIBC
-#   extend DL::Importable
-#   dlload "libc.dylib"
-#   typealias("time_t", "unsigned int")
-#   extern "void * localtime(const time_t *clock)"
-#   extern "void * gmtime(const time_t *clock)"
-#   extern "time_t mktime(void *tm)"
-#   extern "time_t timegm(void *tm)"
-# end
-
-# p LIBC.strlen("abc") # => 3
-
-begin
-  require 'rubygems'
-  require_gem 'RubyInline'
-rescue LoadError
-  require 'inline'
-end
-
+require 'rubygems'
+require 'inline'
 
 class LIBC
 
@@ -194,3 +172,21 @@ class LIBC
 
   end # inline
 end # LIBC
+
+
+# TODO: (maybe)
+# require 'dl/import'
+# libc = DL.dlopen('/usr/lib/libc.dylib')
+# localtime = libc['localtime', 'LP']
+# localtime.call(0)
+# module LIBC
+#   extend DL::Importable
+#   dlload "libc.dylib"
+#   typealias("time_t", "unsigned int")
+#   extern "void * localtime(const time_t *clock)"
+#   extern "void * gmtime(const time_t *clock)"
+#   extern "time_t mktime(void *tm)"
+#   extern "time_t timegm(void *tm)"
+# end
+
+# p LIBC.strlen("abc") # => 3

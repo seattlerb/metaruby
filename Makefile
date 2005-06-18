@@ -20,7 +20,7 @@ CLASSES = \
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
 AUDITFILES = $(patsubst %,%.audit.rb,$(CLASSES))
-FILES = $(patsubst %,%.c,$(CLASSES))
+CFILES = $(patsubst %,%.c,$(CLASSES))
 
 %.pass: %.rb Makefile
 	(cd rubicon/builtin; $(RUBY) -I../.. -r$* Test$<) && touch $@
@@ -32,6 +32,8 @@ FILES = $(patsubst %,%.c,$(CLASSES))
 	$(RUBY) $(RUBY2C)/translate.rb -c=$* $< > $@
 
 all: rubicon tools $(TESTFILES)
+
+allc: all $(CFILES)
 
 test: realclean
 	$(MAKE) -k all
