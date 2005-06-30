@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby -ws
 
-require "YAML"
+require "yaml"
 require "rdoc/ri/ri_descriptions"
 require "rdoc/markup/simple_markup/to_flow"
 
@@ -51,6 +51,7 @@ def generate_rdoc(klass, meth, instance_method)
     end
   else
     puts "# File #{rdoc_path} doesn't exist"
+    puts "#   try: cd RUBY; rdoc -f ri -o rdoc"
   end
 end
 
@@ -97,7 +98,7 @@ klasses.each do |klass|
 
     puts
     print "  "
-    print "# " unless meth == "initialize"
+#    print "# " unless meth == "initialize"
     print "def #{meth}"
     case arity
     when 0 then
@@ -109,8 +110,9 @@ klasses.each do |klass|
     else
       # print "ACK: #{klass}.#{meth} arity = #{arity}"
     end
-    
-    puts "; end"
+    puts
+    puts "    raise NotImplementedError, '#{meth} is not implemented'"
+    puts "  end"
   end
 
   methods = unless klass == Object then
@@ -138,7 +140,9 @@ klasses.each do |klass|
     else
       print "ACK: #{klass}.#{meth} arity = #{arity}"
     end
-    puts "; end"
+    puts
+    puts "    raise NotImplementedError, '#{meth} is not implemented'"
+    puts "  end"
   end
 
   puts "end"
