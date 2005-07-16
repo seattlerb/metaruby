@@ -75,6 +75,11 @@ class Time
       r.vals = LIBC.new.c_localtime(t)
       r.tv_sec = t
       r.tv_usec = ms.nil? ? 0 : ms
+    when Float then
+      t2, ms2 = t.divmod(1.0)
+      r.vals = LIBC.new.c_localtime(t2)
+      r.tv_sec = t2
+      r.tv_usec = ms.nil? ? (ms2 * 1e6) : ms
     else
       raise "wtf?: #{t.inspect}:#{t.class}"
     end
@@ -277,12 +282,11 @@ class Time
         return Time.at(@tv_sec + o, @tv_usec)
       end
     when Float then
+      s, u = o.divmod(1.0)
       if @_utc then
-        return Time.at(@tv_sec + o.to_i,
-                       @tv_usec + ((o - o.to_i) * 1e6).to_i).utc
+        return Time.at(@tv_sec + s, @tv_usec + (u * 1e6).to_i).utc
       else
-        return Time.at(@tv_sec + o.to_i,
-                       @tv_usec + ((o - o.to_i) * 1e6).to_i)
+        return Time.at(@tv_sec + s, @tv_usec + (u * 1e6).to_i)
       end
     else
       raise "wtf?: #{t.inspect}:#{t.class}"
@@ -306,7 +310,7 @@ class Time
   def -(o)
     case o
     when Fixnum, Bignum, Float then
-      return self + -o # FIX: I need to put a to_i to get translation to work
+      return self + -o
     when Time
       return self.to_f - o.to_f
     else
