@@ -16,6 +16,7 @@ CLASSES = \
 	Array \
 	Range \
 	Hash \
+	String \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
