@@ -334,9 +334,14 @@ class Time
   #    t <=> t            #=> 0
 
   def <=>(other)
-    cmp = @tv_sec <=> other.tv_sec
-    return cmp unless cmp == 0
-    return @tv_usec <=> other.tv_usec
+    case other
+    when Time
+      cmp = @tv_sec <=> other.tv_sec
+      return cmp unless cmp == 0
+      return @tv_usec <=> other.tv_usec
+    else
+      return nil
+    end
   end
 
   ##
