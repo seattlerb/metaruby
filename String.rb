@@ -305,7 +305,11 @@ class String
   #    "hello \n there".chomp   #=> "hello \n there"
   #    "hello".chomp("llo")     #=> "he"
 
-  #def chomp(*args); end # HACK
+  def chomp(separator = $/)
+    str = self.dup
+    str.chomp! separator
+    return str
+  end
 
   ##
   # call-seq:
@@ -314,8 +318,9 @@ class String
   # Modifies <em>str</em> in place as described for <tt>String#chomp</tt>,
   # returning <em>str</em>, or <tt>nil</tt> if no modifications were made.
 
-#  def chomp!(separator = $/)
-#  end
+  def chomp!(separator = $/)
+    return gsub!(/#{Regexp.escape separator}\Z/, '')
+  end
 
   ##
   # call-seq:
@@ -347,8 +352,8 @@ class String
 
   def chop!
     return nil if self == ""
-    return self.replace self[0..-3] if self[-1] == ?\n and self[-2] == ?\r
-    return self.replace self[0..-2]
+    return self.replace(self[0..-3]) if self[-1] == ?\n and self[-2] == ?\r
+    return self.replace(self[0..-2])
   end
 
   ##
@@ -614,6 +619,9 @@ class String
   #    "hello".gsub(/[aeiou]/, '*')              #=> "h*ll*"
   #    "hello".gsub(/([aeiou])/, '<\1>')         #=> "h<e>ll<o>"
   #    "hello".gsub(/./) {|s| s[0].to_s + ' '}   #=> "104 101 108 108 111 "
+  #--
+  # HACK need interpreter help for making gsub work, gsub(pattern) { $1 }
+  # fails
 
   #def gsub(*args); end # HACK
 
@@ -624,6 +632,9 @@ class String
   #
   # Performs the substitutions of <tt>String#gsub</tt> in place, returning
   # <em>str</em>, or <tt>nil</tt> if no substitutions were performed.
+  #--
+  # HACK need interpreter help for making gsub! work, gsub!(pattern) { $1 }
+  # fails
 
 #  def gsub!(*args)
 #  end
@@ -689,9 +700,6 @@ class String
 
     return val * negative 
   end
-
-#  def htmlify
-#  end
 
   ##
   # call-seq:
@@ -798,9 +806,6 @@ class String
 
   #def intern; end # CORE
 
-#  def is_binary_data?
-#  end
-
   ##
   # call-seq:
   #   str.length   => integer
@@ -894,8 +899,7 @@ class String
   #    "ZZZ9999".succ     #=> "AAAA0000"
   #    "***".succ         #=> "**+"
 
-#  def next
-#  end
+  alias next succ
 
   ##
   # call-seq:
@@ -904,8 +908,7 @@ class String
   #
   # Equivalent to <tt>String#succ</tt>, but modifies the receiver in place.
 
-#  def next!
-#  end
+  alias next! succ!
 
   ##
   # call-seq:
@@ -1299,8 +1302,11 @@ class String
   #    "hello".sub(/[aeiou]/, '*')               #=> "h*llo"
   #    "hello".sub(/([aeiou])/, '<\1>')          #=> "h<e>llo"
   #    "hello".sub(/./) {|s| s[0].to_s + ' ' }   #=> "104 ello"
+  #--
+  # HACK need interpreter help for making sub work, sub(pattern) { $1 }
+  # fails
 
-  #def sub(*args); end # HACK
+  #def sub(*args); end
 
   ##
   # call-seq:
@@ -1309,8 +1315,58 @@ class String
   #
   # Performs the substitutions of <tt>String#sub</tt> in place, returning
   # <em>str</em>, or <tt>nil</tt> if no substitutions were performed.
+  #--
+  # HACK need interpreter help for making sub! work, sub!(pattern) { $1 }
+  # fails
 
-#  def sub!(*args)
+#  def sub!(pattern, replacement = nil)
+#    if replacement.nil? and not block_given? then
+#      raise TypeError, "can't convert nil into String"
+#    end
+#
+#    case pattern
+#    when Regexp then # nop
+#    when String then
+#      pattern = /#{Regexp.quote pattern}/
+#    end
+#
+#    if block_given? then
+#      pos = self =~ pattern
+#      match = $&
+#      pre_match = $`
+#      post_match = $'
+#
+#      if pos.nil? then
+#        yield nil
+#        return nil
+#      end
+#
+#      replacement = yield match
+#      puts replacement
+#      new = pre_match << replacement << post_match
+#      puts new
+#      self.replace new
+#      return self
+#    end
+#
+#    #puts "Looking for %p in %p" % [pattern, self]
+#    match = pattern.match self
+#
+#    return nil if match.nil?
+#
+#    new = match.pre_match
+#
+#    if match.captures.length > 0 then # maybe split out \\N ...
+#      replacement = replacement.dup
+#      match.captures.each_with_index do |capture, i|
+#        replacement.sub! "\\#{i+1}", capture
+#      end
+#    end
+#
+#    new << replacement << match.post_match
+#
+#    self.replace new
+#    return self
 #  end
 
   ##
@@ -1337,9 +1393,7 @@ class String
   #    "***".succ         #=> "**+"
 
   def succ
-    new = dup
-    new.succ!
-    return new
+    return self.dup.succ!
   end
 
   ##
@@ -1349,17 +1403,36 @@ class String
   #
   # Equivalent to <tt>String#succ</tt>, but modifies the receiver in place.
 
-#  def succ!
-#    n = 0
-#    has_alnum = false
-#    (self.length - 1).downto 0 do |i|
-#      cur = self[i]
-#      if isalnum cur then
-#        new = succ_char cur
-#        #break if 
-#      end
-#    end
-#  end
+  def succ!
+    prepend = false
+    c = :junk
+
+    has_alnum = false
+    (self.length - 1).downto 0 do |i|
+      if isalnum self[i].chr then
+        c = succ_char self, i
+        break if c.nil?
+        prepend = i == 0
+      end
+    end
+
+    if c == :junk then # no alnum
+      c = "\001"
+      (self.length - 1).downto 0 do |i|
+        new = self[i] = (self[i] + 1) % 0x100
+        break if new != 0
+        prepend = i == 0
+      end
+    end
+
+    if prepend then
+      self << 255 # extend
+      self[1..-1] = self[0..-2]
+      self[0] = c
+    end
+
+    return self
+  end
 
   ##
   # call-seq:
@@ -1548,9 +1621,6 @@ class String
   # returning <em>str</em>, or <tt>nil</tt> if no changes were made.
 
 #  def tr_s!(from_str, to_str)
-#  end
-
-#  def unhtmlify
 #  end
 
   ##
@@ -1747,11 +1817,15 @@ class String
   #    a8 a9 b0 b1 b2 b3 b4 b5 b6
   #    a8 a9 b0 b1 b2 b3 b4 b5 b6
 
-#  def upto(arg1)
-#  end
-
-#  def wrap(*args)
-#  end
+  def upto(last)
+    cur = self.dup
+    after_last = last.succ
+    until cur == after_last do
+      yield cur
+      cur.succ!
+    end
+    return self
+  end
 
   private
 
@@ -1795,20 +1869,23 @@ class String
     return 65 <= chr && chr <= 90
   end
 
-  def succ_char(chr)
-    chr = chr[0]
-    if 48 <= c and c < 57 then
-      return (c + 1).chr
-    elsif chr == 57 then
-      return '0'
-    elsif 65 <= chr && chr < 90 then
-      return (c + 1).chr
-    elsif chr == 90 then
-      return 'a'
-    elsif 97 <= chr && chr < 122 then
-      return (c + 1).chr
-    elsif chr == 122 then
-      return 'A'
+  def succ_char(new, i)
+    c = new[i]
+    if ?0 <= c and c < ?9 then
+      new[i] = c + 1
+    elsif c == ?9 then
+      new[i] = ?0
+      return '1'
+    elsif ?a <= c && c < ?z then
+      new[i] = c + 1
+    elsif c == ?z then
+      new[i] = ?a
+      return ?a
+    elsif ?A <= c && c < ?Z then
+      new[i] = c + 1
+    elsif c == ?Z then
+      new[i] = ?A
+      return ?A
     end
     return nil
   end
