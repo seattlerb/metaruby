@@ -96,7 +96,18 @@ class String
   #    "abcdef" <=> "abcdefg"   #=> -1
   #    "abcdef" <=> "ABCDEF"    #=> 1
 
-  #def <=>(arg1); end # HACK
+  def <=>(other)
+    len = [length, other.length].min
+
+    0.upto(len - 1) do |i|
+      return -1 if self[i] < other[i]
+      return  1 if self[i] > other[i]
+    end
+
+    return -1 if length < other.length
+    return  1 if length > other.length
+    return  0
+  end
 
   ##
   # call-seq:
@@ -120,17 +131,23 @@ class String
   #   str =~ obj   => fixnum or nil
   #
   # Match---If <em>obj</em> is a <tt>Regexp</tt>, use it as a pattern to
-  # match against <em>str</em>. If <em>obj</em> is a <tt>String</tt>, look
-  # for it in <em>str</em> (similar to <tt>String#index</tt>). Returns the
-  # position the match starts, or <tt>nil</tt> if there is no match.
-  # Otherwise, invokes <em>obj.=~</em>, passing <em>str</em> as an argument.
-  # The default <tt>=~</tt> in <tt>Object</tt> returns <tt>false</tt>.
+  # match against <em>str</em>.  Returns the position the match starts, or
+  # <tt>nil</tt> if there is no match.  Otherwise, invokes <em>obj.=~</em>,
+  # passing <em>str</em> as an argument.  The default <tt>=~</tt> in
+  # <tt>Object</tt> returns <tt>false</tt>.
   #
   #    "cat o' 9 tails" =~ '\d'   #=> nil
   #    "cat o' 9 tails" =~ /\d/   #=> 7
   #    "cat o' 9 tails" =~ 9      #=> false
 
-  #def =~(arg1); end # HACK
+  def =~(obj)
+    case obj
+    when String then
+      raise TypeError, "type mismatch: String given"
+    else
+      obj =~ self
+    end
+  end
 
   ##
   # call-seq:
@@ -523,7 +540,11 @@ class String
   #
   #    104 101 108 108 111
 
-  #def each_byte; end # HACK
+  def each_byte
+    0.upto(length - 1) do |i|
+      yield self[i]
+    end
+  end
 
   ##
   # call-seq:
@@ -623,7 +644,7 @@ class String
   # HACK need interpreter help for making gsub work, gsub(pattern) { $1 }
   # fails
 
-  #def gsub(*args); end # HACK
+  #def gsub(*args); end
 
   ##
   # call-seq:
@@ -769,8 +790,15 @@ class String
   #    "abcd".insert(-3, 'X')   #=> "abXcd"
   #    "abcd".insert(-1, 'X')   #=> "abcdX"
 
-#  def insert(arg1, arg2)
-#  end
+  def insert(pos, other_str)
+    if pos == -1 then
+      pos = length
+    elsif pos < 0 then
+      pos += 1
+    end
+
+    _splice pos, 0, other_str
+  end
 
   ##
   # call-seq:
@@ -783,7 +811,48 @@ class String
   #    str[3] = 8
   #    str.inspect       #=> "hel\010o"
 
-  #def inspect; end # HACK
+  def inspect
+    str = '"'
+    0.upto(length - 1) do |i|
+      chr = self[i].chr
+
+      if isalnum chr then
+        str << chr
+      elsif chr == '"' then
+        str << '\"'
+      elsif chr == '\\' then # \
+        str << '\\\\'
+      elsif chr == "\n" then
+        str << '\\n'
+      elsif chr == "\r" then
+        str << '\\r'
+      elsif chr == "\t" then
+        str << '\\t'
+      elsif chr == "\f" then
+        str << '\\f'
+      elsif chr == '#' then
+        if self[i + 1].nil? then
+          str << chr 
+          next
+        end
+
+        nex = self[i + 1].chr
+
+        if nex == '$' or nex == '@' or nex == '{' then
+          str << '\\#'
+        else
+          str << chr
+        end
+
+      elsif chr < ' ' or chr > '~' then
+        str << '\\' << "%03o" % self[i]
+      else
+        str << chr
+      end
+    end
+    str << '"'
+    return str
+  end
 
   ##
   # call-seq:
@@ -961,7 +1030,11 @@ class String
   #    s = "hello"         #=> "hello"
   #    s.replace "world"   #=> "world"
 
-  #def replace(arg1); end
+  def replace(other_str)
+    self[0..-1] = other_str
+    self.taint if other_str.tainted?
+    return self
+  end
 
   ##
   # call-seq:
@@ -1345,7 +1418,7 @@ class String
 #      puts replacement
 #      new = pre_match << replacement << post_match
 #      puts new
-#      self.replace new
+#      replace new
 #      return self
 #    end
 #
@@ -1365,7 +1438,7 @@ class String
 #
 #    new << replacement << match.post_match
 #
-#    self.replace new
+#    replace new
 #    return self
 #  end
 
@@ -1837,6 +1910,22 @@ class String
         return _index(substr, pos + 1, substr_pos + 1)
       end
     end
+  end
+
+  def _splice(beg, len, val)
+    raise IndexError, "negative length #{len}" if len < 0
+    raise IndexError, "Index #{beg} out of string" if length < beg
+
+    if beg < 0 then
+      raise IndexError, "Index #{beg} out of string" if -beg > length
+      beg += length
+    end
+
+    str = self[0...beg]  # grab the start bits
+    str << val           # splice
+    str << self[beg..-1] # add the end bits
+
+    replace str
   end
 
   def convert(object)
