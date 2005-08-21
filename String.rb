@@ -69,7 +69,7 @@ class String
   #    a << "world"   #=> "hello world"
   #    a.concat(33)   #=> "hello world!"
 
-  #def <<(arg1); end # CORE
+  #def <<(arg1); end # CORE Only way to append
 
   ##
   # call-seq:
@@ -196,7 +196,7 @@ class String
   #    a["lo"]                #=> "lo"
   #    a["bye"]               #=> nil
 
-  #def [](*args); end # CORE
+  #def [](*args); end # CORE byte accessor
 
   ##
   # call-seq:
@@ -222,7 +222,7 @@ class String
   # <tt>RangeError</tt>, and the <tt>Regexp</tt> and <tt>String</tt> forms
   # will silently ignore the assignment.
 
-  #def []=(*args); end # CORE
+  #def []=(*args); end # CORE replacement
 
   ##
   # call-seq:
@@ -301,8 +301,22 @@ class String
   #    "hello".center(20)        #=> "       hello        "
   #    "hello".center(20, '123') #=> "1231231hello12312312"
 
-#  def center(*args)
-#  end
+  def center(width, padding = ' ')
+    raise ArgumentError, "zero width padding" if padding.empty?
+
+    width = width - length
+    str = self.dup
+    return str if width < 1
+
+    leftsize = width / 2
+    rightsize = leftsize
+    rightsize += 1 if width % 2 != 0 # odd padding goes on the right
+
+    leftpad  = (padding * (leftsize  / padding.length + 1))[0...leftsize]
+    rightpad = (padding * (rightsize / padding.length + 1))[0...rightsize]
+
+    return leftpad << str << rightpad
+  end
 
   ##
   # call-seq:
@@ -405,7 +419,7 @@ class String
   #    a.count "hello", "^l"   #=> 4
   #    a.count "ej-m"          #=> 4
 
-#  def count(*args)
+#  def count(*sets)
 #  end
 
   ##
@@ -644,7 +658,7 @@ class String
   # HACK need interpreter help for making gsub work, gsub(pattern) { $1 }
   # fails
 
-  #def gsub(*args); end
+  #def gsub(*args); end # HACK need interpreter help
 
   ##
   # call-seq:
@@ -657,7 +671,7 @@ class String
   # HACK need interpreter help for making gsub! work, gsub!(pattern) { $1 }
   # fails
 
-#  def gsub!(*args)
+#  def gsub!(*args) # HACK need interpreter help
 #  end
 
   ##
@@ -838,19 +852,22 @@ class String
 
         nex = self[i + 1].chr
 
-        if nex == '$' or nex == '@' or nex == '{' then
+        case nex
+        when '$', '@', '{' then
           str << '\\#'
         else
           str << chr
         end
 
       elsif chr < ' ' or chr > '~' then
-        str << '\\' << "%03o" % self[i]
+        str << '\\' << "%03o" % self[i] # \XXX in octal
       else
         str << chr
       end
     end
+
     str << '"'
+
     return str
   end
 
@@ -873,7 +890,7 @@ class String
   #
   #    'cat and dog'.to_sym   #=> :"cat and dog"
 
-  #def intern; end # CORE
+  #def intern; end # CORE can't make a Symbol any other way
 
   ##
   # call-seq:
@@ -881,7 +898,7 @@ class String
   #
   # Returns the length of <em>str</em>.
 
-  #def length; end # CORE
+  #def length; end # CORE length
 
   ##
   # call-seq:
@@ -942,8 +959,18 @@ class String
   #    'hello'.match(/(.)\1/)[0]   #=> "ll"
   #    'hello'.match('xx')         #=> nil
 
-#  def match(arg1)
-#  end
+  def match(pattern)
+    unless Regexp === pattern then
+      begin
+        str = pattern.to_str
+      rescue NoMethodError
+        raise TypeError, "Wrong argument type #{pattern.class} (expected Regexp)"
+      end
+      pattern = Regexp.new str
+    end
+    
+    return pattern.match self
+  end
 
   ##
   # call-seq:
@@ -1089,8 +1116,25 @@ class String
   #    "hello".rindex(101)             #=> 1
   #    "hello".rindex(/[aeiou]/, -2)   #=> 1
 
-#  def rindex(*args)
-#  end
+  def rindex(target, position = (length - 1))
+    case target
+    when String then
+      return 0 if self.empty? and target.empty?
+      return length if target.empty?
+
+      target = Regexp.new Regexp.quote(target)
+    when Fixnum then
+      target = Regexp.new Regexp.quote(target.chr)
+    end
+
+    # HACK really I want to start matching at the front and move 1 beyond
+    # until no more matches
+    position.downto 0 do |i|
+      return i if self[i..-1] =~ target
+    end
+
+    return nil # not found
+  end
 
   ##
   # call-seq:
@@ -1226,8 +1270,7 @@ class String
   #    a["lo"]                #=> "lo"
   #    a["bye"]               #=> nil
 
-#  def slice(*args)
-#  end
+  alias slice []
 
   ##
   # call-seq:
@@ -1379,7 +1422,7 @@ class String
   # HACK need interpreter help for making sub work, sub(pattern) { $1 }
   # fails
 
-  #def sub(*args); end
+  #def sub(*args); end # HACK need interpreter help
 
   ##
   # call-seq:
@@ -1392,7 +1435,7 @@ class String
   # HACK need interpreter help for making sub! work, sub!(pattern) { $1 }
   # fails
 
-#  def sub!(pattern, replacement = nil)
+#  def sub!(pattern, replacement = nil) # HACK need interpreter help
 #    if replacement.nil? and not block_given? then
 #      raise TypeError, "can't convert nil into String"
 #    end
@@ -1517,8 +1560,11 @@ class String
   # value of each character in <em>str</em> modulo <tt>2n - 1</tt>. This is
   # not a particularly good checksum.
 
-#  def sum(bits = 16)
-#  end
+  def sum(bits = 16)
+    sum = 0
+    0.upto(length - 1) { |i| sum += self[i] }
+    return sum & (1 << bits) - 1 if bits.nonzero?
+  end
 
   ##
   # call-seq:
