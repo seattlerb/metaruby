@@ -5,6 +5,7 @@ PWD=$(shell pwd)
 RUBY2C?=$(PWD)/../../ruby_to_c/dev
 PARSETREE?=$(PWD)/../../ParseTree/dev/lib
 RUBYINLINE?=$(PWD)/../../RubyInline/dev
+RUBICON?=$(PWD)/../../rubicon/dev
 RUBY_FLAGS?=-w -Ilib:bin:$(RUBY2C):$(RUBYINLINE):$(PARSETREE):rubicon
 RUBY=GEM_SKIP=ParseTree:RubyInline $(RUBYBIN) $(RUBY_DEBUG) $(RUBY_FLAGS) 
 
@@ -24,7 +25,7 @@ AUDITFILES = $(patsubst %,%.audit.rb,$(CLASSES))
 CFILES = $(patsubst %,%.c,$(CLASSES))
 
 %.pass: %.rb Makefile
-	(cd rubicon/builtin; $(RUBY) -I../.. -r$* Test$<) && touch $@
+	(cd $(RUBICON)/builtin; $(RUBY) -I../../../metaruby/dev -r$* Test$<) && touch $@
 
 %.audit.rb: %.rb rubicon/builtin/Test%.rb Makefile
 	$(RUBY) ../../ZenTest/dev/ZenTest.rb $*.rb rubicon/builtin/Test$*.rb
@@ -47,7 +48,7 @@ audit: $(AUDITFILES)
 
 # so you can type `make Time` to just run Time tests
 $(CLASSES):
-	(cd rubicon/builtin; $(RUBY) -I../.. -r$@ Test$@.rb $(FILTER))
+	(cd $(RUBICON)/builtin; $(RUBY) -I../../../metaruby/dev:.. -r$@ Test$@.rb $(FILTER))
 
 # shortcut to login, we can't find any way to default the input. argh.
 cvslogin:
@@ -55,17 +56,10 @@ cvslogin:
 
 # checks out rubicon fresh and patches
 rubicon:
-	cvs -z3 -d:pserver:anonymous@rubyforge.org:/var/cvs/rubytests co rubicon
-	(cd rubicon; patch -p0 < ../rubicon.patch)
-
-patch:
-	(cd rubicon; patch -p0 < ../rubicon.patch)
+	ln -s ../../rubicon/dev rubicon
 
 tools: rubicon
 	(cd rubicon; $(MAKE) tools)
-
-diffs:
-	(cd rubicon; cvs -q diff -N -du > ../rubicon.patch.new)
 
 clean:
 	rm -rf *~ *.c ~/.ruby_inline *.pass
