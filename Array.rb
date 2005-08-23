@@ -711,25 +711,45 @@ class Array
   #    a.fill {|i| i*i}         #=> [0, 1, 4, 9]
   #    a.fill(-2) {|i| i*i*i}   #=> [0, 1, 8, 27]
 
-  def fill(object, start = :_unset, count = :_unset) # HACK tests missing
-    if start.kind_of? Range then # HACK lame
-      start.each { |i| self[i] = object }
+  def fill(*args) # HACK tests missing
+    object, range, start, count = :_unset
+
+    object = args.shift unless block_given?
+
+    case args.length
+    when 0 then # ok
+    when 1 then
+      Range === args.first ? (range = *args) : (start = *args)
+    when 2 then
+      raise TypeError, "Can't convert Range into Integer" if Range === args.first
+      start, count = *args
+    when 3 then
+      msg = block_given? ?
+            "wrong number of arguments (3 for 2)" :
+            "wrong number of arguments (4 for 3)"
+      raise ArgumentError, msg
+    end
+
+    if range then
+      if block_given? then
+        range.each { |i| self[i] = yield i }
+      else
+        range.each { |i| self[i] = object }
+      end
+      return self
+    end
+
+    start = 0 if start.nil? or start == :_unset
+    start = length + start if start < 0
+    start = 0 if start < 0
+
+    count = length if count == :_unset
+    count = length - start if count.nil?
+
+    if block_given? then
+      count.times { |i| offset = start + i; self[offset] = yield offset }
     else
-      if count == :_unset then
-        count = self.length
-      end
-
-      if start.nil? or start == :_unset then
-        start = 0
-      end
-
-      if count.nil? then
-        count = self.length - start
-      end
-
-      count.times do |i|
-        self[start + i] = object
-      end
+      count.times { |i| self[start + i] = object }
     end
 
     return self
