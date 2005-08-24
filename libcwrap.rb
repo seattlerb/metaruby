@@ -1,6 +1,6 @@
 #!/usr/local/bin/ruby -w
 
-require 'rubygems'
+# require 'rubygems'
 require 'inline'
 
 class LIBC

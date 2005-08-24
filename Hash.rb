@@ -13,9 +13,6 @@ class Hash
   #    { "a" => 100, "b" => 200 }     #=> {"a"=>100, "b"=>200}
 
   def self.[](*args)
-
-#    p :self_brackets, args.size, args.first.size, args if caller.join(', ') =~ /fuck/
-
     return args if Hash === args
     if Array === args && args.size == 1 && Hash === args.first then
       return args.first # HACK? I have no idea

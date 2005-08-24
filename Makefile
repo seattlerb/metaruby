@@ -38,7 +38,7 @@ all: rubicon tools $(TESTFILES)
 allc: all $(CFILES)
 
 test: realclean
-	$(MAKE) -k all
+	$(MAKE) all
 
 FORCE:
 doc: FORCE
