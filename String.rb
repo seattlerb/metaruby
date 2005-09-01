@@ -419,8 +419,9 @@ class String
   #    a.count "hello", "^l"   #=> 4
   #    a.count "ej-m"          #=> 4
 
-#  def count(*sets)
-#  end
+  def count(*sets)
+    return self.size - self.delete(*sets).size
+  end
 
   ##
   # call-seq:
@@ -431,8 +432,7 @@ class String
   # string, which should be two characters long, each character drawn from
   # <tt>[a-zA-Z0-9./]</tt>.
 
-#  def crypt(arg1)
-#  end
+  # def crypt(arg1); end # CORE hits C library
 
   ##
   # call-seq:
@@ -447,8 +447,22 @@ class String
   #    "hello".delete "aeiou", "^e"   #=> "hell"
   #    "hello".delete "ej-m"          #=> "ho"
 
-#  def delete(*args)
-#  end
+  def delete(*sets)
+    # calculate the internsection... cheat
+    intersection = (0..255).map { |n| n.chr }
+
+    sets.each do |set|
+      set = Regexp.escape(set).gsub(/\\([-^])/, '\1')
+      intersection = intersection.select { |c| c =~ /[#{set}]/ }
+    end
+
+    regex = Regexp.escape(intersection.join).gsub(/\\([-^])/, '\1')
+    return self.dup if regex.empty?
+
+    result = self.split(//).reject { |c| c =~ /[#{regex}]/ }    
+
+    return result.join
+  end
 
   ##
   # call-seq:
@@ -457,9 +471,10 @@ class String
   # Performs a <tt>delete</tt> operation in place, returning <em>str</em>,
   # or <tt>nil</tt> if <em>str</em> was not modified.
 
-#  def delete!(*args)
-#    :junk
-#  end
+  def delete!(*args)
+    result = self.delete(*args)
+    result == self ? nil : self.replace(result)
+  end
 
   ##
   # call-seq:
@@ -504,8 +519,10 @@ class String
   # Produces a version of <em>str</em> with all nonprinting characters
   # replaced by <tt>\nnn</tt> notation and all special characters escaped.
 
-#  def dump
-#  end
+  def dump
+    str = Regexp.escape(self).gsub(/[\000-\026]/) { |c| "\\%03o" % c[0] }
+    return '"' + str + '"'
+  end
 
   ##
   # call-seq:
@@ -1703,8 +1720,21 @@ class String
   #    "hello".tr('el', 'ip')      #=> "hippo"
   #    "hello".tr('a-y', 'b-z')    #=> "ifmmp"
 
-#  def tr(arg1, arg2)
-#  end
+  def tr(f_str, t_str)
+    f_str = f_str.gsub(/(.)-(.)/) { |m| ($1..$2).to_a.join }
+    t_str = t_str.gsub(/(.)-(.)/) { |m| ($1..$2).to_a.join }
+    f_ary = f_str.split(//)
+    t_ary = t_str.split(//)
+
+    size = [f_ary.size, t_ary.size].min
+    map = Hash[*Array.new(size).zip(f_ary, t_ary).flatten.compact]
+    map.default = t_ary.last
+
+    regex = Regexp.escape(f_str).gsub(/\\\^/, '^')
+
+    return self.dup if regex.empty?
+    return self.gsub(/([#{regex}])/) { |m| map[m] }
+  end
 
   ##
   # call-seq:
@@ -1714,8 +1744,10 @@ class String
   # <tt>String#tr</tt>. Returns <em>str</em>, or <tt>nil</tt> if no changes
   # were made.
 
-#  def tr!(arg1, arg2)
-#  end
+  def tr!(f, t)
+    result = self.tr(f, t)
+    return result == self ? nil : replace(result)
+  end
 
   ##
   # call-seq:
@@ -1729,8 +1761,26 @@ class String
   #    "hello".tr_s('el', '*')    #=> "h*o"
   #    "hello".tr_s('el', 'hx')   #=> "hhxo"
 
-#  def tr_s(arg1, arg2)
-#  end
+  def tr_s(f_str, t_str)
+
+    f_str = f_str.gsub(/(.)-(.)/) { |m| ($1..$2).to_a.join }
+    t_str = t_str.gsub(/(.)-(.)/) { |m| ($1..$2).to_a.join }
+
+    regex = Regexp.escape(f_str).gsub(/\\\^/, '^')
+
+    return self.dup if regex.empty?
+
+    chunks = self.split(/([#{regex}]+)/)
+
+    chunks.map do |chunk| 
+      if chunk =~ /[#{regex}]/ then
+        chunk.tr(f_str, t_str).squeeze # does this make me bad?
+      else
+        chunk
+      end
+    end.join
+
+  end
 
   ##
   # call-seq:
@@ -1739,8 +1789,10 @@ class String
   # Performs <tt>String#tr_s</tt> processing on <em>str</em> in place,
   # returning <em>str</em>, or <tt>nil</tt> if no changes were made.
 
-#  def tr_s!(from_str, to_str)
-#  end
+  def tr_s!(from_str, to_str)
+    result = self.tr_s(from_str, to_str)
+    return result == self ? nil : replace(result)
+  end
 
   ##
   # call-seq:
