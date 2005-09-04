@@ -985,7 +985,7 @@ class String
       end
       pattern = Regexp.new str
     end
-    
+
     return pattern.match self
   end
 
@@ -1166,8 +1166,16 @@ class String
   #    "hello".rjust(20)           #=> "               hello"
   #    "hello".rjust(20, '1234')   #=> "123412341234123hello"
 
-#  def rjust(*args)
-#  end
+  def rjust(width, padding = ' ')
+    raise ArgumentError, "zero width padding" if padding.empty?
+
+    width = width - length
+    return self.dup if width < 1
+
+    padding  = (padding * (width / padding.length + 1))[0...width]
+
+    return padding << self
+  end
 
   ##
   # call-seq:
