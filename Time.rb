@@ -314,7 +314,7 @@ class Time
     when Time
       return self.to_f - o.to_f
     else
-      raise "wtf?: #{t.inspect}:#{t.class}"
+      raise "wtf?:" + t.inspect + ": " + t.class
     end
   end
 
