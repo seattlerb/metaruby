@@ -930,8 +930,16 @@ class String
   #    "hello".ljust(20)           #=> "hello               "
   #    "hello".ljust(20, '1234')   #=> "hello123412341234123"
 
-#  def ljust(*args)
-#  end
+  def ljust(width, padding = ' ')
+    raise ArgumentError, "zero width padding" if padding.empty?
+
+    width = width - length
+    return self.dup if width < 1
+
+    padding  = (padding * (width / padding.length + 1))[0...width]
+
+    return self + padding
+  end
 
   ##
   # call-seq:
@@ -986,7 +994,7 @@ class String
       pattern = Regexp.new str
     end
 
-    return pattern.match self
+    return pattern.match(self)
   end
 
   ##
@@ -1135,13 +1143,18 @@ class String
 
   def rindex(target, position = (length - 1))
     case target
+    when Regexp then
+      return length if target.source.empty?
     when String then
       return 0 if self.empty? and target.empty?
       return length if target.empty?
-
       target = Regexp.new Regexp.quote(target)
     when Fixnum then
-      target = Regexp.new Regexp.quote(target.chr)
+      begin
+        target = Regexp.new Regexp.quote(target.chr)
+      rescue RangeError
+        return nil
+      end
     end
 
     # HACK really I want to start matching at the front and move 1 beyond
