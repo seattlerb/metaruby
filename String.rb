@@ -1372,7 +1372,59 @@ class String
   #    "1,2,,3,4,,".split(',', 4)      #=> ["1", "2", "", "3,4,,"]
   #    "1,2,,3,4,,".split(',', -4)     #=> ["1", "2", "", "3", "4", "", ""]
 
-  #def split(*args); end # HACK
+  def zsplit(pattern = $;, limit = nil) # HACK needs grouping
+    return [] if self.empty?
+    return [self] if limit == 1
+    matches = []
+
+    if Regexp === pattern and pattern.source.empty? then
+      self.each_byte { |c| matches << c.chr }
+      return matches
+    end
+
+    limit = nil if limit == 0
+    pattern = $;  if pattern.nil?
+    pattern = ' ' if pattern.nil?
+    awk = pattern == ' '
+
+    if awk then
+      str = self.lstrip
+      pattern = /[ \t\r\n\f\v]+/
+    else
+      str = self
+      pattern = Regexp.new Regexp.quote(pattern) unless Regexp === pattern
+    end
+
+    count = 0
+    while match = pattern.match(str) do
+      count += 1
+      #puts "count: %p begin: %p end: %p" % [count, match.begin(0), match.end(0)]
+      #puts "match: %p str: %p" % [match[0], str]
+      matches << str[0...match.begin(0)]
+      if limit and limit > 0 and count == limit then
+        matches[-1] += match[0] + match.post_match
+        break
+      end
+      str = str[match.end(0)..-1]
+    end
+
+    if limit then
+      if limit > count then
+        matches << str # chunk after match
+      elsif limit <= 0 then
+        matches << str
+      end
+    else
+      matches << str
+    end
+
+    #p matches
+    unless limit then
+      matches.pop while matches.last.empty?
+    end
+
+    return matches
+  end
 
   ##
   # call-seq:
