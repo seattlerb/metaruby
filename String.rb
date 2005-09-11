@@ -1372,7 +1372,7 @@ class String
   #    "1,2,,3,4,,".split(',', 4)      #=> ["1", "2", "", "3,4,,"]
   #    "1,2,,3,4,,".split(',', -4)     #=> ["1", "2", "", "3", "4", "", ""]
 
-  def zsplit(pattern = $;, limit = nil) # HACK needs grouping
+  def split(pattern = $;, limit = nil) # HACK needs grouping
     return [] if self.empty?
     return [self] if limit == 1
     matches = []
@@ -1399,13 +1399,34 @@ class String
     while match = pattern.match(str) do
       count += 1
       #puts "count: %p begin: %p end: %p" % [count, match.begin(0), match.end(0)]
-      #puts "match: %p str: %p" % [match[0], str]
-      matches << str[0...match.begin(0)]
+      #puts "str: %p match: %p captures: %p" % [match[0], str, match.captures]
+      if match.begin(0) == match.end(0) then
+        matches << str[0..0]
+        #puts "zadded #{str[0..0].inspect}"
+      else
+        matches << str[0...match.begin(0)]
+        #puts " added #{str[0...match.begin(0)].inspect}"
+      end
+
+      match.captures.compact.each do |cap|
+        break if limit and limit > 0 and count == limit
+        matches << cap
+      end
+
       if limit and limit > 0 and count == limit then
         matches[-1] += match[0] + match.post_match
         break
       end
-      str = str[match.end(0)..-1]
+
+      if match.begin(0) == match.end(0) then
+        str = str[1..-1]
+        if str.nil? then
+          str = ''
+          break
+        end
+      else
+        str = str[match.end(0)..-1]
+      end
     end
 
     if limit then
@@ -1419,6 +1440,7 @@ class String
     end
 
     #p matches
+
     unless limit then
       matches.pop while matches.last.empty?
     end
