@@ -1,3 +1,5 @@
+require 'English'
+
 class String
 
   ##
@@ -1372,77 +1374,57 @@ class String
   #    "1,2,,3,4,,".split(',', 4)      #=> ["1", "2", "", "3,4,,"]
   #    "1,2,,3,4,,".split(',', -4)     #=> ["1", "2", "", "3", "4", "", ""]
 
-  def split(pattern = $;, limit = nil) # HACK needs grouping
+  def split(pattern = $FIELD_SEPARATOR, limit = nil)
     return [] if self.empty?
     return [self] if limit == 1
     matches = []
 
-    if Regexp === pattern and pattern.source.empty? then
-      self.each_byte { |c| matches << c.chr }
-      return matches
-    end
-
     limit = nil if limit == 0
-    pattern = $;  if pattern.nil?
+    pattern = $FIELD_SEPARATOR if pattern.nil?
     pattern = ' ' if pattern.nil?
-    awk = pattern == ' '
-
-    if awk then
+    
+    if pattern == ' ' then
       str = self.lstrip
-      pattern = /[ \t\r\n\f\v]+/
+      pattern = %r/[\v\s]+/
     else
       str = self
       pattern = Regexp.new Regexp.quote(pattern) unless Regexp === pattern
     end
 
     count = 0
+    skip = nil
+
     while match = pattern.match(str) do
       count += 1
-      #puts "count: %p begin: %p end: %p" % [count, match.begin(0), match.end(0)]
-      #puts "str: %p match: %p captures: %p" % [match[0], str, match.captures]
-      if match.begin(0) == match.end(0) then
-        matches << str[0..0]
-        #puts "zadded #{str[0..0].inspect}"
+
+      if match.pre_match.empty? and (match[0].nil? or match[0].empty?) then
+        if skip then
+          matches << skip
+        else
+          skip = str[0..0]
+          str = str[1..-1]
+          next if skip
+        end
       else
-        matches << str[0...match.begin(0)]
-        #puts " added #{str[0...match.begin(0)].inspect}"
+        matches << "#{skip}#{match.pre_match}"
+        str = match.post_match
       end
 
-      match.captures.compact.each do |cap|
-        break if limit and limit > 0 and count == limit
-        matches << cap
-      end
+      skip = nil
 
       if limit and limit > 0 and count == limit then
         matches[-1] += match[0] + match.post_match
         break
       end
 
-      if match.begin(0) == match.end(0) then
-        str = str[1..-1]
-        if str.nil? then
-          str = ''
-          break
-        end
-      else
-        str = str[match.end(0)..-1]
-      end
+      matches.push *match.captures.compact
     end
 
-    if limit then
-      if limit > count then
-        matches << str # chunk after match
-      elsif limit <= 0 then
-        matches << str
-      end
-    else
-      matches << str
-    end
-
-    #p matches
+    matches << str unless limit and (1..count) === limit
 
     unless limit then
-      matches.pop while matches.last.empty?
+      #p matches unless caller.join(' ') =~ /backtrace/
+      matches.pop while matches.last.nil? or matches.last.empty?
     end
 
     return matches
@@ -2039,7 +2021,7 @@ class String
   #    "hEllO".upcase   #=> "HELLO"
 
   def upcase
-    new = dup
+    new = self.dup
     new.upcase!
     return new
   end
