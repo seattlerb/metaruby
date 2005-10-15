@@ -55,7 +55,7 @@ def generate_rdoc(klass, meth, instance_method)
   end
 end
 
-ObjectSpace.each_object(Class) do |klass|
+ObjectSpace.each_object(Module) do |klass|
   next if klass.name =~ /Errno|NameError::message/
   next if klass.ancestors.include? Exception
   klasses << klass
