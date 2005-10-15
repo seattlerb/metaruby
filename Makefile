@@ -18,6 +18,7 @@ CLASSES = \
 	Range \
 	Hash \
 	String \
+	Comparable \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
