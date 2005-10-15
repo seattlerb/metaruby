@@ -2,11 +2,8 @@
 
 require "yaml"
 require "rdoc/ri/ri_descriptions"
+require "rdoc/ri/ri_paths"
 require "rdoc/markup/simple_markup/to_flow"
-
-# require "rdoc/ri/ri_formatter"
-
-klasses = []
 
 class String
   def wrap(width=72, with="")
@@ -35,7 +32,7 @@ def generate_rdoc(klass, meth, instance_method)
 
   suffix = instance_method ? "i" : "c"
 
-  rdoc_path = "rdoc/#{klass}/#{safe_meth_name}-#{suffix}.yaml"
+  rdoc_path = "#{RI::Paths::PATH}/#{klass}/#{safe_meth_name}-#{suffix}.yaml"
   if test ?f, rdoc_path then
     rdoc = YAML.load_file(rdoc_path) rescue nil
 
@@ -50,55 +47,33 @@ def generate_rdoc(klass, meth, instance_method)
       puts c.body.unhtmlify.wrap(76, "  # ")
     end
   else
-    puts "# File #{rdoc_path} doesn't exist"
-    puts "#   try: cd RUBY; rdoc -f ri -o rdoc"
-  end
-end
-
-ObjectSpace.each_object(Module) do |klass|
-  next if klass.name =~ /Errno|NameError::message/
-  next if klass.ancestors.include? Exception
-  klasses << klass
-end
-
-klasses = klasses.sort_by { |k| k.name }
-
-$c = nil unless defined? $c
-$c = eval $c if $c
-
-klasses.each do |klass|
-
-  if $c then
-    next unless klass == $c
-  end
-
-  superklass = klass.respond_to?(:superclass) ? klass.superclass : nil
-  print "class #{klass}"
-  unless superklass.nil? or superklass == Object then
-    puts " < #{superklass}"
-  else
     puts
+    puts "  ##"
+    puts "  # File #{rdoc_path} doesn't exist"
+    puts "  #   try: cd RUBY; rdoc -f ri -o rdoc"
   end
+end
 
-  klassmethods = klass.public_methods(false)
-  klassmethods.sort.each do |meth|
-    next if meth =~ /yaml/ and klass.name !~ /YAML/
-    next if meth == 'allocate'
-    next if meth == 'superclass'
+def generate_method(mod, meth, instance_method)
+    #puts "ACK: #{mod}.#{meth} instance_method: #{instance_method}"
+    generate_rdoc mod, meth, instance_method
 
-    arity = klass.method(meth.intern).arity
+    arity = if instance_method then
+              mod.instance_method(meth.intern).arity
+            else
+              mod.method(meth.intern).arity
+            end
 
-    generate_rdoc(klass, meth, false)
-
-    if meth == 'new' then
-      meth = 'initialize'
-    else
-      meth = "self.#{meth}"
-    end
+    meth = if not instance_method and meth == 'new' then
+             'initialize'
+           elsif instance_method then
+             meth
+           else
+             "self.#{meth}"
+           end
 
     puts
     print "  "
-#    print "# " unless meth == "initialize"
     print "def #{meth}"
     case arity
     when 0 then
@@ -108,11 +83,28 @@ klasses.each do |klass|
     when -1 then
       print "(*args)"
     else
-      # print "ACK: #{klass}.#{meth} arity = #{arity}"
+      # print "ACK: #{mod}.#{meth} arity = #{arity}"
     end
     puts
     puts "    raise NotImplementedError, '#{meth} is not implemented'"
     puts "  end"
+end
+
+def generate_class(klass)
+  superklass = klass.respond_to?(:superclass) ? klass.superclass : nil
+  print "class #{klass}"
+  unless superklass.nil? or superklass == Object then
+    puts " < #{superklass}"
+  else
+    puts
+  end
+
+  klass.public_methods(false).sort.each do |meth|
+    next if meth =~ /yaml/ and klass.name !~ /YAML/
+    next if meth == 'allocate'
+    next if meth == 'superclass'
+
+    generate_method klass, meth, false
   end
 
   methods = unless klass == Object then
@@ -123,28 +115,35 @@ klasses.each do |klass|
 
   methods.sort.each do |meth|
     next if meth =~ /yaml/ and klass.name !~ /YAML/
-    arity = klass.instance_method(meth.intern).arity
 
-    generate_rdoc(klass, meth, true)
-
-    puts
-    print "  def #{meth}"
-
-    case arity
-    when 0 then
-    when 1..8 then
-      arglist = (1..arity).to_a.map { |n| "arg#{n}" }.join(", ")
-      print "(#{arglist})"
-    when -1 then
-      print "(*args)"
-    else
-      print "ACK: #{klass}.#{meth} arity = #{arity}"
-    end
-    puts
-    puts "    raise NotImplementedError, '#{meth} is not implemented'"
-    puts "  end"
+    generate_method klass, meth, true
   end
 
   puts "end"
   puts
 end
+
+def generate_module(mod)
+  print "module #{mod}"
+  puts
+
+  mod.methods(false).sort.each do |meth|
+    generate_method mod, meth, false
+  end
+
+  mod.instance_methods(false).sort.each do |meth|
+    generate_method mod, meth, true
+  end
+
+  puts
+  puts "end"
+  puts
+end
+
+$c = nil unless defined? $c
+$m = nil unless defined? $m
+raise ArgumentError, "Use -m or -c" unless $c or $m
+
+generate_class  eval($c) if $c
+generate_module eval($m) if $m
+
