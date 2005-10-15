@@ -19,6 +19,7 @@ CLASSES = \
 	Hash \
 	String \
 	Comparable \
+	Exception \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
