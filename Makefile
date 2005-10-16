@@ -21,6 +21,7 @@ CLASSES = \
 	Comparable \
 	Exception \
 	FileTest \
+	Struct \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
