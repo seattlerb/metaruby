@@ -24,7 +24,11 @@ module LIBC
     dlload "libc.dylib"
   end
 
-  typealias "const time_t *", "long ref"
+  ##
+  # Time
+
+  typealias 'time_t',         'long'
+  typealias 'const time_t *', 'long ref'
 
   Timeval = struct [
     "long tv_sec",  # seconds since Jan. 1, 1970
@@ -67,6 +71,53 @@ module LIBC
   def self.c_localtime(clock)
     tm = LIBC.localtime(clock)
     return LIBC::StructTm.new(tm)
+  end
+
+  ##
+  # File stat
+
+  Timespec = struct [
+    'time_t tv_sec',  # seconds
+    'long   tv_nsec', # nanoseconds
+  ]
+
+  typealias 'struct stat *', 'long ref'
+
+  typealias 'dev_t',   'int'
+  typealias 'ino_t',   'unsigned int'
+  typealias 'mode_t',  'unsigned short'
+  typealias 'nlink_t', 'unsigned short'
+  typealias 'uid_t',   'unsigned int'
+  typealias 'gid_t',   'unsigned int'
+  typealias 'struct timespec', 'long long'
+  typealias 'off_t',   'long long'
+  typealias 'quad_t',  'unsigned long long'
+  typealias 'u_long',  'unsigned long'
+
+  Stat = struct [ # From Darwin 8.2.0
+    'dev_t           st_dev',       # device inode
+    'ino_t           st_ino',       # inode number
+    'mode_t          st_mode',      # inode protection mode
+    'nlink_t         st_nlink',     # number of hard links
+    'uid_t           st_uid',       # user-id
+    'gid_t           st_gid',       # group-id
+    'dev_t           st_rdev',      # device type, for special file inode
+    'struct timespec st_atimespec', # time of last access
+    'struct timespec st_mtimespec', # time of last data modification
+    'struct timespec st_ctimespec', # time of last file status change
+    'off_t           st_size',      # file size in bytes
+    'quad_t          st_blocks',    # blocks allocated for file
+    'u_long          st_blksize',   # optimal file sys for I/O ops blocksize
+    'u_long          st_flags',     # user defined flags for file
+    'u_long          st_gen',       # file genration number
+  ]
+
+  extern 'int stat(const char * path, struct stat *sb)'
+
+  def self.c_stat(path)
+    sb = LIBC::Stat.malloc
+    return nil unless LIBC.stat path, sb
+    return sb.st_ino
   end
 
 end

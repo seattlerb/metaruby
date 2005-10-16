@@ -170,9 +170,78 @@ class LIBC
       }
     }
 
-  end # inline
-end # LIBC
+    builder.include("<sys/types.h>")
+    builder.include("<sys/stat.h>")
 
+    stat_vals = <<-END
+      rb_ary_push(result, INT2NUM(retval));
+
+      if (retval == 0) {
+        VALUE stat_values = rb_ary_new();
+        VALUE tspec = Qnil;
+        rb_ary_push(stat_values, INT2NUM(sb.st_dev));
+        rb_ary_push(stat_values, INT2NUM(sb.st_ino));
+        rb_ary_push(stat_values, INT2NUM(sb.st_mode));
+        rb_ary_push(stat_values, INT2NUM(sb.st_nlink));
+        rb_ary_push(stat_values, INT2NUM(sb.st_uid));
+        rb_ary_push(stat_values, INT2NUM(sb.st_gid));
+        rb_ary_push(stat_values, INT2NUM(sb.st_rdev));
+
+        /* st_atimespec */
+          tspec = rb_ary_new();
+        rb_ary_push(tspec, INT2NUM(sb.st_atimespec.tv_sec));
+        rb_ary_push(tspec, INT2NUM(sb.st_atimespec.tv_nsec));
+        rb_ary_push(stat_values, tspec);
+
+        /* st_mtimespec */
+          tspec = rb_ary_new();
+        rb_ary_push(tspec, INT2NUM(sb.st_mtimespec.tv_sec));
+        rb_ary_push(tspec, INT2NUM(sb.st_mtimespec.tv_nsec));
+        rb_ary_push(stat_values, tspec);
+
+        /* st_ctimespec */
+          tspec = rb_ary_new();
+        rb_ary_push(tspec, INT2NUM(sb.st_mtimespec.tv_sec));
+        rb_ary_push(tspec, INT2NUM(sb.st_mtimespec.tv_nsec));
+        rb_ary_push(stat_values, tspec);
+
+        rb_ary_push(stat_values, INT2NUM(sb.st_size));
+        rb_ary_push(stat_values, INT2NUM(sb.st_blocks));
+        rb_ary_push(stat_values, INT2NUM(sb.st_blksize));
+        rb_ary_push(stat_values, INT2NUM(sb.st_flags));
+        rb_ary_push(stat_values, INT2NUM(sb.st_gen));
+
+        rb_ary_push(result, stat_values);
+      }
+      return result;
+    END
+
+    %w[stat lstat].each do |function|
+      builder.c %{
+        static VALUE c_#{function}(const char * path) {
+          VALUE result = rb_ary_new();
+          struct stat sb;
+          int retval = #{function}(path, &sb);
+          (void)self;
+
+          #{stat_vals}
+        }
+      }
+    end
+
+    builder.c %{
+      static VALUE c_fstat(int fd) {
+        VALUE result = rb_ary_new();
+        struct stat sb;
+        int retval = fstat(fd, &sb);
+        (void)self;
+
+        #{stat_vals}
+      }
+    }
+  end # inline
+
+end # LIBC
 
 # TODO: (maybe)
 # require 'dl/import'

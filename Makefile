@@ -20,6 +20,7 @@ CLASSES = \
 	String \
 	Comparable \
 	Exception \
+	FileTest \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
