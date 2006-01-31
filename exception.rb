@@ -2,14 +2,16 @@ class Exception
 
   ##
   # call-seq:
-  #   exc.exception(string) -> an_exception or exc
+  #   exc.exception(string = nil) -> an_exception or exc
   #
   # With no argument, or if the argument is the same as the receiver, return
   # the receiver. Otherwise, create a new exception object of the same class
   # as the receiver, but with a message equal to <tt>string.to_str</tt>.
+  #
+  # FIX: this is really just new and should say that
 
-  def self.exception(*args)
-    raise NotImplementedError, 'self.exception is not implemented'
+  def self.exception(string = nil)
+    return self.new(string)
   end
 
   ##
@@ -18,8 +20,9 @@ class Exception
   #
   # Construct a new Exception object, optionally passing in a message.
 
-  def initialize(*args)
-    raise NotImplementedError, 'initialize is not implemented'
+  def initialize(msg = nil)
+    @backtrace = nil
+    @message = msg
   end
 
   ##
@@ -49,19 +52,20 @@ class Exception
   #    prog.rb:10
 
   def backtrace
-    raise NotImplementedError, 'backtrace is not implemented'
+    return @backtrace
   end
 
   ##
   # call-seq:
-  #   exc.exception(string) -> an_exception or exc
+  #   exc.exception(string = nil) -> an_exception or exc
   #
   # With no argument, or if the argument is the same as the receiver, return
   # the receiver. Otherwise, create a new exception object of the same class
   # as the receiver, but with a message equal to <tt>string.to_str</tt>.
 
-  def exception(*args)
-    raise NotImplementedError, 'exception is not implemented'
+  def exception(string = nil)
+    return self if string.nil? or string.equal? self
+    return self.class.exception(string)
   end
 
   ##
@@ -71,20 +75,7 @@ class Exception
   # Return this exception's class name an message
 
   def inspect
-    raise NotImplementedError, 'inspect is not implemented'
-  end
-
-  ##
-  # call-seq:
-  #   exception.message   =>  string
-  #   exception.to_str    =>  string
-  #
-  # Returns the result of invoking <tt>exception.to_s</tt>. Normally this
-  # returns the exception's message or name. By supplying a to_str method,
-  # exceptions are agreeing to be used where Strings are expected.
-
-  def message
-    raise NotImplementedError, 'message is not implemented'
+    "<#{self.class}: #{message}>"
   end
 
   ##
@@ -95,23 +86,13 @@ class Exception
   # argument must be an array of <tt>String</tt> objects in the format
   # described in <tt>Exception#backtrace</tt>.
 
-  def set_backtrace(arg1)
-    raise NotImplementedError, 'set_backtrace is not implemented'
+  def set_backtrace(array)
+    @backtrace = array
   end
 
   ##
   # call-seq:
-  #   exception.to_s   =>  string
-  #
-  # Returns exception's message (or the name of the exception if no message
-  # is set).
-
-  def to_s
-    raise NotImplementedError, 'to_s is not implemented'
-  end
-
-  ##
-  # call-seq:
+  #   exception.to_s      =>  string
   #   exception.message   =>  string
   #   exception.to_str    =>  string
   #
@@ -119,8 +100,33 @@ class Exception
   # returns the exception's message or name. By supplying a to_str method,
   # exceptions are agreeing to be used where Strings are expected.
 
-  def to_str
-    raise NotImplementedError, 'to_str is not implemented'
+  def to_s
+    return @message
   end
+
+  ##
+  # call-seq:
+  #   exception.to_s      =>  string
+  #   exception.message   =>  string
+  #   exception.to_str    =>  string
+  #
+  # Returns the result of invoking <tt>exception.to_s</tt>. Normally this
+  # returns the exception's message or name. By supplying a to_str method,
+  # exceptions are agreeing to be used where Strings are expected.
+
+  alias to_str to_s
+
+  ##
+  # call-seq:
+  #   exception.to_s      =>  string
+  #   exception.message   =>  string
+  #   exception.to_str    =>  string
+  #
+  # Returns the result of invoking <tt>exception.to_s</tt>. Normally this
+  # returns the exception's message or name. By supplying a to_str method,
+  # exceptions are agreeing to be used where Strings are expected.
+
+  alias message to_s
+
 end
 

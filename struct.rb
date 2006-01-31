@@ -224,18 +224,7 @@ class Struct
   def hash
     raise NotImplementedError, 'hash is not implemented'
   end
-
-  ##
-  # call-seq:
-  #   struct.to_s      => string
-  #   struct.inspect   => string
-  #
-  # Describe the contents of this struct in a string.
-
-  def inspect
-    raise NotImplementedError, 'inspect is not implemented'
-  end
-
+ 
   ##
   # call-seq:
   #   struct.length    => fixnum
@@ -250,6 +239,8 @@ class Struct
   def length
     return _attrs.length
   end
+
+  alias size length
 
   ##
   # call-seq:
@@ -288,23 +279,8 @@ class Struct
   #    l.select(-1, -3, -5)            #=> [66, 44, 22]
   #    l.select {|v| (v % 2).zero? }   #=> [22, 44, 66]
 
-  def select(*args)
-    raise NotImplementedError, 'select is not implemented'
-  end
-
-  ##
-  # call-seq:
-  #   struct.length    => fixnum
-  #   struct.size      => fixnum
-  #
-  # Returns the number of instance variables.
-  #
-  #    Customer = Struct.new(:name, :address, :zip)
-  #    joe = Customer.new("Joe Smith", "123 Maple, Anytown NC", 12345)
-  #    joe.length   #=> 3
-
-  def size
-    raise NotImplementedError, 'size is not implemented'
+  def select(&block)
+    to_a.select(&block)
   end
 
   ##
@@ -330,8 +306,10 @@ class Struct
   # Describe the contents of this struct in a string.
 
   def to_s
-    raise NotImplementedError, 'to_s is not implemented'
+    "#<struct #{self.class} #{_attrs.zip(self.to_a).map{|o| o[1] = o[1].inspect; o.join('=')}.join(', ') }>"
   end
+
+  alias inspect to_s
 
   ##
   # call-seq:
@@ -361,7 +339,7 @@ class Struct
   #    a.values_at(1..3, 2...5)
 
   def values_at(*args)
-    raise NotImplementedError, 'values_at is not implemented'
+    to_a.values_at(*args)
   end
 
 end

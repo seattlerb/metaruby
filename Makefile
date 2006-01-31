@@ -4,24 +4,24 @@ FILTER?=
 RUBY2C?=$(shell cd ../../ruby_to_c/dev; pwd)
 PARSETREE?=$(shell cd ../../ParseTree/dev/lib; pwd)
 RUBYINLINE?=$(shell cd ../../RubyInline/dev; pwd)
-RUBICON?=$(shell cd ../../rubicon/dev; pwd)
-RUBY_FLAGS?=-w -Ilib:bin:$(RUBY2C):$(RUBYINLINE):$(PARSETREE):rubicon
+BFTS?=$(shell cd ../../bfts/dev; pwd)
+RUBY_FLAGS?=-w -Ilib:bin:$(RUBY2C):$(RUBYINLINE):$(PARSETREE):$(BFTS)
 RUBY?=$(RUBYBIN) $(RUBY_DEBUG) $(RUBY_FLAGS) 
 CFLAGS ?= -I$(shell $(RUBYBIN) -rrbconfig -e 'puts Config::CONFIG["archdir"]')
 
 CLASSES = \
-	TrueClass \
-	FalseClass \
-	NilClass \
-	Time \
-	Array \
-	Range \
-	Hash \
-	String \
-	Comparable \
-	Exception \
-	FileTest \
-	Struct \
+	true_class \
+	false_class \
+	nil_class \
+	time \
+	array \
+	range \
+	hash \
+	string \
+	comparable \
+	exception \
+	file_test \
+	struct \
 	$(NULL)
 
 TESTFILES = $(patsubst %,%.pass,$(CLASSES))
@@ -33,15 +33,15 @@ SHLIB_EXT = $(shell ruby -rrbconfig -e 'puts Config::CONFIG["DLEXT"]')
 LINKER = $(shell ruby -rrbconfig -e 'puts Config::CONFIG["LDSHARED"]')
 
 %.pass: %.rb Makefile
-	(cd $(RUBICON)/builtin; $(RUBY) -I../../../metaruby/dev -r$* Test$<) && touch $@
+	(cd $(BFTS); $(RUBY) -I../../metaruby/dev -r$* test_$<) && touch $@
 
-%.audit.rb: %.rb rubicon/builtin/Test%.rb Makefile
-	$(RUBY) ../../ZenTest/dev/ZenTest.rb $*.rb rubicon/builtin/Test$*.rb
+%.audit.rb: %.rb bfts/Test%.rb Makefile
+	$(RUBY) ../../ZenTest/dev/ZenTest.rb $*.rb bfts/Test$*.rb
 
 %.c: %.rb %.pass Makefile
 	$(RUBY) $(RUBY2C)/translate.rb -c=$* ./$< > $@
 
-all: rubicon tools $(TESTFILES)
+all: bfts $(TESTFILES)
 
 allc: all $(CFILES)
 
@@ -57,27 +57,23 @@ test: realclean
 
 FORCE:
 doc: FORCE
-	rm -rf doc ; rdoc -x rubicon .
+	rm -rf doc ; rdoc -x bfts .
 
 audit: $(AUDITFILES)
 
 # so you can type `make Time` to just run Time tests
 $(CLASSES):
-	(cd $(RUBICON)/builtin; $(RUBY) -I../../../metaruby/dev:.. -r$@ Test$@.rb $(FILTER))
+	(cd $(BFTS); $(RUBY) -I../../../metaruby/dev:.. -r$@ Test$@.rb $(FILTER))
 
 # shortcut to login, we can't find any way to default the input. argh.
 cvslogin:
 	cvs -d:pserver:anonymous@rubyforge.org:/var/cvs/rubytests login
 
-# checks out rubicon fresh and patches
-rubicon:
-	ln -s ../../rubicon/dev rubicon
-
-tools: rubicon
-	(cd rubicon; $(MAKE) tools)
+sort:
+	for f in *.rb; do egrep "^ *def [a-z]" $$f > x; sort x > y; echo $$f; echo; diff x y; done
 
 clean:
 	rm -rf *~ *.c *.o *.$(SHLIB_EXT) ~/.ruby_inline *.a *.pass *.cache
 
 realclean: clean
-	rm -rf rubicon
+	rm -rf bfts
