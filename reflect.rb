@@ -114,8 +114,7 @@ def generate_class(klass)
             end
 
   methods.sort.each do |meth|
-    next if meth =~ /yaml/ and klass.name !~ /YAML/
-    next if meth =~ /taguri/ and klass.name !~ /YAML/
+    next if meth =~ /yaml|taguri/ and klass.name !~ /YAML/
 
     generate_method klass, meth, true
   end
