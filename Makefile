@@ -41,7 +41,7 @@ LINKER = $(shell ruby -rrbconfig -e 'puts Config::CONFIG["LDSHARED"]')
 %.c: %.rb %.pass Makefile
 	$(RUBY) $(RUBY2C)/translate.rb -c=$* ./$< > $@
 
-all: bfts $(TESTFILES)
+all: $(TESTFILES)
 
 allc: all $(CFILES)
 
