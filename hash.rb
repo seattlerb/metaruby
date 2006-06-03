@@ -1,4 +1,4 @@
-class Hash
+class ZHash < Hash
 
   ##
   # call-seq:
