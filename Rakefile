@@ -10,6 +10,8 @@ end
 
 def task(args, &block)
   case args
+  when Symbol
+    Rake::Task.define_task(args, &block)
   when Hash
     args.each_pair do |k,v|
       Rake::Task.define_task(k => v, &block)
