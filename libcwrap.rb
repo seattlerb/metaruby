@@ -96,7 +96,6 @@ class LIBC
         time_t result;
 
         (void)self;
-        (void)argc;
 
         tv.tm_sec = sec;
         tv.tm_min = min;
@@ -123,7 +122,6 @@ class LIBC
         time_t result;
 
         (void)self;
-        (void)argc;
 
         tv.tm_sec = sec;
         tv.tm_min = min;
