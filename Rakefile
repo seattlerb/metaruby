@@ -50,14 +50,14 @@ end
 RUBY2C = File.expand_path "../../ruby_to_c/dev"
 BFTS = File.expand_path "../../bfts/dev"
 
-inc = %w(ruby_to_c/dev/lib ParseTree/dev/lib RubyInline/dev bfts/dev).map { |p| File.expand_path "../../#{p}" }
+inc = %w(ruby_to_c/dev/lib ParseTree/dev/lib RubyInline/dev/lib bfts/dev).map { |p| File.expand_path "../../#{p}" }
 
 RUBY_FLAGS = %(-w -Ilib:bin:#{inc.join(':')})
 task :test => [ :clean, :default ]
 
 rule '.pass' => ['.rb'] do |t|
   Dir.chdir BFTS do
-    ruby %(-I../../metaruby/dev -r#{t.source} test_#{t.source} #{ENV['FILTER']})
+    ruby %(-I../../metaruby/dev:../../RubyInline/dev -r#{t.source} test_#{t.source} #{ENV['FILTER']})
   end
   touch t.name
 end
