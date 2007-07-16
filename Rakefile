@@ -57,7 +57,7 @@ task :test => [ :clean, :default ]
 
 rule '.pass' => ['.rb'] do |t|
   Dir.chdir BFTS do
-    ruby %(-I../../metaruby/dev:../../RubyInline/dev -r#{t.source} test_#{t.source} #{ENV['FILTER']})
+    ruby %(-I../../metaruby/dev:../../RubyInline/dev/lib -r#{t.source} test_#{t.source} #{ENV['FILTER']})
   end
   touch t.name
 end
