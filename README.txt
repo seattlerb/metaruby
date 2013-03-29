@@ -36,7 +36,7 @@ FEATURES/PROBLEMS:
   
 + Soooo far from done...
 
-SYNOPSYS:
+SYNOPSIS:
 
   n/a
 
